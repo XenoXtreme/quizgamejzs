@@ -61,14 +61,14 @@ export default function QuestionPanel({
   // Navigation URL helpers
   const getNextURL = () => {
     if (!isNextDisabled) {
-      return path.replace(`${qno}`, `${Number(qno) + 1}?type=${type}`);
+      return path.replace(`${qno}`, `${Number(qno) + 1}`);
     }
     return '';
   };
 
   const getPrevURL = () => {
     if (!isPrevDisabled) {
-      return path.replace(`${qno}`, `${Number(qno) - 1}?type=${type}`);
+      return path.replace(`${qno}`, `${Number(qno) - 1}`);
     }
     return '';
   };
@@ -112,6 +112,7 @@ export default function QuestionPanel({
 
   // Keyboard navigation support
   useEffect(() => {
+    console.log(type)
     const handleKeyDown = (e: KeyboardEvent) => {
       // Prevent handling if user is typing in an input field
       if (e.target instanceof HTMLInputElement ||
