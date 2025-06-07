@@ -11,13 +11,11 @@ export default function ConnectionDebug() {
 
   useEffect(() => {
     const getConnectionInfo = () => {
-      const isCodespaces = window.location.hostname.includes('.app.github.dev');
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const backendURl = process.env.NEXT_PUBLIC_BACKEND_API_URI;
       const codesspacesUrl = `${wsProtocol}//${backendURl?.replace(/https?:\/\//, '')}`;
 
       setDebugInfo({
-        isCodespaces,
         hostname: window.location.hostname,
         expectedUrl: codesspacesUrl,
         socketConnected: socket?.connected,
@@ -76,11 +74,6 @@ export default function ConnectionDebug() {
               <div className="grid grid-cols-3 gap-1">
                 <span className="text-gray-400">Hostname:</span>
                 <span className="col-span-2 text-indigo-300 font-mono truncate">{debugInfo.hostname || "N/A"}</span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-1">
-                <span className="text-gray-400">Codespaces:</span>
-                <span className="col-span-2 text-indigo-300 font-mono">{debugInfo.isCodespaces ? "Yes" : "No"}</span>
               </div>
 
               <div className="grid grid-cols-3 gap-1">

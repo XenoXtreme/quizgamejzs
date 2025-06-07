@@ -14,6 +14,7 @@ import { Button, Card, Badge } from "flowbite-react";
 
 // BUZZER
 import Buzzer from "./buzzer";
+import ConnectionDebug from "./debug";
 
 export default function AdminPanel() {
   // INTERFACE
@@ -71,7 +72,7 @@ export default function AdminPanel() {
       if (!firstPressInfo) {
         setFirstPressInfo(data);
       }
-      toast.info(`Team - ${data.teamName} pressed the button.`)
+      toast.info(`Team - ${data.teamName} pressed the button.`, {duration: 15000})
     };
 
     const handleBuzzerReset = () => {
@@ -109,20 +110,20 @@ export default function AdminPanel() {
         <h1 className="text-3xl font-bold text-center mb-2 text-indigo-800">Quiz Buzzer Admin Panel</h1>
         <p className="text-center text-gray-600 mb-8">Control the timer and monitor buzzer presses</p>
       </div>
-      
+
       <Card className="mb-8 shadow-lg">
         <div className="flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-2 text-indigo-700">Timer Control</h2>
-          
+
           <div className="flex items-center justify-center mb-4">
             <div className="relative">
               <div className="w-32 h-32 rounded-full border-8 border-indigo-100 flex items-center justify-center">
                 <span className="text-4xl font-bold text-indigo-700">{timer}</span>
                 <span className="text-xl text-indigo-500 absolute -right-1 top-14">s</span>
               </div>
-              <div 
+              <div
                 className="absolute inset-0 rounded-full border-8 border-indigo-500 border-t-transparent"
-                style={{ 
+                style={{
                   transform: 'rotate(-90deg)',
                   opacity: isTimerRunning ? '1' : '0.3',
                   animation: isTimerRunning ? 'spin 1s linear infinite' : 'none'
@@ -130,7 +131,7 @@ export default function AdminPanel() {
               ></div>
             </div>
           </div>
-          
+
           <div className="flex gap-3 justify-center">
             <Button
               onClick={startTimer}
@@ -174,22 +175,21 @@ export default function AdminPanel() {
       <Card className="shadow-lg bg-gradient-to-r from-indigo-50 to-purple-50">
         <div className="flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-6 text-indigo-700">Buzzer Status</h2>
-          
+
           <div className="mb-6">
-            <Badge 
-              color={firstPressInfo ? "failure" : "success"} 
+            <Badge
+              color={firstPressInfo ? "failure" : "success"}
               size="xl"
               className="px-4 py-2 rounded-full"
             >
               {firstPressInfo ? "Buzzer Pressed" : "Buzzer Ready"}
             </Badge>
           </div>
-          
-          <div className={`w-48 h-48 rounded-full flex items-center justify-center text-white text-center transition-all duration-500 shadow-lg ${
-            firstPressInfo 
-              ? "bg-gradient-to-br from-red-500 to-red-600 pulse-animation" 
+
+          <div className={`w-48 h-48 rounded-full flex items-center justify-center text-white text-center transition-all duration-500 shadow-lg ${firstPressInfo
+              ? "bg-gradient-to-br from-red-500 to-red-600 pulse-animation"
               : "bg-gradient-to-br from-green-500 to-green-600"
-          }`}>
+            }`}>
             {firstPressInfo ? (
               <div className="flex flex-col items-center gap-2 p-2">
                 <p className="font-bold text-lg">{firstPressInfo.teamName}</p>
@@ -199,13 +199,14 @@ export default function AdminPanel() {
               <p className="text-xl font-bold">Waiting for teams</p>
             )}
           </div>
-          
+
           <div className="mt-8 w-full">
             <Buzzer isAdmin={true} />
           </div>
         </div>
+        <ConnectionDebug />
       </Card>
-      
+
       <style jsx>{`
         @keyframes pulse-animation {
           0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }

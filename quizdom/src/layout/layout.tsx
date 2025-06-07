@@ -42,6 +42,7 @@ export default function Layout({
           richColors={true}
           position="top-right"
           theme={computedMode as ToasterProps["theme"]}
+          duration={3500}
         />
         <Navbar />
         {children}

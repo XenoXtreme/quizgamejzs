@@ -74,21 +74,18 @@ export default function EnhancedVideoPlayer({
     const skipForward = () => {
         if (!videoRef.current) return;
         videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 10, duration);
-        toast.info("Skipped forward 10 seconds");
     };
 
     // Skip backward 10 seconds
     const skipBackward = () => {
         if (!videoRef.current) return;
         videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
-        toast.info("Skipped backward 10 seconds");
     };
 
     // Reset to beginning
     const resetVideo = () => {
         if (!videoRef.current) return;
         videoRef.current.currentTime = 0;
-        toast.info("Reset to beginning");
     };
 
     // Toggle mute state

@@ -108,13 +108,17 @@ export default function QuizTimer() {
                                     .then(() => setIsAlarmPlaying(true))
                                     .catch(err => console.error("Error playing alarm sound:", err));
                             }
+                            if (tickSoundRef.current) {
+                                tickSoundRef.current.pause();
+                                tickSoundRef.current.currentTime = 0;
+                            }
 
                             displayToast("Time's up!", "warning");
                             return 0;
                         }
 
-                        // Play tick sound every second for last 10 seconds
-                        if (playTickSound && tickSoundRef.current && prev <= 10 && prev > 0) {
+                        // Play tick sound every second for last 6 seconds
+                        if (playTickSound && tickSoundRef.current && prev <= 6 && prev > 0) {
                             tickSoundRef.current.currentTime = 0;
                             tickSoundRef.current.play()
                                 .catch(err => console.error("Error playing tick sound:", err));
@@ -468,7 +472,7 @@ export default function QuizTimer() {
                                             className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
                                         />
                                         <Label htmlFor="tickSound" className="ml-2">
-                                            Play tick sound (last 10 seconds)
+                                            Play tick sound (last 5 seconds)
                                         </Label>
                                     </div>
 

@@ -21,7 +21,6 @@ import { ContextType } from "@/context/auth/context";
 // FLOWBITE
 import { Button, Card, Badge } from "flowbite-react";
 
-import Debug from "./debug";
 
 // INTERFACE
 interface BuzzerProps {
@@ -123,7 +122,6 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
 
   return (
     <div className={nunito.className}>
-      {process.env.NODE_ENV === "development" && <Debug />}
       <div className="flex flex-col items-center gap-6">
         {!isAdmin && (
           <Card className="w-full">

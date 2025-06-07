@@ -3,12 +3,11 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 
 
@@ -51,7 +50,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
       setIsConnected(true);
-      toast.success("Connected to server");
+      toast.success("Connected to server", {duration: 2000});
     });
 
     socketInstance.on("connect_error", (err) => {
@@ -62,7 +61,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on("disconnect", (reason) => {
       console.log("Socket disconnected:", reason);
       setIsConnected(false);
-      toast.error(`Disconnected: ${reason}`);
+      toast.error(`Disconnected: ${reason}`), {duration: 2000};
     });
 
     return socketInstance;
