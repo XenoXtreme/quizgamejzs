@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSocket } from "@/context/socket/context";
 
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 // FLOWBITE
 import { Button, Card, Badge } from "flowbite-react";
@@ -71,7 +71,7 @@ export default function AdminPanel() {
       if (!firstPressInfo) {
         setFirstPressInfo(data);
       }
-      toast.info(`Team - ${data.teamName} pressed the button.`, { autoClose: 15000 })
+      toast.info(`Team - ${data.teamName} pressed the button.`)
     };
 
     const handleBuzzerReset = () => {
@@ -92,7 +92,7 @@ export default function AdminPanel() {
 
     socket.on("buzzerReset", handleBuzzerReset);
     socket.on("mainComputerAlreadyExists", () => {
-      toast.warn("Already logged in as an admin")
+      toast.warning("Already logged in as an admin")
     })
 
     return () => {

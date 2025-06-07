@@ -13,7 +13,7 @@ import { useSocket } from "@/context/socket/context";
 import { useAuthContext } from "@/context/auth/state";
 
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 // AUTH CONTEXT
 import { ContextType } from "@/context/auth/context";

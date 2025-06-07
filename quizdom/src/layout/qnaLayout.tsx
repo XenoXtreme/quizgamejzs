@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { useAuthContext } from "@/context/auth/state";
 
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function QuizLayout({
     children,
@@ -17,7 +17,7 @@ export default function QuizLayout({
     React.useEffect(() => {
         if (typeof window !== "undefined") {
             if (team.role && team.role !== "ADMIN") {
-                toast.warn("You are not an admin.")
+                toast.warning("You are not an admin.")
                 redirect("/account");
 
             }

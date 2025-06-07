@@ -20,7 +20,7 @@ import {
 import { ContextType } from "@/context/auth/context";
 import { useAuthContext } from "@/context/auth/state";
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function Home() {
   interface LoginData {
@@ -94,7 +94,7 @@ export default function Home() {
   React.useEffect(()=>{
     if(localStorage?.getItem("_user")){
       router.push("/account")
-      toast.warn("Already logged in.")
+      toast.warning("Already logged in.")
     }
   })
 
@@ -164,7 +164,7 @@ export default function Home() {
               />
               <button
                 type="button"
-                className="cursor-pointer absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 cursor-pointer"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 cursor-pointer"
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (

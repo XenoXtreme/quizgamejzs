@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useAuthContext } from "@/context/auth/state";
 import { Team, ContextType } from "@/context/auth/context";
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 // FLOWBITE
 import {
   Navbar,

@@ -12,7 +12,7 @@ import {
     faExpand,
     faCompress,
 } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 interface VideoPlayerProps {
     src?: string;

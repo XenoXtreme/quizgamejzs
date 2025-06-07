@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Button, Card, Spinner, Badge } from "flowbite-react";
 import { HiArrowLeft, HiArrowRight, HiSwitchHorizontal, HiInformationCircle } from "react-icons/hi";
 
@@ -45,7 +45,7 @@ export default function QuestionPanel({
 
   // Question and answer URIs
   const questionURI = `/_asset/quiz/${category}/${type}/${round}-${qno}.${extension}`;
-  const answerURI = `/_asset/quiz/${category}/${type}/${round}-ans-${qno}.${extension}`;
+  const answerURI = `/_asset/quiz/${category}/${type}/ans/${round}-${qno}.${extension}`;
 
   // Router
   const router = useRouter();
@@ -154,7 +154,7 @@ export default function QuestionPanel({
         };
       } else {
         return {
-          URI: `/_asset/quiz/${category}/img/${round}-ans-${qno}.png`,
+          URI: `/_asset/quiz/${category}/img/ans/${round}-${qno}.png`,
           vURI: `/_asset/quiz/${category}/audio/ans/${round}-${qno}.mp3`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type
@@ -170,7 +170,7 @@ export default function QuestionPanel({
         };
       } else {
         return {
-          URI: `/_asset/quiz/${category}/img/${round}-ans-${qno}.png`,
+          URI: `/_asset/quiz/${category}/img/ans/${round}-${qno}.png`,
           vURI: `/_asset/quiz/${category}/video/ans/${round}-${qno}.mp4`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type
@@ -214,7 +214,7 @@ export default function QuestionPanel({
       case "interschool":
         return "Inter School";
       default:
-        return "Unknown Category";  
+        return "Unknown Category";
     }
   }
 
@@ -239,7 +239,7 @@ export default function QuestionPanel({
               {getRoundFullName(round)}
             </Badge>
             <Badge color="dark" size="sm">
-              {getCategoryName(category)}
+              <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
             </Badge>
           </div>
           <div className="text-sm text-gray-500">

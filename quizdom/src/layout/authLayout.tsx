@@ -5,7 +5,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export default function QuizLayout({
   children,

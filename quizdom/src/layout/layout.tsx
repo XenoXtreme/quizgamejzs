@@ -3,10 +3,10 @@
 import * as React from "react";
 
 // FLOWBITE
-import {  ThemeProvider } from "flowbite-react";
+import { ThemeProvider, useThemeMode } from "flowbite-react";
 
 // TOAST
-import { ToastContainer, Flip } from "react-toastify";
+import { Toaster, type ToasterProps } from "sonner";
 
 // CONTEXT
 import { AuthState } from "@/context/auth/state";
@@ -19,6 +19,7 @@ import Loader from "@/components/panel/loader/loader";
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { computedMode } = useThemeMode();
   // Loading State
   const [PageLoading, setPageLoading] = React.useState(true);
 
@@ -33,17 +34,18 @@ export default function Layout({
   ) : (
     <AuthState>
       <ThemeProvider>
-          <ToastContainer
-            position="top-right"
-            limit={8}
-            theme="colored"
-            autoClose={4000}
-            draggable
-            transition={Flip}
-          />
-          <Navbar />
-          {children}
-          <Footer />
+        <Toaster
+          expand
+          visibleToasts={9}
+          hotkey={["alt + T"]}
+          closeButton
+          richColors={true}
+          position="top-right"
+          theme={computedMode as ToasterProps["theme"]}
+        />
+        <Navbar />
+        {children}
+        <Footer />
       </ThemeProvider>
     </AuthState>
   );

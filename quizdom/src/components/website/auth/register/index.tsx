@@ -15,7 +15,7 @@ import { useAuthContext } from "@/context/auth/state";
 import { v4 } from "uuid";
 
 // TOAST
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { styleText } from "util";
 
 export default function Home() {
@@ -127,7 +127,7 @@ export default function Home() {
       .then((res) => {
         if (res.id) {
           navigator.clipboard.writeText(res.id)
-          toast.success(`Successfully created account. ID: ${res.id}`, {autoClose: 5000});
+          toast.success(`Successfully created account. ID: ${res.id}`);
           setLoading(false);
           setTimeout(() => {
             toast.info("Log in to your account.");

@@ -14,7 +14,6 @@ import Layout from "@/layout/layout";
 import { config } from "@fortawesome/fontawesome-svg-core";
 
 // CSS
-import "react-toastify/dist/ReactToastify.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 // CONFIG FONTAWESOME
