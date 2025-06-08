@@ -10,7 +10,7 @@ import Component from "./component";
 import { ContextType } from "@/context/auth/context";
 import { useAuthContext } from "@/context/auth/state";
 
-interface PointBlankProps {
+interface QNSProps {
   category: string;
   qno: string;
   round: string;
@@ -26,7 +26,7 @@ export default function QuestionPanel({
   type,
   limit,
   path,
-}: PointBlankProps) {
+}: QNSProps) {
   // Helper function to get file extension based on content type
   function getExtension(type: string) {
     if (type === "img") {

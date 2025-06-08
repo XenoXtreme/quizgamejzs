@@ -8,7 +8,7 @@ import Link from "next/link";
 import styles from "../../css/q.module.css";
 
 // TYPES
-import { intra_jr_mm } from "@/types/qns-structures";
+import { IntraJR } from "@/types/qns-structures";
 
 // FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,7 +25,7 @@ export default function Panel({ category }: { category: string }) {
         <h1 className={styles.oyo}>
           <FontAwesomeIcon icon={faCube} /> Movie Mania
         </h1>
-       {intra_jr_mm.map((question: any, index: any) => (
+       {IntraJR.mm.map((question: any, index: any) => (
             <div key={question.q_no} className={styles.qns}>
               {/* Question display text */}
               <h3 className={styles.ti}>

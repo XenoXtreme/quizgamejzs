@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Panel from '@/components/website/quiz/panel/question-panel/intraschool/senior/oyf';
+import Panel from '@/components/website/quiz/panel/question-panel/general/oyf';
 
 // METADATA
 export const metadata: Metadata = {

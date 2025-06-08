@@ -7,6 +7,9 @@ import Link from "next/link";
 // CSS
 import styles from "../css/q.module.css";
 
+// QNS STRUCTURE
+import { InterSch } from "@/types/qns-structures";
+
 // FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
@@ -16,41 +19,6 @@ export default function Panel({ category }: { category: string }) {
   function genURL(q_no: string) {
     return `/quiz/${category}/round/movie-mania/${q_no}`;
   }
-  // QNS STRUCTURE
-  const movieManiaQuestions = [
-  {
-    "q_no": "1",
-    "display_text": "Question - I",
-  },
-  {
-    "q_no": "2",
-    "display_text": "Question - II",
-  },
-  {
-    "q_no": "3",
-    "display_text": "Question - III",
-  },
-  {
-    "q_no": "4",
-    "display_text": "Question - IV",
-  },
-  {
-    "q_no": "5",
-    "display_text": "Question - V",
-  },
-  {
-    "q_no": "6",
-    "display_text": "Question - VI",
-  },
-  {
-    "q_no": "7",
-    "display_text": "Question - VII",
-  },
-  {
-    "q_no": "8",
-    "display_text": "Question - VIII",
-  }
-]
 
   return (
     <div >
@@ -58,7 +26,7 @@ export default function Panel({ category }: { category: string }) {
         <h1 className={styles.oyo}>
           <FontAwesomeIcon icon={faCube} /> Movie Mania
         </h1>
-        {movieManiaQuestions.map((question: any, index: any) => (
+        {InterSch.mm.map((question: any, index: any) => (
             <div key={question.q_no} className={styles.qns}>
               {/* Question display text */}
               <h3 className={styles.ti}>
