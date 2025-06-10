@@ -31,7 +31,7 @@ export default function Panel() {
           <div className={styles.rounds}>
             <Link href="/quiz/intraschool/senior/round/on-your-own">
               <div className={styles.first}>
-                <img src="/_asset/static/person.jpg" loading="lazy" alt="person" />
+                <img src="/assets/static/person.jpg" loading="lazy" alt="person" />
               </div>
               <div className={styles.second}>
                 <h1>On Your Own</h1>
@@ -42,7 +42,7 @@ export default function Panel() {
           <div className={styles.rounds}>
             <Link href="/quiz/intraschool/senior/round/pounce-bounce">
               <div className={styles.first}>
-                <img src="/_asset/static/bounce.jpg" loading="lazy" alt="logo" />
+                <img src="/assets/static/bounce.jpg" loading="lazy" alt="logo" />
               </div>
               <div className={styles.second}>
                 <h1>Pounce - Bounce</h1>
@@ -53,7 +53,7 @@ export default function Panel() {
           <div className={styles.rounds}>
             <Link href="/quiz/intraschool/senior/round/connections">
               <div className={styles.first}>
-                <img src="/_asset/static/connection.jpg" loading="lazy" alt="" />
+                <img src="/assets/static/connection.jpg" loading="lazy" alt="" />
               </div>
               <div className={styles.second}>
                 <h1>Connections</h1>
@@ -64,7 +64,7 @@ export default function Panel() {
           <div className={styles.rounds}>
             <Link href="/quiz/intraschool/senior/round/on-your-fingertips">
               <div className={styles.first}>
-                <img src="/_asset/static/fingertips.png" loading="lazy" alt="logo" />
+                <img src="/assets/static/fingertips.png" loading="lazy" alt="logo" />
               </div>
               <div className={styles.second}>
                 <h1>On Your Fingertips</h1>

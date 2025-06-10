@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: url("/_asset/static/banner2.jpg");
+  background: url("/assets/static/banner2.jpg");
   background-size: cover;
 }
 
@@ -97,28 +97,28 @@
   font-size: 25px;
 }
 .option_a {
-  background-image: url("/_asset/static/music.jfif");
+  background-image: url("/assets/static/music.jfif");
 }
 .option_b {
-  background-image: url("/_asset/static/sports.png");
+  background-image: url("/assets/static/sports.png");
 }
 .option_c {
-  background-image: url("/_asset/static/history.png");
+  background-image: url("/assets/static/history.png");
 }
 .option_d {
-  background-image: url("/_asset/static/world.png");
+  background-image: url("/assets/static/world.png");
 }
 .option_e {
-  background-image: url("/_asset/static/literature.png");
+  background-image: url("/assets/static/literature.png");
 }
 .option_f {
-  background-image: url("/_asset/static/mythology.png");
+  background-image: url("/assets/static/mythology.png");
 }
 .option_g {
-  background-image: url("/_asset/static/defence.png");
+  background-image: url("/assets/static/defence.png");
 }
 .option_h {
-  background-image: url("/_asset/static/astronomy.png");
+  background-image: url("/assets/static/astronomy.png");
 }
 
 .option a:hover {

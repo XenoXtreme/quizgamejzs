@@ -17,7 +17,7 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
-  background: url("/_asset/static/banner.jpg");
+  background: url("/assets/static/banner.jpg");
   background-size: cover;
 }
 

@@ -23,7 +23,7 @@ export default function Panel() {
         <section className={styles.all}>
           <section className={styles.qz}>
             <div className={styles.left}>
-              <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
+              <img src="/assets/static/jzs.png" loading="lazy" alt="Logo" />
             </div>
             <div className={styles.right}>
               <h1>Prelims</h1>
@@ -37,7 +37,7 @@ export default function Panel() {
           </section>
           <section className={styles.qz}>
             <div className={styles.left}>
-              <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
+              <img src="/assets/static/jzs.png" loading="lazy" alt="Logo" />
             </div>
             <div className={styles.right}>
               <h1>Intra School - (Junior)</h1>
@@ -54,7 +54,7 @@ export default function Panel() {
           </section>
           <section className={styles.qz}>
             <div className={styles.left}>
-              <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
+              <img src="/assets/static/jzs.png" loading="lazy" alt="Logo" />
             </div>
             <div className={styles.right}>
               <h1>Intra School - (Senior)</h1>
@@ -71,7 +71,7 @@ export default function Panel() {
           </section>
           <section className={styles.qz}>
             <div className={styles.left}>
-              <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
+              <img src="/assets/static/jzs.png" loading="lazy" alt="Logo" />
             </div>
             <div className={styles.right}>
               <h1>Inter School Quiz Competition</h1>

@@ -3,40 +3,62 @@ import PptxViewer from "./pptxviewer";
 import { Button } from "flowbite-react";
 
 export default function PPTViewer({ category }: { category: string }) {
-    const [showAnswer, setShowAnswer] = useState(false);
+    const [view, setView] = useState<"question" | "answer" | "audience">("question");
 
-    const pptUrl = showAnswer
-        ? `https://idoxdew.sufydely.com/prelims/${category}/prelims-ans.pptx`
-        : `https://idoxdew.sufydely.com/prelims/${category}/prelims.pptx`;
+    let pptUrl: string;
+    let filename: string;
+
+    const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "/";
+
+    if (view === "question") {
+        pptUrl = `${CDN_URI}/prelims/${category}/prelims.pptx`;
+        filename = "prelims.pptx";
+    } else if (view === "answer") {
+        pptUrl = `${CDN_URI}/prelims/${category}/prelims-ans.pptx`;
+        filename = "prelims-ans.pptx";
+    } else {
+        pptUrl = `${CDN_URI}/prelims/${category}/prelims-audience.pptx`;
+        filename = "prelims-audience.pptx";
+    }
 
     return (
         <div className="flex flex-col items-center gap-4 mt-4">
             <div className="flex gap-2 mb-2">
                 <Button
-                    onClick={() => setShowAnswer(false)}
-                    color={!showAnswer ? "info" : "light"}
+                    onClick={() => setView("question")}
+                    color={view === "question" ? "alternative" : "light"}
                     pill
                     size="sm"
-                    disabled={!showAnswer}
-                    className={`cursor-pointer transition-all duration-200 shadow-sm ${!showAnswer ? "ring-2 ring-orange-400" : ""}`}
+                    disabled={view === "question"}
+                    className={`cursor-pointer transition-all duration-200 shadow-sm ${view === "question" ? "ring-2 ring-orange-400" : ""}`}
                 >
                     Show Question PPT
                 </Button>
                 <Button
-                    onClick={() => setShowAnswer(true)}
-                    color={showAnswer ? "success" : "light"}
+                    onClick={() => setView("answer")}
+                    color={view === "answer" ? "default" : "light"}
                     pill
                     size="sm"
-                    disabled={showAnswer}
-                    className={`cursor-pointer transition-all duration-200 shadow-sm ${showAnswer ? "ring-2 ring-green-400" : ""}`}
+                    disabled={view === "answer"}
+                    className={`cursor-pointer transition-all duration-200 shadow-sm ${view === "answer" ? "ring-2 ring-green-400" : ""}`}
                 >
                     Show Answer PPT
+                </Button>
+                <Button
+                    onClick={() => setView("audience")}
+                    color={view === "audience" ? "purple" : "light"}
+                    pill
+                    size="sm"
+                    disabled={view === "audience"}
+                    className={`cursor-pointer transition-all duration-200 shadow-sm ${view === "audience" ? "ring-2 ring-purple-400" : ""}`}
+                >
+                    Questions for Audience
                 </Button>
             </div>
             <div className="w-full max-w-4xl">
                 <PptxViewer
                     src={pptUrl}
-                    filename={showAnswer ? "prelims-ans.pptx" : "prelims.pptx"}
+                    filename={filename}
                 />
             </div>
         </div>

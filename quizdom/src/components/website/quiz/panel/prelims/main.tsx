@@ -31,7 +31,7 @@ export default function Panel() {
           <div className={styles.rounds}>
             <Link href="/quiz/prelims/intraschool/junior">
               <div className={styles.first}>
-                <img src="/_asset/static/prelims.png" loading="lazy" alt="person" />
+                <img src="/assets/static/prelims.png" loading="lazy" alt="person" />
               </div>
               <div className={styles.second}>
                 <h1>Intra School (Junior)</h1>
@@ -42,7 +42,7 @@ export default function Panel() {
           <div className={styles.rounds}>
              <Link href="/quiz/prelims/intraschool/senior">
               <div className={styles.first}>
-                <img src="/_asset/static/prelims.png" loading="lazy" alt="person" />
+                <img src="/assets/static/prelims.png" loading="lazy" alt="person" />
               </div>
               <div className={styles.second}>
                 <h1>Intra School (Senior)</h1>
@@ -54,7 +54,7 @@ export default function Panel() {
           <div className={styles.rounds}>
              <Link href="/quiz/prelims/interschool">
               <div className={styles.first}>
-                <img src="/_asset/static/prelims.png" loading="lazy" alt="person" />
+                <img src="/assets/static/prelims.png" loading="lazy" alt="person" />
               </div>
               <div className={styles.second}>
                 <h1>Inter School</h1>
