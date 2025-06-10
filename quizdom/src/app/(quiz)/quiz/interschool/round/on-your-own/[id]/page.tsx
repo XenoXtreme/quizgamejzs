@@ -6,11 +6,14 @@ import React from "react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Panel from "@/components/website/quiz/question-panel/qp";
 
+// QNS META
+import { InterSchMeta } from "@/types/qns-pattern";
+
 export default function Page() {
   const { id } = useParams();
   const path = usePathname();
-  const sparam = useSearchParams();
-  const type = sparam.get("type");
+  const meta = InterSchMeta.oyo[id as string];
+  const type = meta ? meta.type : "img";
   return (
     <div>
       <Panel
@@ -18,7 +21,7 @@ export default function Page() {
         round={"oyo"}
         qno={`${id}`}
         type={`${type}`}
-        limit={"8"}
+        limit={Object.keys(InterSchMeta.oyo).length.toString()}
         key={"oyo"}
         path={path}
       />

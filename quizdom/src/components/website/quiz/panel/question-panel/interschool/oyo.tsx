@@ -14,6 +14,9 @@ import styles from "../css/q.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 
+// QNS STRUCTURE
+import { InterSch } from "@/types/qns-structures";
+
 // FONT
 const nunito = Nunito({
   subsets: ["cyrillic"],
@@ -22,7 +25,7 @@ const nunito = Nunito({
 
 export default function Panel({ category }: { category: string }) {
   function genURL(q_no: string) {
-    return `/quiz/${category}/round/on-your-own/${q_no}?type=img`;
+    return `/quiz/${category}/round/on-your-own/${q_no}`;
   }
   return (
     <div className={nunito.className}>
@@ -30,54 +33,24 @@ export default function Panel({ category }: { category: string }) {
         <h1 className={styles.oyo}>
           <FontAwesomeIcon icon={faCube} /> On Your Own
         </h1>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - I </h3>
-          <Link href={genURL("1")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - II </h3>
-          <Link href={genURL("2")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - III </h3>
-          <Link href={genURL("3")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - IV </h3>
-          <Link href={genURL("4")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - V </h3>
-          <Link href={genURL("5")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - VI </h3>
-          <Link href={genURL("6")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - VII </h3>
-          <Link href={genURL("7")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
-        <div className={styles.qns}>
-          <h3 className={styles.ti}>Question - VIII </h3>
-          <Link href={genURL("8")}>
-            <button className={styles.qns_ans}>View</button>
-          </Link>
-        </div>
+         {InterSch.oyo.map((question: any, index: any) => (
+            <div key={question.q_no} className={styles.qns}>
+              {/* Question display text */}
+              <h3 className={styles.ti}>
+                {question.display_text}
+              </h3>
+              {/* Link button to view the question */}
+              <Link href={genURL(question.q_no)} className="no-underline">
+                <button
+                  className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md
+                             hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75
+                             transition-all duration-200 ease-in-out transform hover:scale-105"
+                >
+                  View
+                </button>
+              </Link>
+            </div>
+          ))}
       </section>
     </div>
   );

@@ -3,8 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button, Card, Spinner, Badge } from "flowbite-react";
-import { HiArrowLeft, HiArrowRight, HiSwitchHorizontal, HiInformationCircle } from "react-icons/hi";
+import { Button, Card, Spinner, Badge, Modal, ModalBody, ModalHeader } from "flowbite-react";
+import {
+  HiArrowLeft,
+  HiArrowRight,
+  HiSwitchHorizontal,
+  HiInformationCircle,
+} from "react-icons/hi";
 
 import Component from "./component";
 import { ContextType } from "@/context/auth/context";
@@ -42,6 +47,8 @@ export default function QuestionPanel({
   const [showAns, setShowAns] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [extension] = useState<string>(getExtension(type));
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [pendingToggle, setPendingToggle] = useState<boolean>(false);
   const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "";
 
   // Question and answer URIs
@@ -64,25 +71,34 @@ export default function QuestionPanel({
     if (!isNextDisabled) {
       return path.replace(`${qno}`, `${Number(qno) + 1}`);
     }
-    return '';
+    return "";
   };
 
   const getPrevURL = () => {
     if (!isPrevDisabled) {
       return path.replace(`${qno}`, `${Number(qno) - 1}`);
     }
-    return '';
+    return "";
   };
 
   // Toggle between question and answer
   const toggleAnswer = (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setPendingToggle(true);
+    setModalOpen(true);
+  };
 
-    // Confirm with the user
-    if (window.confirm(`Do you want to show the ${showAns ? "question" : "answer"}?`)) {
-      setShowAns(!showAns);
-      toast.success(`Successfully updated to show ${showAns ? "question" : "answer"}`);
-    }
+  // Confirm modal action
+  const handleModalConfirm = () => {
+    setShowAns((prev) => !prev);
+    setModalOpen(false);
+    setPendingToggle(false);
+  };
+
+  // Cancel modal action
+  const handleModalCancel = () => {
+    setModalOpen(false);
+    setPendingToggle(false);
   };
 
   // Navigate to previous question
@@ -103,7 +119,7 @@ export default function QuestionPanel({
   useEffect(() => {
     if (team.role) {
       if (team.role !== "ADMIN") {
-        router.push(`${path.replace(qno, '')}`);
+        router.push(`${path.replace(qno, "")}`);
         toast.error("You are not authorized to access this content.");
       } else {
         setLoading(false);
@@ -113,36 +129,34 @@ export default function QuestionPanel({
 
   // Keyboard navigation support
   useEffect(() => {
-    console.log(type)
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent handling if user is typing in an input field
-      if (e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
+      if (modalOpen) return; // Prevent navigation while modal is open
 
       switch (e.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           if (!isPrevDisabled) goToPrevious();
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           if (!isNextDisabled) goToNext();
           break;
-        case ' ':
-          // Prevent scrolling with spacebar
+        case " ":
           e.preventDefault();
           toggleAnswer(e as unknown as React.SyntheticEvent);
           break;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-
-    // Clean up
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isPrevDisabled, isNextDisabled, showAns]);
+  }, [isPrevDisabled, isNextDisabled, showAns, modalOpen]);
 
   // Prepare visualization URIs for special content types - with fixed type handling
   const getComponentProps = () => {
@@ -152,14 +166,14 @@ export default function QuestionPanel({
           URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
           vURI: `${CDN_URI}/assets/quiz/${category}/audio/${round}-${qno}.mp3`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
-          type
+          type,
         };
       } else {
         return {
           URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
           vURI: `${CDN_URI}/assets/quiz/${category}/audio/ans/${round}-${qno}.mp3`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
-          type
+          type,
         };
       }
     } else if (type === "visualvideoans") {
@@ -168,21 +182,21 @@ export default function QuestionPanel({
           URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
           vURI: `${CDN_URI}/assets/quiz/${category}/video/${round}-${qno}.mp4`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
-          type
+          type,
         };
       } else {
         return {
           URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
           vURI: `${CDN_URI}/assets/quiz/${category}/video/ans/${round}-${qno}.mp4`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
-          type
+          type,
         };
       }
     } else {
       return {
         URI: showAns ? answerURI : questionURI,
         alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}${showAns ? " (Answer)" : ""}`,
-        type
+        type,
       };
     }
   };
@@ -204,7 +218,7 @@ export default function QuestionPanel({
       default:
         return "Unknown Round";
     }
-  }
+  };
 
   // Get Category name
   const getCategoryName = (category: string) => {
@@ -218,12 +232,12 @@ export default function QuestionPanel({
       default:
         return "Unknown Category";
     }
-  }
+  };
 
   // Render loading spinner if still loading
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex h-screen items-center justify-center">
         <Spinner size="xl" />
       </div>
     );
@@ -231,8 +245,8 @@ export default function QuestionPanel({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 p-4 md:p-8">
-      <Card className="max-w-6xl mx-auto overflow-visible">
-        <div className="flex justify-between items-center mb-4">
+      <Card className="mx-auto max-w-6xl overflow-visible">
+        <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Badge color={showAns ? "success" : "info"} size="sm">
               {showAns ? "Answer" : "Question"}
@@ -245,15 +259,15 @@ export default function QuestionPanel({
             </Badge>
           </div>
           <div className="text-sm text-gray-500">
-            Question {qno} {limit ? `of ${limit}` : ''}
+            Question {qno} {limit ? `of ${limit}` : ""}
           </div>
         </div>
 
-        <div className="relative w-full h-full flex-1 flex items-center justify-center">
+        <div className="relative flex h-full w-full flex-1 items-center justify-center">
           <Component {...getComponentProps()} />
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-4 mt-8 w-full">
+                <div className="flex flex-wrap justify-center items-center gap-4 mt-8 w-full">
           <Button
             color="light"
             onClick={goToPrevious}
@@ -282,11 +296,36 @@ export default function QuestionPanel({
             <HiArrowRight className="ml-2" />
           </Button>
         </div>
-
+        {pendingToggle && (
+          <div className="mt-4 text-center text-gray-500">
+            <Spinner size="sm" />
+            <span className="ml-2">Processing...</span>
+          </div>
+        )}
+        <Modal show={modalOpen} size="md" onClose={handleModalCancel} popup>
+          <ModalHeader />
+          <ModalBody>
+            <div className="text-center">
+              <HiSwitchHorizontal className="mx-auto mb-4 h-10 w-10 text-gray-400" />
+              <h3 className="mb-5 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                Do you want to show the {showAns ? "question" : "answer"}?
+              </h3>
+              <div className="mt-6 flex justify-center gap-4">
+                <Button color="red" className="cursor-pointer" onClick={handleModalCancel}>
+                  Cancel
+                </Button>
+                <Button  color="default" className="cursor-pointer" onClick={handleModalConfirm}>
+                  Yes, show {showAns ? "question" : "answer"}
+                </Button>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
         <div className="mt-6 text-center">
-          <div className="text-xs text-gray-500 flex items-center justify-center">
+          <div className="flex items-center justify-center text-xs text-gray-500">
             <HiInformationCircle className="mr-1" />
-            Use keyboard shortcuts: Left/Right arrows to navigate, Space to toggle question/answer
+            Use keyboard shortcuts: Left/Right arrows to navigate, Space to
+            toggle question/answer
           </div>
         </div>
       </Card>

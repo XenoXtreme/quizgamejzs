@@ -64,78 +64,123 @@
 }
 
 .main {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
+  min-height: 60vh;
+  width: 90vw;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 3rem 3.5rem;
+  justify-items: center;
   align-items: center;
-  flex-wrap: wrap;
-  background-color: aliceblue;
   background: transparent;
+  margin: 0 auto;
+  padding: 3rem 0;
 }
 
 .option {
-  height: 30vh;
-  width: 20vw;
-  /*background: url(Assets/off_white___4k_minimalist_wallpaper_by_abdelrahman_dd77r44.jpg)*/
+  aspect-ratio: 1/1;
+  width: 100%;
+  max-width: 230px;
+  min-width: 180px;
+  margin: 0.8rem 1.2rem; /* Extra vertical and horizontal margin */
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08), 0 1.5px 6px 0 rgba(0,58,134,0.12);
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 
+    transform 0.25s cubic-bezier(.4,2,.6,1),
+    box-shadow 0.25s cubic-bezier(.4,2,.6,1),
+    background 0.25s;
+  font-family: inherit;
+  overflow: hidden;
+  position: relative;
+  background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  margin: 10px 20px;
-  border: none;
-  border-radius: 17px;
-  cursor: pointer;
-  font-family: cursive;
 }
+
+
+.option_a { background-image: url("/assets/static/literature.png"); }
+.option_b { background-image: url("/assets/static/history.png"); }
+.option_c { background-image: url("/assets/static/music.jfif"); }
+.option_d { background-image: url("/assets/static/sports.png"); }
+.option_e { background-image: url("/assets/static/scientist.jpg"); }
+.option_f { background-image: url("/assets/static/mystery.png"); }
 
 .option a {
   text-decoration: none;
   color: #003a86;
-  font-weight: 100;
-  background: rgba(255, 255, 255, 0.486);
+  font-weight: 600;
+  background: rgba(255,255,255,0.7);
   border-radius: 8px;
-  padding: 10px;
-  font-size: 25px;
-}
-.option_a {
-  background-image: url("/assets/static/music.jfif");
-}
-.option_b {
-  background-image: url("/assets/static/sports.png");
-}
-.option_c {
-  background-image: url("/assets/static/history.png");
-}
-.option_d {
-  background-image: url("/assets/static/world.png");
-}
-.option_e {
-  background-image: url("/assets/static/literature.png");
-}
-.option_f {
-  background-image: url("/assets/static/mythology.png");
-}
-.option_g {
-  background-image: url("/assets/static/defence.png");
-}
-.option_h {
-  background-image: url("/assets/static/astronomy.png");
+  padding: 18px 0;
+  font-size: 1.4rem;
+  width: 100%;
+  text-align: center;
+  transition: 
+    color 0.2s,
+    background 0.2s,
+    font-size 0.2s,
+    opacity 0.2s;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
-.option a:hover {
-  font-size: 40px;
-  transition: 0.5s;
+/* Focus image on hover */
+.option:hover,
+.option:focus-within {
+  transform: scale(1.07) translateY(-8px);
+  box-shadow: 0 8px 32px 0 rgba(0,58,134,0.18), 0 3px 12px 0 rgba(0,58,134,0.22);
+  background-size: 120%;
+  background-position: center;
 }
 
-.option:hover {
-  transition: 1s;
-  height: 22vh;
-  width: 23vw;
-  color: rgb(0, 34, 187);
-  text-shadow: #ffffff;
+.option:hover a,
+.option:focus-within a {
+  background: rgba(255,255,255,0.3);
+  color: #003a86;
+  font-size: 1.6rem;
+  opacity: 0.95;
 }
 
-.next_btn button:hover {
-  background: #ffffff9c;
-  transition: 0.5s;
-  padding: 4%;
+/* Optional: fade out text a bit more on hover for more image focus */
+.option:hover a,
+.option:focus-within a {
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .main {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+  .option {
+    max-width: 180px;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 0.8rem;
+    width: 98vw;
+    padding: 1rem 0;
+  }
+  .option {
+    max-width: 140px;
+    min-width: 90px;
+    border-radius: 12px;
+  }
+  .option a {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
 }
