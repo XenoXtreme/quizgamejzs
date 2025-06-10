@@ -26,6 +26,20 @@ export default function Panel() {
               <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
             </div>
             <div className={styles.right}>
+              <h1>Prelims</h1>
+              <p>Questions for Prelims.</p>
+            </div>
+            <div className={styles.rgt_btn}>
+              <Link href="/quiz/prelims">
+                <button>View</button>
+              </Link>
+            </div>
+          </section>
+          <section className={styles.qz}>
+            <div className={styles.left}>
+              <img src="/_asset/static/jzs.png" loading="lazy" alt="Logo" />
+            </div>
+            <div className={styles.right}>
               <h1>Intra School - (Junior)</h1>
               <p>
                 Access the questions meant for students of class VI- VIII.

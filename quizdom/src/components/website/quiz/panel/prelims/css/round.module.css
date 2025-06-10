@@ -1,0 +1,87 @@
+/*-----------Rounds----------------*/
+.mainq{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: url("/_asset/static/banner.jpg");
+    background-size: cover;
+}
+.head1{
+    margin-right: 80%;
+    font-weight: bold;
+    margin-top: 2%;
+    color: #021454;
+}
+.injr{
+    height: 100%;
+    width: 65vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3%;
+}
+
+.rounds a{
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.rounds{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #4d9aff9c;
+    width: 80%;
+    height: 20vh;
+    margin: 10px;
+    padding: 2%;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.first{
+    width: 40%;
+    margin-left: 30px;
+}
+.second{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+}
+
+.second h1{
+    color: #01295c;
+    font-size: 1.8rem;
+}
+
+.first img{
+    width: 40%;
+    border-radius: 100%;
+    border: 2px solid black;
+}
+
+.rounds:hover{
+    transition: 0.5s;
+    width: 83%;
+    border: none;
+}
+
+.second h1:hover{
+    font-size: 2.3rem;
+    transition: 1s;
+}
+
+.first img:hover{
+    width: 37%;
+    transition: 0.5s;
+    border: none;
+}

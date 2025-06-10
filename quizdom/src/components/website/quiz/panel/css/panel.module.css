@@ -15,9 +15,9 @@
 }
 
 .all {
-  height: 80vh;
+  height: 105vh;
   display: flex;
-  margin-top: 5%;
+  margin-top: 3.5%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
