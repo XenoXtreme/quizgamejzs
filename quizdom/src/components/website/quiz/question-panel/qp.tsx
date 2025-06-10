@@ -248,10 +248,10 @@ export default function QuestionPanel({
       <Card className="mx-auto max-w-6xl overflow-visible">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Badge color={showAns ? "success" : "info"} size="sm">
+            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer">
               {showAns ? "Answer" : "Question"}
             </Badge>
-            <Badge color="purple" size="sm">
+            <Badge color="purple" size="sm" className="cursor-pointer">
               {getRoundFullName(round)}
             </Badge>
             <Badge color="dark" size="sm">
