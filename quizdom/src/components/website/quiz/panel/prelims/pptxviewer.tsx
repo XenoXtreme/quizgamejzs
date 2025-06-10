@@ -84,7 +84,7 @@ export default function PptxViewer({
       }}
     >
       {/* Header */}
-      <div className="relative flex w-full items-center rounded-t-2xl border-b border-gray-100 bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4">
+      <div className="relative flex w-full items-center rounded-t-2xl border-b border-gray-100 dark:bg-slate-900 bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4">
         <FontAwesomeIcon
           icon={faFilePowerpoint}
           className="mr-2 h-6 w-6 text-orange-500 cursor-pointer"

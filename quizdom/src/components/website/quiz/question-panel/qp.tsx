@@ -42,10 +42,11 @@ export default function QuestionPanel({
   const [showAns, setShowAns] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [extension] = useState<string>(getExtension(type));
+  const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "";
 
   // Question and answer URIs
-  const questionURI = `/assets/quiz/${category}/${type}/${round}-${qno}.${extension}`;
-  const answerURI = `/assets/quiz/${category}/${type}/ans/${round}-${qno}.${extension}`;
+  const questionURI = `${CDN_URI}/assets/quiz/${category}/${type}/${round}-${qno}.${extension}`;
+  const answerURI = `${CDN_URI}/assets/quiz/${category}/${type}/ans/${round}-${qno}.${extension}`;
 
   // Router
   const router = useRouter();
@@ -148,15 +149,15 @@ export default function QuestionPanel({
     if (type === "visualaudio") {
       if (!showAns) {
         return {
-          URI: `/assets/quiz/${category}/img/${round}-${qno}.png`,
-          vURI: `/assets/quiz/${category}/audio/${round}-${qno}.mp3`,
+          URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/${category}/audio/${round}-${qno}.mp3`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
           type
         };
       } else {
         return {
-          URI: `/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
-          vURI: `/assets/quiz/${category}/audio/ans/${round}-${qno}.mp3`,
+          URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/${category}/audio/ans/${round}-${qno}.mp3`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type
         };
@@ -164,15 +165,15 @@ export default function QuestionPanel({
     } else if (type === "visualvideoans") {
       if (!showAns) {
         return {
-          URI: `/assets/quiz/${category}/img/${round}-${qno}.png`,
-          vURI: `/assets/quiz/${category}/video/${round}-${qno}.mp4`,
+          URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/${category}/video/${round}-${qno}.mp4`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
           type
         };
       } else {
         return {
-          URI: `/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
-          vURI: `/assets/quiz/${category}/video/ans/${round}-${qno}.mp4`,
+          URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/${category}/video/ans/${round}-${qno}.mp4`,
           alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type
         };

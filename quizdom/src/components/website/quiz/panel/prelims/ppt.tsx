@@ -8,7 +8,7 @@ export default function PPTViewer({ category }: { category: string }) {
     let pptUrl: string;
     let filename: string;
 
-    const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "/";
+    const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "https://jzsquiz.mos.ap-southeast-2.sufybkt.com";
 
     if (view === "question") {
         pptUrl = `${CDN_URI}/prelims/${category}/prelims.pptx`;
