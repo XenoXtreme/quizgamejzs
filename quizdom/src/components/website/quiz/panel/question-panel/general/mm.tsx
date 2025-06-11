@@ -8,7 +8,7 @@ import Link from "next/link";
 import styles from "../css/q.module.css";
 
 // QNS STRUCTURE
-import { InterSch } from "@/types/qns-structures";
+import { General } from "@/types/qns-structures";
 
 // FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +26,7 @@ export default function Panel({ category }: { category: string }) {
         <h1 className={styles.oyo}>
           <FontAwesomeIcon icon={faCube} /> Movie Mania
         </h1>
-        {InterSch.mm.map((question: any, index: any) => (
+        {General.mm.map((question: any, index: any) => (
             <div key={question.q_no} className={styles.qns}>
               {/* Question display text */}
               <h3 className={styles.ti}>

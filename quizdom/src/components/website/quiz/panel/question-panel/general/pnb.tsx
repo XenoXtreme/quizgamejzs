@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 // QNS STRUCTURE
-import { InterSch } from "@/types/qns-structures";
+import { General } from "@/types/qns-structures";
 
 // FONT
 const nunito = Nunito({
@@ -33,7 +33,7 @@ export default function Panel({ category }: { category: string }) {
         <h1 className={styles.oyo}>
           <FontAwesomeIcon icon={faCube} /> Pounce Bounce
         </h1>
-      {InterSch.pnb.map((question: any, index: any) => (
+      {General.pnb.map((question: any, index: any) => (
             <div key={question.q_no} className={styles.qns}>
               {/* Question display text */}
               <h3 className={styles.ti}>
