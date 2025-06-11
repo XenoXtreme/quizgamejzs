@@ -23,7 +23,7 @@ export default function Page() {
         qno={`${id}`}
         type={`${type}`}
         key={"mm"}
-        limit={"8"}
+        limit={Object.keys(IntraJRMeta.mm).length.toString()}
         path={path}
       />
     </div>

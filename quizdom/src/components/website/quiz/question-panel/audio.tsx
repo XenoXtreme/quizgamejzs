@@ -246,7 +246,7 @@ export default function EnhancedAudioPlayer({
                     <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden shadow-md">
                         <img
                             alt="audio visualizer"
-                            src={isPlaying ? "/_asset/static/sound-wave.gif" : "/assets/static/music.avif"}
+                            src={isPlaying ? "/assets/static/sound-wave.gif" : "/assets/static/music.avif"}
                             className="w-full h-full object-cover transition-opacity duration-500"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
