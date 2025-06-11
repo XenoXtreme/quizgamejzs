@@ -145,7 +145,8 @@ export default function QuestionPanel({
         case "ArrowRight":
           if (!isNextDisabled) goToNext();
           break;
-        case " ":
+        case "a":
+        case "A":
           e.preventDefault();
           toggleAnswer(e as unknown as React.SyntheticEvent);
           break;
@@ -244,35 +245,35 @@ export default function QuestionPanel({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 p-4 md:p-8">
-      <Card className="mx-auto max-w-6xl overflow-visible">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 dark:from-gray-900 dark:to-gray-950 p-4 md:p-8">
+      <Card className="mx-auto max-w-6xl overflow-visible rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer">
+            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow">
               {showAns ? "Answer" : "Question"}
             </Badge>
-            <Badge color="purple" size="sm" className="cursor-pointer">
+            <Badge color="purple" size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow">
               {getRoundFullName(round)}
             </Badge>
-            <Badge color="dark" size="sm">
+            <Badge color="dark" size="sm" className="px-3 py-1 rounded-lg shadow">
               <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
             </Badge>
           </div>
-          <div className="text-sm text-gray-500">
-            Question {qno} {limit ? `of ${limit}` : ""}
+          <div className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            Question {qno} {limit ? <span className="text-gray-400 dark:text-gray-500">of {limit}</span> : ""}
           </div>
         </div>
 
-        <div className="relative flex h-full w-full flex-1 items-center justify-center">
+        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-2 md:p-6">
           <Component {...getComponentProps()} />
         </div>
 
-                <div className="flex flex-wrap justify-center items-center gap-4 mt-8 w-full">
+        <div className="flex flex-wrap justify-center items-center gap-4 mt-8 w-full">
           <Button
             color="light"
             onClick={goToPrevious}
             disabled={isPrevDisabled}
-            className={isPrevDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 cursor-pointer'}
+            className={`rounded-lg px-6 py-2 font-medium transition-all ${isPrevDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'}`}
           >
             <HiArrowLeft className="mr-2" />
             Previous
@@ -280,7 +281,7 @@ export default function QuestionPanel({
 
           <Button
             onClick={toggleAnswer}
-            className="px-6 py-2 cursor-pointer"
+            className="cursor-pointer px-8 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow hover:from-blue-600 hover:to-pink-600 transition-all"
           >
             <HiSwitchHorizontal className="mr-2" />
             Show {showAns ? "Question" : "Answer"}
@@ -290,14 +291,14 @@ export default function QuestionPanel({
             color="light"
             onClick={goToNext}
             disabled={isNextDisabled}
-            className={isNextDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 cursor-pointer'}
+            className={`rounded-lg px-6 py-2 font-medium transition-all ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'}`}
           >
             Next
             <HiArrowRight className="ml-2" />
           </Button>
         </div>
         {pendingToggle && (
-          <div className="mt-4 text-center text-gray-500">
+          <div className="mt-4 text-center text-gray-500 dark:text-gray-400">
             <Spinner size="sm" />
             <span className="ml-2">Processing...</span>
           </div>
@@ -322,10 +323,9 @@ export default function QuestionPanel({
           </ModalBody>
         </Modal>
         <div className="mt-6 text-center">
-          <div className="flex items-center justify-center text-xs text-gray-500">
+          <div className="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
             <HiInformationCircle className="mr-1" />
-            Use keyboard shortcuts: Left/Right arrows to navigate, Space to
-            toggle question/answer
+            Use keyboard shortcuts: <span className="font-semibold mx-1">Left/Right arrows</span> to navigate, <span className="font-semibold mx-1">A</span> to toggle question/answer
           </div>
         </div>
       </Card>
