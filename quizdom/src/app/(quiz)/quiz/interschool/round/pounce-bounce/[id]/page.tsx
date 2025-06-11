@@ -3,7 +3,7 @@
 import React from "react";
 
 // NEXT
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Panel from "@/components/website/quiz/question-panel/qp";
 
 // QNS META

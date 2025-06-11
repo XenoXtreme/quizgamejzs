@@ -15,7 +15,6 @@ import { toast } from "sonner";
 interface AudioPlayerProps {
     src?: string;
     title?: string;
-    albumCover?: string; // NEW: Album cover prop
     showVisualizer?: boolean;
     onPlayStateChange?: (isPlaying: boolean) => void;
     className?: string;
@@ -24,15 +23,12 @@ interface AudioPlayerProps {
 export default function EnhancedAudioPlayer({
     src,
     title = "Audio Track",
-    albumCover = "/assets/static/music.avif",
     showVisualizer = true,
     onPlayStateChange,
     className = ""
 }: AudioPlayerProps) {
     const audioRef = useRef<HTMLAudioElement>(null);
     const progressRef = useRef<HTMLInputElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
@@ -42,15 +38,10 @@ export default function EnhancedAudioPlayer({
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [wasPlayingBeforeSeek, setWasPlayingBeforeSeek] = useState<boolean>(false);
 
-    // For the visualizer
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const analyserRef = useRef<AnalyserNode | null>(null);
-    const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-    const animationFrameRef = useRef<number | null>(null);
-
     // Format time in MM:SS format
     const formatTime = (timeInSeconds: number): string => {
         if (isNaN(timeInSeconds)) return "00:00";
+
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -59,6 +50,7 @@ export default function EnhancedAudioPlayer({
     // Handle play/pause toggle
     const togglePlayPause = () => {
         if (!audioRef.current) return;
+
         if (isPlaying) {
             audioRef.current.pause();
         } else {
@@ -67,11 +59,13 @@ export default function EnhancedAudioPlayer({
                 audioRef.current.currentTime = 0;
                 setCurrentTime(0);
             }
+
             audioRef.current.play().catch(error => {
                 toast.error("Failed to play audio. Please try again.");
                 console.error("Audio playback error:", error);
             });
         }
+
         setIsPlaying(!isPlaying);
         if (onPlayStateChange) {
             onPlayStateChange(!isPlaying);
@@ -165,9 +159,12 @@ export default function EnhancedAudioPlayer({
     // Update audio source when src prop changes
     useEffect(() => {
         if (audioRef.current) {
+            // Reset state when source changes
             setCurrentTime(0);
             setIsPlaying(false);
             setIsLoading(true);
+
+            // Force the audio element to load the new source
             audioRef.current.load();
         }
     }, [src]);
@@ -177,8 +174,10 @@ export default function EnhancedAudioPlayer({
         const audio = audioRef.current;
         if (!audio) return;
 
+        // Set initial volume
         audio.volume = volume / 100;
 
+        // Event handlers
         const handleAudioPlay = () => setIsPlaying(true);
         const handleAudioPause = () => setIsPlaying(false);
         const handleLoadedMetadata = () => {
@@ -186,11 +185,17 @@ export default function EnhancedAudioPlayer({
             setIsLoading(false);
         };
         const handleTimeUpdate = () => {
-            if (!isDragging) setCurrentTime(audio.currentTime);
+            // Only update time if user is not dragging
+            if (!isDragging) {
+                setCurrentTime(audio.currentTime);
+            }
         };
         const handleEnded = () => {
             setIsPlaying(false);
-            if (onPlayStateChange) onPlayStateChange(false);
+            // Don't reset currentTime here to show accurate position at end
+            if (onPlayStateChange) {
+                onPlayStateChange(false);
+            }
         };
         const handleCanPlay = () => setIsLoading(false);
         const handleError = (e: ErrorEvent) => {
@@ -199,6 +204,7 @@ export default function EnhancedAudioPlayer({
             setIsLoading(false);
         };
 
+        // Add event listeners
         audio.addEventListener('play', handleAudioPlay);
         audio.addEventListener('pause', handleAudioPause);
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -207,6 +213,7 @@ export default function EnhancedAudioPlayer({
         audio.addEventListener('canplay', handleCanPlay);
         audio.addEventListener('error', handleError as EventListener);
 
+        // Clean up event listeners on unmount
         return () => {
             audio.removeEventListener('play', handleAudioPlay);
             audio.removeEventListener('pause', handleAudioPause);
@@ -225,108 +232,6 @@ export default function EnhancedAudioPlayer({
         }
     }, [duration]);
 
-    // --- Audio visualizer logic (slowed down, musical, only while playing) ---
-    useEffect(() => {
-        // Only activate visualizer if requested and playing
-        if (!showVisualizer || !isPlaying) {
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-            return;
-        }
-
-        let ctx = audioContextRef.current;
-        if (!ctx) {
-            ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-            audioContextRef.current = ctx;
-        }
-
-        // Connect audio
-        if (!analyserRef.current && audioRef.current) {
-            const analyser = ctx.createAnalyser();
-            analyser.fftSize = 512; // Smoother, more musical
-            analyserRef.current = analyser;
-
-            sourceRef.current = ctx.createMediaElementSource(audioRef.current);
-            sourceRef.current.connect(analyser);
-            analyser.connect(ctx.destination);
-        }
-
-        const analyser = analyserRef.current;
-        const canvas = canvasRef.current;
-
-        // Animation timing for "slower" visualizer (about 30 FPS)
-        let lastDrawTime = 0;
-        const targetFPS = 30;
-        const frameInterval = 1000 / targetFPS;
-
-        function draw(now: number) {
-            if (!canvas || !analyser) return;
-            if (now - lastDrawTime < frameInterval) {
-                animationFrameRef.current = requestAnimationFrame(draw);
-                return;
-            }
-            lastDrawTime = now;
-
-            const ctx2d = canvas.getContext("2d");
-            if (!ctx2d) return;
-
-            const bufferLength = analyser.fftSize;
-            const dataArray = new Uint8Array(bufferLength);
-
-            analyser.getByteTimeDomainData(dataArray);
-
-            ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-            ctx2d.lineWidth = 2;
-            ctx2d.strokeStyle = "#2563eb"; // blue-600
-
-            ctx2d.beginPath();
-            const sliceWidth = canvas.width / bufferLength;
-            let x = 0;
-
-            for (let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0;
-                const y = (v * canvas.height) / 2;
-                if (i === 0) {
-                    ctx2d.moveTo(x, y);
-                } else {
-                    ctx2d.lineTo(x, y);
-                }
-                x += sliceWidth;
-            }
-            ctx2d.lineTo(canvas.width, canvas.height / 2);
-            ctx2d.stroke();
-
-            animationFrameRef.current = requestAnimationFrame(draw);
-        }
-        animationFrameRef.current = requestAnimationFrame(draw);
-
-        return () => {
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-        };
-    }, [showVisualizer, isPlaying, src]);
-
-    // Clean up audio context and analyser on unmount
-    useEffect(() => {
-        return () => {
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-            if (analyserRef.current) {
-                try {
-                    analyserRef.current.disconnect();
-                } catch { }
-                analyserRef.current = null;
-            }
-            if (sourceRef.current) {
-                try {
-                    sourceRef.current.disconnect();
-                } catch { }
-                sourceRef.current = null;
-            }
-            if (audioContextRef.current) {
-                audioContextRef.current.close();
-                audioContextRef.current = null;
-            }
-        };
-    }, []);
-
     return (
         <Card className={`w-full max-w-lg shadow-lg ${className}`}>
             {/* Audio element */}
@@ -335,25 +240,15 @@ export default function EnhancedAudioPlayer({
                 Your browser does not support the audio element.
             </audio>
 
-            {/* Album cover or waveform visualizer */}
+            {/* Visualizer or album art */}
             {showVisualizer && (
                 <div className="w-full flex justify-center mb-4">
-                    <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
-                        {!isPlaying ? (
-                            <img
-                                alt="album cover"
-                                src={albumCover}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <canvas
-                                ref={canvasRef}
-                                width={480}
-                                height={140}
-                                className="w-full h-full"
-                                style={{ background: "#fafafa" }}
-                            />
-                        )}
+                    <div className="relative w-full max-w-md aspect-video rounded-lg overflow-hidden shadow-md">
+                        <img
+                            alt="audio visualizer"
+                            src={isPlaying ? "/assets/static/sound-wave.gif" : "/assets/static/music.avif"}
+                            className="w-full h-full object-cover transition-opacity duration-500"
+                        />
                         <div className="absolute inset-0 flex items-center justify-center">
                             {isLoading && (
                                 <div className="animate-pulse flex flex-col items-center justify-center bg-black bg-opacity-50 w-full h-full text-white">
@@ -410,6 +305,7 @@ export default function EnhancedAudioPlayer({
                         <FontAwesomeIcon icon={faStepBackward} />
                     </Button>
                 </Tooltip>
+
                 <Button
                     className="bg-pink-700 text-white cursor-pointer"
                     color={isPlaying ? "failure" : "success"}
@@ -422,7 +318,9 @@ export default function EnhancedAudioPlayer({
                         icon={isPlaying ? faPauseCircle : faPlayCircle}
                         className="text-xl"
                     />
+
                 </Button>
+
                 <Tooltip content="Go forward 10 seconds">
                     <Button
                         className="cursor-pointer"
@@ -453,6 +351,7 @@ export default function EnhancedAudioPlayer({
                             className="text-gray-600"
                         />
                     </Button>
+
                     <input
                         type="range"
                         min="0"
@@ -463,6 +362,7 @@ export default function EnhancedAudioPlayer({
                         disabled={isMuted || isLoading}
                     />
                 </div>
+
                 <Tooltip content="Reset to beginning">
                     <Button
                         className="cursor-pointer"
