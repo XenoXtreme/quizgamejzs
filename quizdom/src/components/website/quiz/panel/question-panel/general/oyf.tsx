@@ -30,20 +30,14 @@ export default function Panel({ category }: { category: string }) {
   return (
     <div className={nunito.className}>
       <section className="min-h-screen w-full flex flex-col justify-center items-center text-center bg-cover bg-center bg-no-repeat transition-all duration-300 bg-[url('/assets/static/banner2.jpg')] dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-950">
-        <section className="flex flex-row justify-between items-center w-full max-w-5xl py-8 px-4">
-          <div className="flex-1">
-            <h1 className="flex items-center gap-2 text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 bg-white/70 dark:bg-gray-900/70 rounded-lg px-4 py-2 shadow">
-              <FontAwesomeIcon icon={faCube} />
-              On Your Fingertips
-            </h1>
+        <section className="flex flex-row justify-center items-center w-full max-w-5xl py-8 px-4">
+          <div className="flex-1 flex justify-center items-center">
+        <h1 className="flex items-center gap-2 text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 bg-white/70 dark:bg-gray-900/70 rounded-lg px-4 py-2 shadow">
+          <FontAwesomeIcon icon={faCube} />
+          On Your Fingertips
+        </h1>
           </div>
-          <div>
-            <Link href="/quiz">
-              <button className="cursor-pointer ml-4 px-6 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold shadow transition-all text-lg">
-                Go to Main Page
-              </button>
-            </Link>
-          </div>
+          
         </section>
         <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 py-8 px-2">
           {General.oyf.map((item, idx) => (
