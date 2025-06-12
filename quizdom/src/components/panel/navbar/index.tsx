@@ -164,21 +164,33 @@ export default function AppBar() {
           <NavbarLink
             href="/"
             active={isActive("/")}
-            className="py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white"
+            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
+              ${isActive("/") 
+                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
+                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
+            `}
           >
             Home
           </NavbarLink>
           <NavbarLink
             href="/about"
             active={isActive("/about")}
-            className="py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white"
+            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
+              ${isActive("/about") 
+                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
+                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
+            `}
           >
             About
           </NavbarLink>
           <NavbarLink
             href="/quiz"
             active={isActive("/quiz")}
-            className="py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white"
+            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
+              ${isActive("/quiz") 
+                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
+                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
+            `}
           >
             QNA
           </NavbarLink>

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import About from "@/components/website/static/about";
 
 export const metadata : Metadata = {
   title: 'About - Quizdom',
@@ -7,7 +8,7 @@ export const metadata : Metadata = {
 
 export default function Page() {
     return (
-      <div><p>TBW...</p></div>
+      <div><About/></div>
       
     );
   }

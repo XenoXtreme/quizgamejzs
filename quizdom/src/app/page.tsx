@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import HomePage from "@/components/website/static/home";
 
 export const metadata: Metadata = {
   title: "Quizdom - Home",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div><p>TBW...</p></div>
+    <div><HomePage/></div>
 
   );
 }
