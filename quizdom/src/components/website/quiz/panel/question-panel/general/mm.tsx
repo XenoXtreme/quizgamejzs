@@ -1,19 +1,9 @@
-// REACT
+"use client";
 import React from "react";
-
-// NEXT JS
 import Link from "next/link";
-
-// CSS
-import styles from "../css/q.module.css";
-
-// QNS STRUCTURE
-import { General } from "@/types/qns-structures";
-
-// FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
-
+import { faFilm } from "@fortawesome/free-solid-svg-icons";
+import { General } from "@/types/qns-structures";
 
 export default function Panel({ category }: { category: string }) {
   function genURL(q_no: string) {
@@ -21,31 +11,38 @@ export default function Panel({ category }: { category: string }) {
   }
 
   return (
-    <div >
-      <section className={styles.oyo_qns}>
-        <h1 className={styles.oyo}>
-          <FontAwesomeIcon icon={faCube} /> Movie Mania
+    <section className="flex min-h-screen flex-col items-center bg-gradient-to-b from-gray-100 to-blue-50 py-8 transition-colors dark:from-gray-950 dark:to-gray-900">
+      {/* Header with icon and round name */}
+      <div className="mb-8 flex items-center gap-3">
+        <FontAwesomeIcon
+          icon={faFilm}
+          className="text-3xl text-blue-600 drop-shadow md:text-4xl dark:text-pink-400"
+        />
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 md:text-3xl dark:text-white">
+          Movie Mania
         </h1>
-        {General.mm.map((question: any, index: any) => (
-            <div key={question.q_no} className={styles.qns}>
-              {/* Question display text */}
-              <h3 className={styles.ti}>
-                {question.display_text}
-              </h3>
-              {/* Link button to view the question */}
-              <Link href={genURL(question.q_no)} className="no-underline">
-                <button
-                  className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md
-                             hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75
-                             transition-all duration-200 ease-in-out transform hover:scale-105"
-                >
-                  View
-                </button>
-              </Link>
-            </div>
-          ))}
-    
-      </section>
-    </div>
+      </div>
+
+      {/* Questions List with spacing */}
+      <div className="flex w-full max-w-2xl flex-col gap-6">
+        {General.mm.map((question: any) => (
+          <div
+            key={question.q_no}
+            className="group flex items-center justify-between rounded-xl border border-white/30 bg-white/30 px-5 py-4 shadow-lg backdrop-blur-md transition hover:bg-white/60 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:bg-gray-700/60"
+          >
+            {/* Question text */}
+            <span className="text-base font-medium text-gray-800 md:text-lg dark:text-gray-100">
+              {question.display_text}
+            </span>
+            {/* View Button */}
+            <Link href={genURL(question.q_no)} className="ml-4">
+              <button className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow transition hover:bg-pink-500 dark:bg-pink-600 dark:hover:bg-blue-500">
+                View
+              </button>
+            </Link>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
