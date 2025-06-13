@@ -7,41 +7,21 @@ export default function PPTViewer({ category }: { category: string }) {
     "question",
   );
 
-  function getPPTUrl(
-    category: string,
-    view: "question" | "answer" | "audience",
-  ): { pptUrl: string; filename: string } {
-    if (category === "intraschool/junior") {
-      if (view === "question") {
-        return { pptUrl: "", filename: "prelims.pptx" };
-      } else if (view === "answer") {
-        return { pptUrl: "", filename: "prelims-ans.pptx" };
-      } else {
-        return { pptUrl: "", filename: "prelims-audience.pptx" };
-      }
-    }
-    if (category === "intraschool/senior") {
-      if (view === "question") {
-        return { pptUrl: "", filename: "prelims.pptx" };
-      } else if (view === "answer") {
-        return { pptUrl: "", filename: "prelims-ans.pptx" };
-      } else {
-        return { pptUrl: "", filename: "prelims-audience.pptx" };
-      }
-    }
-    if (category === "interschool") {
-      if (view === "question") {
-        return { pptUrl: "", filename: "prelims.pptx" };
-      } else if (view === "answer") {
-        return { pptUrl: "", filename: "prelims-ans.pptx" };
-      } else {
-        return { pptUrl: "", filename: "prelims-audience.pptx" };
-      }
-    }
-    // fallback
-    return { pptUrl: "", filename: "" };
-  }
+  let pptUrl: string;
+  let filename: string;
 
+  const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "/";
+
+  if (view === "question") {
+    pptUrl = `${CDN_URI}/prelims/${category}/prelims.pptx`;
+    filename = "prelims.pptx";
+  } else if (view === "answer") {
+    pptUrl = `${CDN_URI}/prelims/${category}/prelims-ans.pptx`;
+    filename = "prelims-ans.pptx";
+  } else {
+    pptUrl = `${CDN_URI}/prelims/${category}/prelims-audience.pptx`;
+    filename = "prelims-audience.pptx";
+  }
 
   const { pptUrl, filename } = getPPTUrl(category, view);
 

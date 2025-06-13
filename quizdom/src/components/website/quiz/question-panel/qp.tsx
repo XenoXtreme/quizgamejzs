@@ -49,6 +49,8 @@ export default function QuestionPanel({
   const [extension] = useState<string>(getExtension(type));
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [pendingToggle, setPendingToggle] = useState<boolean>(false);
+
+  // CDN URI
   const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "";
 
   // Question and answer URIs
