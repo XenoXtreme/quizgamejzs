@@ -73,16 +73,16 @@ export default function Home() {
       .then((res) => {
         if (res["id"]) {
           localStorage.setItem("_user", JSON.stringify(res));
-          toast.success("Successfully logged in.");
+          toast.success("Successfully logged in.", {duration: 1500});
           setLoading(false);
           router.push("/account");
         } else {
-          toast.error("Failed to login.");
+          toast.error("Failed to login.", {duration: 1500});
           setLoading(false);
         }
       })
       .catch(() => {
-        toast.error("Failed to login.");
+        toast.error("Failed to login.", {duration: 1500});
         setLoading(false);
       });
   }
@@ -94,7 +94,7 @@ export default function Home() {
   React.useEffect(()=>{
     if(localStorage?.getItem("_user")){
       router.push("/account")
-      toast.warning("Already logged in.")
+      toast.warning("Already logged in.", {duration: 600})
     }
   })
 

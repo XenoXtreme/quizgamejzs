@@ -13,7 +13,7 @@ export default function QuizLayout({
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       if (!localStorage.getItem("_user")) {
-        toast.info("Please login to your team.");
+        toast.info("Please login to your team.", {duration: 2000});
         redirect("/login");
       }
     }

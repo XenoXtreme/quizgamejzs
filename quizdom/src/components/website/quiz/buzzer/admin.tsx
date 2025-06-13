@@ -38,7 +38,7 @@ export default function AdminPanel() {
         setFirstPressInfo(data);
       }
       toast.info(`Team - ${data.teamName} pressed the button.`, {
-        duration: 15000,
+        duration: 10000,
       });
     };
 

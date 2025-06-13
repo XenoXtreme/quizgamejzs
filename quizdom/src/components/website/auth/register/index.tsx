@@ -127,19 +127,19 @@ export default function Home() {
       .then((res) => {
         if (res.id) {
           navigator.clipboard.writeText(res.id)
-          toast.success(`Successfully created account. ID: ${res.id}`);
+          toast.success(`Successfully created account. ID: ${res.id}, {duration: 2000}`);
           setLoading(false);
           setTimeout(() => {
-            toast.info("Log in to your account.");
+            toast.info("Log in to your account.", {duration: 700});
             redirect("/login");
           }, 3000);
         } else {
-          toast.error("Failed to login.");
+          toast.error("Failed to login.", {duration: 1000});
           setLoading(false);
         }
       })
       .catch(() => {
-        toast.error("Failed to login.");
+        toast.error("Failed to login.", {duration: 1000});
         setLoading(false);
       });
   }

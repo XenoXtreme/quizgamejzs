@@ -144,11 +144,6 @@ export default function AppBar() {
             </DropdownHeader>
             <DropdownItem as={Link} href="/account">Profile</DropdownItem>
             <DropdownItem as={Link} href={getBuzzerURL()}>Buzzer</DropdownItem>
-            {team?.role === "ADMIN" && (
-              <DropdownItem as={Link} href="/timer">
-                Timer
-              </DropdownItem>
-            )}
             <DropdownDivider />
             <DropdownItem onClick={handleLogOut} disabled={isLoggingOut}>
               {isLoggingOut ? "Logging out..." : "Sign out"}
