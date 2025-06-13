@@ -13,13 +13,13 @@ export default function PPTViewer({ category }: { category: string }) {
   const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "/";
 
   if (view === "question") {
-    pptUrl = `${CDN_URI}/prelims/${category}/prelims.pptx`;
+    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims.pptx`;
     filename = "prelims.pptx";
   } else if (view === "answer") {
-    pptUrl = `${CDN_URI}/prelims/${category}/prelims-ans.pptx`;
+    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims-ans.pptx`;
     filename = "prelims-ans.pptx";
   } else {
-    pptUrl = `${CDN_URI}/prelims/${category}/prelims-audience.pptx`;
+    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims-audience.pptx`;
     filename = "prelims-audience.pptx";
   }
 
