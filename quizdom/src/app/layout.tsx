@@ -18,6 +18,10 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 
 // CONFIG FONTAWESOME
 config.autoAddCss = false;
+
+// TOP LOADER
+import NextTopLoader from 'nextjs-toploader';
+
 // FONT
 import { Nunito } from "next/font/google";
 
@@ -43,6 +47,7 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={`dark:bg-slate-500 ${nunito.className}`}>
+        <NextTopLoader />
         <Layout>{children}</Layout>
       </body>
     </html>

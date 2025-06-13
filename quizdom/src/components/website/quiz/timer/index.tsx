@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Card, Badge, TextInput, Label, Toast, ToastToggle } from "flowbite-react";
 import { HiClock, HiPause, HiPlay, HiStop, HiRefresh, HiAdjustments, HiSave, HiVolumeOff } from "react-icons/hi";
+import Stopwatch from "./stopwatch";
 
 export default function QuizTimer() {
     // Default timer set to 30 seconds
@@ -284,256 +285,242 @@ export default function QuizTimer() {
     };
 
     return (
-        <div className="mt-6 px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 p-8">
+        <div className="mt-6 px-2 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 p-4 sm:p-8">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-center mb-2 text-indigo-800">Quiz Timer</h1>
+                <h1 className="text-3xl font-extrabold text-center mb-2 text-indigo-900 drop-shadow">Quiz Timer</h1>
                 <p className="text-center text-gray-600 mb-8">Set, save, and manage timers for your quiz rounds</p>
 
-                {/* Main Timer Card */}
-                <Card className="mb-8 shadow-lg bg-white">
-                    <div className="flex flex-col items-center">
-                        {/* Timer Direction Toggle */}
-                        <div className="flex gap-4 mb-6">
-                            <Badge
-                                color={direction === "countdown" ? "info" : "gray"}
-                                size="xl"
-                                className="px-4 py-2 cursor-pointer"
-                                onClick={() => setDirection("countdown")}
-                            >
-                                Countdown
-                            </Badge>
-                            <Badge
-                                color={direction === "stopwatch" ? "info" : "gray"}
-                                size="xl"
-                                className="px-4 py-2 cursor-pointer"
-                                onClick={() => setDirection("stopwatch")}
-                            >
-                                Stopwatch
-                            </Badge>
-                        </div>
+                {/* Timer Direction Toggle */}
+                <div className="flex gap-4 mb-6 justify-center">
+                    <Badge
+                        color={direction === "countdown" ? "info" : "gray"}
+                        size="xl"
+                        className={`px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "countdown" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
+                        onClick={() => setDirection("countdown")}
+                    >
+                        Countdown
+                    </Badge>
+                    <Badge
+                        color={direction === "stopwatch" ? "info" : "gray"}
+                        size="xl"
+                        className={`px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "stopwatch" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
+                        onClick={() => setDirection("stopwatch")}
+                    >
+                        Stopwatch
+                    </Badge>
+                </div>
 
-                        {/* Timer Display */}
-                        <div className="relative w-72 h-72 mb-6">
-                            {/* Circular Progress Background */}
-                            <div className="absolute inset-0 rounded-full bg-gray-200"></div>
-
-                            {/* Circular Progress Indicator */}
-                            <div
-                                className="absolute inset-0 rounded-full bg-indigo-500 transition-all duration-1000"
-                                style={{
-                                    clipPath: `circle(${progressPercentage}% at center)`,
-                                    opacity: 0.2
-                                }}
-                            ></div>
-
-                            {/* Timer Value Display */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <div className="text-5xl font-bold text-indigo-700">
-                                    {formatTime(hours, minutes, seconds)}
-                                </div>
-                                <div className="mt-2 text-indigo-500">
-                                    {direction === "countdown" ? "Remaining" : "Elapsed"}
-                                </div>
-
-                                {/* Show when time is up */}
-                                {direction === "countdown" && remainingTimeInSeconds === 0 && !isRunning && (
-                                    <div className="flex flex-col items-center mt-4 gap-2">
-                                        <Badge color="warning" size="xl">
-                                            Time's Up!
-                                        </Badge>
-
-                                        {isAlarmPlaying && (
-                                            <Button
-                                                className="cursor-pointer bg-pink-600 text-white"
-                                                color="failure"
-                                                size="sm"
-                                                onClick={stopAlarm}
-                                            >
-                                                <HiVolumeOff className="mr-2 h-4 w-4" />
-                                                Stop Alarm
-                                            </Button>
-                                        )}
+                {/* Main Timer Card or Stopwatch */}
+                {direction === "countdown" ? (
+                    <Card className="mb-8 shadow-2xl border-2 border-indigo-100 bg-white rounded-2xl">
+                        <div className="flex flex-col items-center">
+                            {/* Timer Display */}
+                            <div className="relative w-72 h-72 mb-6">
+                                {/* Circular Progress Background */}
+                                <div className="absolute inset-0 rounded-full bg-gray-200 shadow-inner"></div>
+                                {/* Circular Progress Indicator */}
+                                <div
+                                    className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-pink-300 transition-all duration-700"
+                                    style={{
+                                        clipPath: `circle(${progressPercentage}% at center)`,
+                                        opacity: 0.25
+                                    }}
+                                ></div>
+                                {/* Timer Value Display */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <div className="text-4xl sm:text-5xl font-extrabold text-indigo-700 drop-shadow-lg tracking-widest select-none">
+                                        {formatTime(hours, minutes, seconds)}
                                     </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Timer Controls */}
-                        <div className="grid grid-cols-4 gap-3 mb-6">
-                            <Button
-                                className="cursor-pointer bg-pink-600 text-white"
-                                color={isRunning ? "gray" : "success"}
-                                disabled={isRunning}
-                                onClick={handleStart}
-                                size="lg"
-                            >
-                                <HiPlay className="mr-2 h-5 w-5" />
-                                {isPaused ? "Resume" : "Start"}
-                            </Button>
-
-                            <Button
-                                className="cursor-pointer bg-pink-600 text-white"
-                                color="warning"
-                                disabled={!isRunning}
-                                onClick={handlePause}
-                                size="lg"
-                            >
-                                <HiPause className="mr-2 h-5 w-5" />
-                                Pause
-                            </Button>
-
-                            <Button
-                                className="cursor-pointer bg-pink-600 text-white"
-                                color="failure"
-                                disabled={!isRunning && !isPaused}
-                                onClick={handleStop}
-                                size="lg"
-                            >
-                                <HiStop className="mr-2 h-5 w-5" />
-                                Stop
-                            </Button>
-
-                            <Button
-                                className="cursor-pointer"
-                                color="purple"
-                                onClick={handleReset}
-                                size="lg"
-                            >
-                                <HiRefresh className="mr-2 h-5 w-5" />
-                                Reset
-                            </Button>
-                        </div>
-
-                        {/* Timer Settings Toggle */}
-                        <Button
-                            color="light"
-                            onClick={() => setShowSettings(!showSettings)}
-                            className="cursor-pointer mb-4"
-                        >
-                            <HiAdjustments className="mr-2 h-5 w-5" />
-                            {showSettings ? "Hide Settings" : "Show Settings"}
-                        </Button>
-
-                        {/* Timer Settings */}
-                        {showSettings && (
-                            <div className="w-full space-y-4 border-t pt-4">
-                                <h3 className="text-lg font-semibold text-center text-indigo-700">Timer Settings</h3>
-
-                                {/* Input Fields for Timer */}
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <Label htmlFor="hours">Hours</Label>
-                                        <TextInput
-                                            id="hours"
-                                            type="number"
-                                            min={0}
-                                            max={23}
-                                            value={hours}
-                                            onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                                            disabled={isRunning || isPaused}
-                                        />
+                                    <div className="mt-2 text-indigo-500 font-medium">
+                                        Remaining
                                     </div>
-
-                                    <div>
-                                        <Label htmlFor="minutes">Minutes</Label>
-                                        <TextInput
-                                            id="minutes"
-                                            type="number"
-                                            min={0}
-                                            max={59}
-                                            value={minutes}
-                                            onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                                            disabled={isRunning || isPaused}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="seconds">Seconds</Label>
-                                        <TextInput
-                                            id="seconds"
-                                            type="number"
-                                            min={0}
-                                            max={59}
-                                            value={seconds}
-                                            onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
-                                            disabled={isRunning || isPaused}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Sound Settings */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="flex items-center">
-                                        <input
-                                            id="tickSound"
-                                            type="checkbox"
-                                            checked={playTickSound}
-                                            onChange={() => setPlayTickSound(!playTickSound)}
-                                            className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
-                                        />
-                                        <Label htmlFor="tickSound" className="ml-2">
-                                            Play tick sound (last 5 seconds)
-                                        </Label>
-                                    </div>
-
-                                    <div className="flex items-center">
-                                        <input
-                                            id="alarmSound"
-                                            type="checkbox"
-                                            checked={playAlarmSound}
-                                            onChange={() => setPlayAlarmSound(!playAlarmSound)}
-                                            className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
-                                        />
-                                        <Label htmlFor="alarmSound" className="ml-2">
-                                            Play alarm when timer ends
-                                        </Label>
-                                    </div>
-                                </div>
-
-                                {/* Quick Time Presets */}
-                                <div>
-                                    <Label className="mb-2 block">Quick Presets</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {[15, 30, 60, 120, 300].map((timeInSeconds) => (
-                                            <Badge
-                                                key={timeInSeconds}
-                                                color="info"
-                                                className="cursor-pointer"
-                                                onClick={() => handleLoadTimer(timeInSeconds)}
-                                            >
-                                                {timeInSeconds < 60 ? `${timeInSeconds}s` :
-                                                    timeInSeconds < 3600 ? `${Math.floor(timeInSeconds / 60)}m` :
-                                                        `${Math.floor(timeInSeconds / 3600)}h ${Math.floor((timeInSeconds % 3600) / 60)}m`}
+                                    {remainingTimeInSeconds === 0 && !isRunning && (
+                                        <div className="flex flex-col items-center mt-4 gap-2">
+                                            <Badge color="warning" size="xl" className="animate-bounce">
+                                                Time's Up!
                                             </Badge>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Save Timer */}
-                                <div className="pt-2 border-t">
-                                    <Label htmlFor="timerName" className="mb-2 block">Save Current Timer</Label>
-                                    <div className="flex gap-2">
-                                        <TextInput
-                                            id="timerName"
-                                            placeholder="Enter timer name..."
-                                            value={timerName}
-                                            onChange={(e) => setTimerName(e.target.value)}
-                                            className="flex-grow"
-                                        />
-                                        <Button
-                                            color="success"
-                                            onClick={handleSaveTimer}
-                                            className="cursor-pointer dark:text-white"
-                                        >
-                                            <HiSave className="mr-2 h-5 w-5" />
-                                            Save
-                                        </Button>
-                                    </div>
+                                            {isAlarmPlaying && (
+                                                <Button
+                                                    className="cursor-pointer bg-pink-600 text-white"
+                                                    color="failure"
+                                                    size="sm"
+                                                    onClick={stopAlarm}
+                                                >
+                                                    <HiVolumeOff className="mr-2 h-4 w-4" />
+                                                    Stop Alarm
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )}
-                    </div>
-                </Card>
+                            {/* Timer Controls */}
+                            <div className="grid grid-cols-4 gap-3 mb-6 w-full max-w-md">
+                                <Button
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition"
+                                    color={isRunning ? "gray" : "success"}
+                                    disabled={isRunning}
+                                    onClick={handleStart}
+                                    size="lg"
+                                >
+                                    <HiPlay className="mr-2 h-5 w-5" />
+                                    {isPaused ? "Resume" : "Start"}
+                                </Button>
+                                <Button
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition"
+                                    color="warning"
+                                    disabled={!isRunning}
+                                    onClick={handlePause}
+                                    size="lg"
+                                >
+                                    <HiPause className="mr-2 h-5 w-5" />
+                                    Pause
+                                </Button>
+                                <Button
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition"
+                                    color="failure"
+                                    disabled={!isRunning && !isPaused}
+                                    onClick={handleStop}
+                                    size="lg"
+                                >
+                                    <HiStop className="mr-2 h-5 w-5" />
+                                    Stop
+                                </Button>
+                                <Button
+                                    className="cursor-pointer hover:bg-purple-700 transition"
+                                    color="purple"
+                                    onClick={handleReset}
+                                    size="lg"
+                                >
+                                    <HiRefresh className="mr-2 h-5 w-5" />
+                                    Reset
+                                </Button>
+                            </div>
+                            {/* Timer Settings Toggle */}
+                            <Button
+                                color="light"
+                                onClick={() => setShowSettings(!showSettings)}
+                                className="cursor-pointer mb-4 hover:ring-2 hover:ring-indigo-200 transition"
+                            >
+                                <HiAdjustments className="mr-2 h-5 w-5" />
+                                {showSettings ? "Hide Settings" : "Show Settings"}
+                            </Button>
+                            {/* Timer Settings */}
+                            {showSettings && (
+                                <div className="w-full space-y-4 border-t pt-4">
+                                    <h3 className="text-lg font-semibold text-center text-indigo-700">Timer Settings</h3>
+                                    {/* Input Fields for Timer */}
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <Label htmlFor="hours">Hours</Label>
+                                            <TextInput
+                                                id="hours"
+                                                type="number"
+                                                min={0}
+                                                max={23}
+                                                value={hours}
+                                                onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                                                disabled={isRunning || isPaused}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="minutes">Minutes</Label>
+                                            <TextInput
+                                                id="minutes"
+                                                type="number"
+                                                min={0}
+                                                max={59}
+                                                value={minutes}
+                                                onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                                                disabled={isRunning || isPaused}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="seconds">Seconds</Label>
+                                            <TextInput
+                                                id="seconds"
+                                                type="number"
+                                                min={0}
+                                                max={59}
+                                                value={seconds}
+                                                onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
+                                                disabled={isRunning || isPaused}
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Sound Settings */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex items-center">
+                                            <input
+                                                id="tickSound"
+                                                type="checkbox"
+                                                checked={playTickSound}
+                                                onChange={() => setPlayTickSound(!playTickSound)}
+                                                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
+                                            />
+                                            <Label htmlFor="tickSound" className="ml-2">
+                                                Play tick sound (last 5 seconds)
+                                            </Label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                id="alarmSound"
+                                                type="checkbox"
+                                                checked={playAlarmSound}
+                                                onChange={() => setPlayAlarmSound(!playAlarmSound)}
+                                                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
+                                            />
+                                            <Label htmlFor="alarmSound" className="ml-2">
+                                                Play alarm when timer ends
+                                            </Label>
+                                        </div>
+                                    </div>
+                                    {/* Quick Time Presets */}
+                                    <div>
+                                        <Label className="mb-2 block">Quick Presets</Label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {[15, 30, 60, 120, 300].map((timeInSeconds) => (
+                                                <Badge
+                                                    key={timeInSeconds}
+                                                    color="info"
+                                                    className="cursor-pointer hover:ring-2 hover:ring-indigo-300 transition"
+                                                    onClick={() => handleLoadTimer(timeInSeconds)}
+                                                >
+                                                    {timeInSeconds < 60 ? `${timeInSeconds}s` :
+                                                        timeInSeconds < 3600 ? `${Math.floor(timeInSeconds / 60)}m` :
+                                                            `${Math.floor(timeInSeconds / 3600)}h ${Math.floor((timeInSeconds % 3600) / 60)}m`}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {/* Save Timer */}
+                                    <div className="pt-2 border-t">
+                                        <Label htmlFor="timerName" className="mb-2 block">Save Current Timer</Label>
+                                        <div className="flex gap-2">
+                                            <TextInput
+                                                id="timerName"
+                                                placeholder="Enter timer name..."
+                                                value={timerName}
+                                                onChange={(e) => setTimerName(e.target.value)}
+                                                className="flex-grow"
+                                            />
+                                            <Button
+                                                color="success"
+                                                onClick={handleSaveTimer}
+                                                className="cursor-pointer dark:text-white hover:bg-green-700 transition"
+                                            >
+                                                <HiSave className="mr-2 h-5 w-5" />
+                                                Save
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+                ) : (
+                    <Stopwatch />
+                )}
 
                 {/* Saved Timers Card */}
                 {savedTimers.length > 0 && (
@@ -545,7 +532,6 @@ export default function QuizTimer() {
                                     const h = Math.floor(timer.timeInSeconds / 3600);
                                     const m = Math.floor((timer.timeInSeconds % 3600) / 60);
                                     const s = timer.timeInSeconds % 60;
-
                                     return (
                                         <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                             <div>
@@ -556,7 +542,7 @@ export default function QuizTimer() {
                                                 <Button
                                                     size="xs"
                                                     color="info"
-                                                    className="cursor-pointer"
+                                                    className="cursor-pointer hover:bg-indigo-600 transition"
                                                     onClick={() => handleLoadTimer(timer.timeInSeconds)}
                                                 >
                                                     Load
@@ -564,7 +550,7 @@ export default function QuizTimer() {
                                                 <Button
                                                     size="xs"
                                                     color="failure"
-                                                    className="cursor-pointer"
+                                                    className="cursor-pointer hover:bg-red-700 transition"
                                                     onClick={() => handleDeleteTimer(index)}
                                                 >
                                                     Delete
@@ -578,7 +564,6 @@ export default function QuizTimer() {
                     </Card>
                 )}
             </div>
-
             {/* Toast Notification */}
             {showToast && (
                 <div className="fixed bottom-4 right-4 z-50">

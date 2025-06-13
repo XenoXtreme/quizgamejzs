@@ -20,6 +20,7 @@
     "flowbite": "^3.1.2",
     "flowbite-react": "^0.11.8",
     "next": "^15.3.3",
+    "nextjs-toploader": "^3.8.16",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "react": "^19.1.0",
