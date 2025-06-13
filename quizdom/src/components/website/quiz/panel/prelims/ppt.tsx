@@ -23,8 +23,6 @@ export default function PPTViewer({ category }: { category: string }) {
     filename = "prelims-audience.pptx";
   }
 
-  const { pptUrl, filename } = getPPTUrl(category, view);
-
   return (
     <div className="mt-4 flex flex-col items-center gap-4">
       <div className="mb-2 flex gap-2">
