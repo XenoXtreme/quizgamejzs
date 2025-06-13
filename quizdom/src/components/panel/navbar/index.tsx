@@ -20,7 +20,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownHeader,
-  DropdownDivider
+  DropdownDivider,
 } from "flowbite-react";
 
 export default function AppBar() {
@@ -39,7 +39,7 @@ export default function AppBar() {
     toast.success("Successfully logged out.");
 
     setTimeout(() => {
-      router.push("/login")
+      router.push("/login");
     }, 2000);
   };
 
@@ -95,29 +95,29 @@ export default function AppBar() {
 
   return (
     <Navbar
-      className="sticky top-0 z-50 px-4 lg:px-6 py-2.5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gradient-to-r dark:from-indigo-900 dark:via-purple-900 dark:to-indigo-900 shadow-md"
+      className="sticky top-0 z-50 border-b border-gray-200 bg-white px-4 py-2.5 shadow-md lg:px-6 dark:border-gray-700 dark:bg-gradient-to-r dark:from-indigo-900 dark:via-purple-900 dark:to-indigo-900"
       fluid
     >
       <NavbarBrand as={Link} href="/" className="flex items-center">
-        <div className="relative h-10 w-10 overflow-hidden rounded-lg mr-3 shadow-lg">
+        <div className="relative mr-3 h-10 w-10 overflow-hidden rounded-lg shadow-lg">
           <Image
             src="/icon.png"
-            className="object-contain transform hover:scale-110 transition-transform duration-300"
+            className="transform object-contain transition-transform duration-300 hover:scale-110"
             width={40}
             height={40}
             alt="Quizdom Logo"
           />
         </div>
-        <span className="self-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 dark:from-purple-400 dark:to-blue-300">
+        <span className="self-center bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-2xl font-bold text-transparent dark:from-purple-400 dark:to-blue-300">
           Quizdom
         </span>
       </NavbarBrand>
 
-      <div className="flex items-center md:order-2 gap-2">
-        <DarkThemeToggle className="cursor-pointer p-2.5 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg" />
+      <div className="flex items-center gap-2 md:order-2">
+        <DarkThemeToggle className="cursor-pointer rounded-lg p-2.5 text-gray-600 hover:text-gray-800 focus:ring-4 focus:ring-gray-200 dark:text-gray-300 dark:hover:text-white dark:focus:ring-gray-700" />
 
         {isAuthenticated && (
-          <div className="hidden md:flex md:flex-col md:items-end mr-2 cursor-pointer">
+          <div className="mr-2 hidden cursor-pointer md:flex md:flex-col md:items-end">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {team?.team || "Team Member"}
             </span>
@@ -139,11 +139,23 @@ export default function AppBar() {
                 {team?.team || "User"}
               </span>
               <span className="block truncate text-sm font-medium">
-                <b><u>ROLE:</u></b> {team?.role || "Member"}
+                <b>
+                  <u>ROLE:</u>
+                </b>{" "}
+                {team?.role || "Member"}
               </span>
             </DropdownHeader>
-            <DropdownItem as={Link} href="/account">Profile</DropdownItem>
-            <DropdownItem as={Link} href={getBuzzerURL()}>Buzzer</DropdownItem>
+            <DropdownItem as={Link} href="/account">
+              Profile
+            </DropdownItem>
+            <DropdownItem as={Link} href={getBuzzerURL()}>
+              Buzzer
+            </DropdownItem>
+            {team?.role === "ADMIN" && (
+              <DropdownItem as={Link} href="/quiz/timer">
+                Timer
+              </DropdownItem>
+            )}
             <DropdownDivider />
             <DropdownItem onClick={handleLogOut} disabled={isLoggingOut}>
               {isLoggingOut ? "Logging out..." : "Sign out"}
@@ -151,70 +163,70 @@ export default function AppBar() {
           </Dropdown>
         ) : null}
 
-        <NavbarToggle className="ml-1 dark:text-white focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600" />
+        <NavbarToggle className="ml-1 focus:ring-2 focus:ring-blue-300 dark:text-white dark:focus:ring-blue-600" />
       </div>
 
       <NavbarCollapse className="md:flex md:items-center">
-        <div className="flex flex-col md:flex-row w-full md:w-auto md:gap-4 lg:gap-6">
+        <div className="flex w-full flex-col md:w-auto md:flex-row md:gap-4 lg:gap-6">
           <NavbarLink
             href="/"
             active={isActive("/")}
-            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
-              ${isActive("/") 
-                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
-                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
-            `}
+            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
+              isActive("/")
+                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
+                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+            } `}
           >
             Home
           </NavbarLink>
           <NavbarLink
             href="/about"
             active={isActive("/about")}
-            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
-              ${isActive("/about") 
-                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
-                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
-            `}
+            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
+              isActive("/about")
+                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
+                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+            } `}
           >
             About
           </NavbarLink>
           <NavbarLink
             href="/quiz"
             active={isActive("/quiz")}
-            className={`py-2 pl-3 pr-4 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-200
-              ${isActive("/quiz") 
-                ? "bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-yellow-300 font-bold shadow"
-                : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white text-gray-700"}
-            `}
+            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
+              isActive("/quiz")
+                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
+                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+            } `}
           >
             QNA
           </NavbarLink>
 
           {!isAuthenticated ? (
-            <div className="flex flex-col md:flex-row md:ml-auto gap-2 mt-2 md:mt-0">
+            <div className="mt-2 flex flex-col gap-2 md:mt-0 md:ml-auto md:flex-row">
               <Button
                 as={Link}
                 href="/login"
                 color="light"
-                className="cursor-pointer w-full md:w-auto text-gray-800 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                className="w-full cursor-pointer rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 md:w-auto dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
               >
                 Login
               </Button>
               <Button
                 as={Link}
                 href="/register"
-                className="cursor-pointer w-full md:w-auto text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 dark:focus:ring-blue-800"
+                className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 md:w-auto dark:focus:ring-blue-800"
               >
                 Register
               </Button>
             </div>
           ) : (
-            <div className="md:hidden mt-2">
+            <div className="mt-2 md:hidden">
               <Button
                 onClick={handleLogOut}
                 disabled={isLoggingOut}
                 color="failure"
-                className="cursor-pointer w-full text-white font-medium rounded-lg text-sm px-5 py-2.5"
+                className="w-full cursor-pointer rounded-lg px-5 py-2.5 text-sm font-medium text-white"
               >
                 {isLoggingOut ? "Logging out..." : "Sign out"}
               </Button>

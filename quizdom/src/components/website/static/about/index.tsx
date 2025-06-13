@@ -15,17 +15,25 @@ interface ImageProps {
 // Test Data for the carousel
 const images: ImageProps[] = [
   {
-    src: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80",
-    alt: "Front view of a classical-style school building with a large tree.",
+    src: "https://static.wixstatic.com/media/bbabb2_29dfb17f56ec450cae2b65efd2dcc67c~mv2.jpg/v1/fill/w_1178,h_662,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/15%20AUGUST%2C%202017.jpg",
+    alt: "Independence",
   },
   {
-    src: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80",
-    alt: "Modern library interior with bookshelves lining the walls.",
+    src: "https://static.wixstatic.com/media/bbabb2_36a542fc09624868875eddafeaab5144~mv2_d_6000_4000_s_4_2.jpg/v1/fill/w_965,h_643,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Annual%20Sports%202015.jpg",
+    alt: "School Awards",
   },
   {
-    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    alt: "Vast sports ground with a stunning mountain landscape in the background.",
-  }
+    src: "https://static.wixstatic.com/media/bbabb2_473d62aa23674373b5c095634bd194db~mv2_d_3264_1836_s_2.jpg/v1/fill/w_1144,h_643,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/23rd%20January%2C%202017.jpg",
+    alt: "School Building",
+  },
+  {
+    src: "https://static.wixstatic.com/media/bbabb2_885b2c25104e443d81d2263cd2c284c8~mv2.jpg/v1/fill/w_720,h_406,al_c,lg_1,q_80,enc_auto/15th%20August%2C%202017.jpg",
+    alt: "Students",
+  },
+  {
+    src: "https://static.wixstatic.com/media/bbabb2_30de0bb21a5a4c90b9825381880b5771~mv2_d_4608_3072_s_4_2.jpg/v1/fill/w_994,h_663,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Group%20Photo%20DAY%20Section_JPG.jpg",
+    alt: "Teachers",
+  },
 ];
 
 // Interface for the Carousel component's props
@@ -93,7 +101,7 @@ const CustomCarousel: React.FC<CarouselProps> = ({
             key={index}
             src={image.src}
             alt={image.alt}
-            className="h-full w-full flex-shrink-0 object-cover"
+            className=" h-full w-full flex-shrink-0 object-cover"
             // Preload images for smoother transitions
             loading={index === 0 ? "eager" : "lazy"}
           />
@@ -164,7 +172,7 @@ const About = () => {
             <br />
             Jalpaiguri Zilla School, established on{" "}
             <span className="font-semibold">26th May 1876</span>, is one of the
-            oldest and most prestigious educational institutions in the region.
+            oldest and most prestigious educational institutions in Jalpaiguri, West Bengal.
             With a rich heritage and a commitment to excellence, Jalpaiguri
             Zilla School has been shaping young minds for generations.
           </p>
