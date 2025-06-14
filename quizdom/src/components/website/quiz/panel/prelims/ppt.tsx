@@ -24,15 +24,17 @@ export default function PPTViewer({ category }: { category: string }) {
   }
 
   return (
-    <div className="mt-4 flex flex-col items-center gap-4">
-      <div className="mb-2 flex gap-2">
+    <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl bg-white/70 dark:bg-slate-900/80 shadow-xl backdrop-blur-lg p-6 transition-all">
+      <div className="mb-4 flex gap-2 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-md px-4 py-3 backdrop-blur-md">
         <Button
           onClick={() => setView("question")}
           color={view === "question" ? "alternative" : "light"}
           pill
           size="sm"
           disabled={view === "question"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 ${view === "question" ? "ring-2 ring-orange-400" : ""}`}
+          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
+            view === "question" ? "ring-2 ring-orange-400 scale-105" : "hover:scale-105"
+          }`}
         >
           Show Question PPT
         </Button>
@@ -42,7 +44,9 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "answer"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 ${view === "answer" ? "ring-2 ring-green-400" : ""}`}
+          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-green-400 ${
+            view === "answer" ? "ring-2 ring-green-400 scale-105" : "hover:scale-105"
+          }`}
         >
           Show Answer PPT
         </Button>
@@ -52,7 +56,9 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "audience"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 ${view === "audience" ? "ring-2 ring-purple-400" : ""}`}
+          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
+            view === "audience" ? "ring-2 ring-purple-400 scale-105" : "hover:scale-105"
+          }`}
         >
           Questions for Audience
         </Button>
