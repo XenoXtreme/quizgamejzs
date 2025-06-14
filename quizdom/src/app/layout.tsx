@@ -46,7 +46,7 @@ export default function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <body className={`${nunito.className}`}>
+      <body className={`${nunito.className} dark:bg-gray-900`}>
         <NextTopLoader />
         <Layout>{children}</Layout>
       </body>

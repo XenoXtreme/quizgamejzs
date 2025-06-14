@@ -72,19 +72,19 @@ export default function AdminPanel() {
   }, [socket, firstPressInfo]);
 
   return (
-    <div className="mx-auto min-h-screen max-w-[1200px] bg-gradient-to-br from-slate-50 to-slate-100 p-8">
+    <div className="mx-auto min-h-screen max-w-[1200px] p-8 transition-colors duration-300">
       <div className="mb-8">
-        <h1 className="mb-2 text-center text-3xl font-bold text-indigo-800">
+        <h1 className="mb-2 text-center text-3xl font-bold text-indigo-800 dark:text-indigo-200">
           Quiz Buzzer Admin Panel
         </h1>
-        <p className="mb-8 text-center text-gray-600">
+        <p className="mb-8 text-center text-gray-600 dark:text-gray-300">
           Control the timer and monitor buzzer presses
         </p>
       </div>
 
-      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg">
+      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg transition-colors duration-300 dark:from-indigo-900 dark:to-purple-900">
         <div className="flex flex-col items-center">
-          <h2 className="mb-6 text-xl font-semibold text-indigo-700">
+          <h2 className="mb-6 text-xl font-semibold text-indigo-700 dark:text-indigo-200">
             Buzzer Status
           </h2>
 
@@ -92,7 +92,7 @@ export default function AdminPanel() {
             <Badge
               color={firstPressInfo ? "failure" : "success"}
               size="xl"
-              className="rounded-full px-4 py-2"
+              className="dark:bg-opacity-80 rounded-full px-4 py-2"
             >
               {firstPressInfo ? "Buzzer Pressed" : "Buzzer Ready"}
             </Badge>
@@ -101,8 +101,8 @@ export default function AdminPanel() {
           <div
             className={`flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-lg transition-all duration-500 ${
               firstPressInfo
-                ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600"
-                : "bg-gradient-to-br from-green-500 to-green-600"
+                ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600 dark:from-red-700 dark:to-red-900"
+                : "bg-gradient-to-br from-green-500 to-green-600 dark:from-green-700 dark:to-green-900"
             }`}
           >
             {firstPressInfo ? (
@@ -120,20 +120,20 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {/* Timer component */}
-        <Card className="mb-8 shadow-lg">
-          <div className="flex flex-col items-center">
-            <h2 className="mb-2 text-xl font-semibold text-indigo-700">
-              Timer Control
-            </h2>
-            <div className="flex w-full justify-center">
-              <div className="w-full">
-                <Timer />
-              </div>
+        <ConnectionDebug />
+      </Card>
+      {/* Timer component */}
+      <Card className="mb-8 mt-5 bg-white shadow-lg transition-colors duration-300 dark:bg-gray-900">
+        <div className="flex flex-col items-center">
+          <h2 className="mb-2 text-xl font-semibold text-indigo-700 dark:text-indigo-200">
+            Timer Control
+          </h2>
+          <div className="flex w-full justify-center">
+            <div className="w-full">
+              <Timer />
             </div>
           </div>
-        </Card>
-        <ConnectionDebug />
+        </div>
       </Card>
 
       <style jsx>{`

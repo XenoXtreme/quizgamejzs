@@ -163,8 +163,8 @@ export default function Stopwatch() {
                                 const totalSec = Math.floor(lap / 100);
                                 const ms = lap % 100;
                                 return (
-                                    <div key={idx} className="flex justify-between px-2 py-1 bg-indigo-50 rounded">
-                                        <span className="font-medium text-indigo-800">Lap {laps.length - idx}</span>
+                                    <div key={idx} className="flex justify-between px-2 py-1 bg-indigo-50 dark:bg-indigo-800 dark:text-amber-500 rounded">
+                                        <span className="font-medium dark:text-white">Lap {laps.length - idx}</span>
                                         <span className="font-mono">{formatTime(totalSec, ms)}</span>
                                     </div>
                                 );

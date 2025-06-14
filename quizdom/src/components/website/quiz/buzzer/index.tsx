@@ -16,7 +16,7 @@ export default function BuzzerPage() {
             <AdminPanel />
           ) : (
             <>
-              <h1 className="text-2xl font-bold mb-6 text-center">
+              <h1 className="text-2xl font-bold mb-6 text-center dark:text-white">
                 Team Buzzer
               </h1>
               <Buzzer />

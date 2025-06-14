@@ -285,10 +285,10 @@ export default function QuizTimer() {
     };
 
     return (
-        <div className="mt-6 px-2 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 p-4 sm:p-8">
+        <div className="mt-6 px-2 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-extrabold text-center mb-2 text-indigo-900 drop-shadow">Quiz Timer</h1>
-                <p className="text-center text-gray-600 mb-8">Set, save, and manage timers for your quiz rounds</p>
+                <h1 className="text-3xl font-extrabold text-center mb-2 text-indigo-900 dark:text-indigo-100 drop-shadow">Quiz Timer</h1>
+                <p className="text-center text-gray-600 dark:text-gray-300 mb-8">Set, save, and manage timers for your quiz rounds</p>
 
                 {/* Timer Direction Toggle */}
                 <div className="flex gap-4 mb-6 justify-center">
@@ -312,15 +312,15 @@ export default function QuizTimer() {
 
                 {/* Main Timer Card or Stopwatch */}
                 {direction === "countdown" ? (
-                    <Card className="mb-8 shadow-2xl border-2 border-indigo-100 bg-white rounded-2xl">
+                    <Card className="mb-8 shadow-2xl border-2 border-indigo-100 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl">
                         <div className="flex flex-col items-center">
                             {/* Timer Display */}
                             <div className="relative w-72 h-72 mb-6">
                                 {/* Circular Progress Background */}
-                                <div className="absolute inset-0 rounded-full bg-gray-200 shadow-inner"></div>
+                                <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-800 shadow-inner"></div>
                                 {/* Circular Progress Indicator */}
                                 <div
-                                    className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-pink-300 transition-all duration-700"
+                                    className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-pink-300 dark:from-indigo-700 dark:to-pink-800 transition-all duration-700"
                                     style={{
                                         clipPath: `circle(${progressPercentage}% at center)`,
                                         opacity: 0.25
@@ -328,10 +328,10 @@ export default function QuizTimer() {
                                 ></div>
                                 {/* Timer Value Display */}
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div className="text-4xl sm:text-5xl font-extrabold text-indigo-700 drop-shadow-lg tracking-widest select-none">
+                                    <div className="text-4xl sm:text-5xl font-extrabold text-indigo-700 dark:text-indigo-200 drop-shadow-lg tracking-widest select-none">
                                         {formatTime(hours, minutes, seconds)}
                                     </div>
-                                    <div className="mt-2 text-indigo-500 font-medium">
+                                    <div className="mt-2 text-indigo-500 dark:text-indigo-300 font-medium">
                                         Remaining
                                     </div>
                                     {remainingTimeInSeconds === 0 && !isRunning && (
@@ -363,8 +363,10 @@ export default function QuizTimer() {
                                     onClick={handleStart}
                                     size="lg"
                                 >
-                                    <HiPlay className="mr-2 h-5 w-5" />
-                                    {isPaused ? "Resume" : "Start"}
+                                    <span className="flex items-center">
+                                        <HiPlay className="mr-2 h-5 w-5" />
+                                        {isPaused ? "Resume" : "Start"}
+                                    </span>
                                 </Button>
                                 <Button
                                     className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition"
@@ -400,15 +402,15 @@ export default function QuizTimer() {
                             <Button
                                 color="light"
                                 onClick={() => setShowSettings(!showSettings)}
-                                className="cursor-pointer mb-4 hover:ring-2 hover:ring-indigo-200 transition"
+                                className="cursor-pointer mb-4 hover:ring-2 hover:ring-indigo-200 dark:hover:ring-indigo-700 transition"
                             >
                                 <HiAdjustments className="mr-2 h-5 w-5" />
                                 {showSettings ? "Hide Settings" : "Show Settings"}
                             </Button>
                             {/* Timer Settings */}
                             {showSettings && (
-                                <div className="w-full space-y-4 border-t pt-4">
-                                    <h3 className="text-lg font-semibold text-center text-indigo-700">Timer Settings</h3>
+                                <div className="w-full space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                    <h3 className="text-lg font-semibold text-center text-indigo-700 dark:text-indigo-200">Timer Settings</h3>
                                     {/* Input Fields for Timer */}
                                     <div className="grid grid-cols-3 gap-4">
                                         <div>
@@ -494,7 +496,7 @@ export default function QuizTimer() {
                                         </div>
                                     </div>
                                     {/* Save Timer */}
-                                    <div className="pt-2 border-t">
+                                    <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                                         <Label htmlFor="timerName" className="mb-2 block">Save Current Timer</Label>
                                         <div className="flex gap-2">
                                             <TextInput
@@ -524,25 +526,25 @@ export default function QuizTimer() {
 
                 {/* Saved Timers Card */}
                 {savedTimers.length > 0 && (
-                    <Card className="shadow-lg bg-white">
+                    <Card className="shadow-lg bg-white dark:bg-gray-900">
                         <div>
-                            <h3 className="text-xl font-semibold mb-4 text-indigo-700">Saved Timers</h3>
+                            <h3 className="text-xl font-semibold mb-4 text-indigo-700 dark:text-indigo-200">Saved Timers</h3>
                             <div className="space-y-3">
                                 {savedTimers.map((timer, index) => {
                                     const h = Math.floor(timer.timeInSeconds / 3600);
                                     const m = Math.floor((timer.timeInSeconds % 3600) / 60);
                                     const s = timer.timeInSeconds % 60;
                                     return (
-                                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                             <div>
-                                                <p className="font-medium text-indigo-800">{timer.name}</p>
-                                                <p className="text-sm text-gray-600">{formatTime(h, m, s)}</p>
+                                                <p className="font-medium text-indigo-800 dark:text-indigo-100">{timer.name}</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">{formatTime(h, m, s)}</p>
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
                                                     size="xs"
                                                     color="info"
-                                                    className="cursor-pointer hover:bg-indigo-600 transition"
+                                                    className="cursor-pointer hover:bg-indigo-600 transition dark:text-white"
                                                     onClick={() => handleLoadTimer(timer.timeInSeconds)}
                                                 >
                                                     Load
@@ -550,7 +552,7 @@ export default function QuizTimer() {
                                                 <Button
                                                     size="xs"
                                                     color="failure"
-                                                    className="cursor-pointer hover:bg-red-700 transition"
+                                                    className="cursor-pointer hover:bg-red-700 transition dark:text-white"
                                                     onClick={() => handleDeleteTimer(index)}
                                                 >
                                                     Delete
@@ -568,18 +570,19 @@ export default function QuizTimer() {
             {showToast && (
                 <div className="fixed bottom-4 right-4 z-50">
                     <Toast>
-                        <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${toastType === "success" ? "bg-green-100 text-green-500" :
-                            toastType === "error" ? "bg-red-100 text-red-500" :
-                                toastType === "warning" ? "bg-yellow-100 text-yellow-500" :
-                                    "bg-blue-100 text-blue-500"
-                            }`}>
+                        <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                            toastType === "success" ? "bg-green-100 dark:bg-green-900 text-green-500" :
+                            toastType === "error" ? "bg-red-100 dark:bg-red-900 text-red-500" :
+                            toastType === "warning" ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-500" :
+                            "bg-blue-100 dark:bg-blue-900 text-blue-500"
+                        }`}>
                             {toastType === "success" && <HiSave className="h-5 w-5" />}
                             {toastType === "error" && <span>❌</span>}
                             {toastType === "warning" && <HiClock className="h-5 w-5" />}
                             {toastType === "info" && <span>ℹ️</span>}
                         </div>
-                        <div className="ml-3 text-sm font-normal">{toastMessage}</div>
-                        <ToastToggle onClick={() => setShowToast(false)} />
+                        <div className="ml-3 text-sm font-normal dark:text-gray-100">{toastMessage}</div>
+                        <ToastToggle className="cursor-pointer" onClick={() => setShowToast(false)} />
                     </Toast>
                 </div>
             )}

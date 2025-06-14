@@ -35,7 +35,54 @@ export default function ConnectionDebug() {
       <Card className="bg-gray-900/90 text-white backdrop-blur-sm shadow-xl border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${debugInfo.socketConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <div className="relative w-3 h-3 mr-2">
+              <span
+              className={`absolute inset-0 rounded-full ${
+                debugInfo.socketConnected ? 'bg-green-500' : 'bg-red-500'
+              }`}
+              ></span>
+              <span
+              className={`absolute inset-0 rounded-full pointer-events-none ${
+                debugInfo.socketConnected ? 'animate-outline-pulse-green' : 'animate-outline-pulse-red'
+              }`}
+              ></span>
+            </div>
+            <style jsx global>{`
+              @keyframes outlinePulseGreen {
+              0% {
+                box-shadow: 0 0 0 0 rgba(34,197,94,0.7);
+                opacity: 1;
+              }
+              70% {
+                box-shadow: 0 0 0 8px rgba(255,255,255,0);
+                opacity: 0.7;
+              }
+              100% {
+                box-shadow: 0 0 0 0 rgba(255,255,255,0);
+                opacity: 0;
+              }
+              }
+              @keyframes outlinePulseRed {
+              0% {
+                box-shadow: 0 0 0 0 rgba(239,68,68,0.7);
+                opacity: 1;
+              }
+              70% {
+                box-shadow: 0 0 0 8px rgba(255,255,255,0);
+                opacity: 0.7;
+              }
+              100% {
+                box-shadow: 0 0 0 0 rgba(255,255,255,0);
+                opacity: 0;
+              }
+              }
+              .animate-outline-pulse-green {
+              animation: outlinePulseGreen 1.2s infinite;
+              }
+              .animate-outline-pulse-red {
+              animation: outlinePulseRed 1.2s infinite;
+              }
+            `}</style>
             <h3 className="text-lg font-semibold">Connection Debug</h3>
           </div>
           <button

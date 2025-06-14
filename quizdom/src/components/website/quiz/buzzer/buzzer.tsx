@@ -114,7 +114,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
   if (!team) {
     return (
       <div className="flex h-32 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-indigo-500 dark:border-indigo-300"></div>
       </div>
     );
   }
@@ -123,16 +123,16 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
     <div className={nunito.className}>
       <div className="flex flex-col items-center gap-6">
         {!isAdmin && (
-          <Card className="w-full">
+          <Card className="w-full transition-colors duration-300">
             <div className="flex flex-col items-center p-4">
-              <h2 className="mb-6 text-xl font-bold text-indigo-700">
+              <h2 className="mb-6 text-xl font-bold text-indigo-700 dark:text-indigo-200">
                 <u>Team:</u> {team.team}
               </h2>
 
               <Badge
                 color={buzzerPressed ? "failure" : "success"}
                 size="xl"
-                className="mb-6 rounded-full px-4 py-2"
+                className="mb-6 rounded-full px-4 py-2 dark:bg-opacity-80"
               >
                 {buzzerPressed ? "Buzzer Pressed" : "Buzzer Ready"}
               </Badge>
@@ -140,8 +140,8 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
               <div
                 className={`mb-6 flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-lg transition-all duration-500 ${
                   buzzerPressed
-                    ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600"
-                    : "bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500"
+                    ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600 dark:from-red-700 dark:to-red-900"
+                    : "bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 dark:from-green-700 dark:to-green-900"
                 }`}
               >
                 <p className="text-2xl font-bold">
@@ -156,7 +156,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
                   buzzerPressed
                     ? "cursor-not-allowed"
                     : "hover:scale-105 active:scale-95"
-                }`}
+                } dark:text-white`}
                 color={buzzerPressed ? "gray" : "blue"}
                 size="xl"
               >
@@ -170,7 +170,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
           <div className="mt-4 flex w-full justify-center">
             <Button
               onClick={handleReset}
-              className="h-12 w-48 transform cursor-pointer rounded-full text-lg font-bold transition-all duration-300 hover:scale-105 active:scale-95"
+              className="h-12 w-48 transform cursor-pointer rounded-full text-lg font-bold transition-all duration-300 hover:scale-105 active:scale-95 dark:text-white"
               color="warning"
               size="lg"
             >
@@ -192,7 +192,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
         )}
 
         {error && (
-          <div className="mt-4 w-full rounded-md border-l-4 border-red-500 bg-red-100 p-4 text-red-700 shadow-md">
+          <div className="mt-4 w-full rounded-md border-l-4 border-red-500 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 text-red-700 dark:border-red-400 shadow-md transition-colors duration-300">
             <div className="flex items-center">
               <svg
                 className="mr-2 h-6 w-6"
