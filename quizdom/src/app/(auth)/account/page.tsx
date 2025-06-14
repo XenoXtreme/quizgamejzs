@@ -1,4 +1,4 @@
-import Account from "@/components/website/auth/logged";
+import Account from "@/components/website/auth/account";
 
 export default function Page() {
   return (
