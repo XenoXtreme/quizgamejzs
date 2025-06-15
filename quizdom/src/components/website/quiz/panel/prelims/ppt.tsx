@@ -24,16 +24,18 @@ export default function PPTViewer({ category }: { category: string }) {
   }
 
   return (
-    <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl bg-white/70 dark:bg-slate-900/80 shadow-xl backdrop-blur-lg p-6 transition-all">
-      <div className="mb-4 flex gap-2 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-md px-4 py-3 backdrop-blur-md">
+    <div className="mt-6 flex flex-col items-center gap-4 rounded-none bg-white/70 p-2 shadow-xl backdrop-blur-lg transition-all sm:rounded-2xl sm:p-6 dark:bg-slate-900/80">
+      <div className="mb-4 flex w-full gap-2 overflow-x-auto rounded-xl bg-white/60 px-2 py-2 shadow-md backdrop-blur-md sm:w-auto sm:px-4 sm:py-3 dark:bg-slate-800/60">
         <Button
           onClick={() => setView("question")}
           color={view === "question" ? "alternative" : "light"}
           pill
           size="sm"
           disabled={view === "question"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
-            view === "question" ? "ring-2 ring-orange-400 scale-105" : "hover:scale-105"
+          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
+            view === "question"
+              ? "scale-105 ring-2 ring-orange-400"
+              : "hover:scale-105"
           }`}
         >
           Show Question PPT
@@ -44,8 +46,10 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "answer"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-green-400 ${
-            view === "answer" ? "ring-2 ring-green-400 scale-105" : "hover:scale-105"
+          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-green-400 ${
+            view === "answer"
+              ? "scale-105 ring-2 ring-green-400"
+              : "hover:scale-105"
           }`}
         >
           Show Answer PPT
@@ -56,14 +60,16 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "audience"}
-          className={`cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
-            view === "audience" ? "ring-2 ring-purple-400 scale-105" : "hover:scale-105"
+          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
+            view === "audience"
+              ? "scale-105 ring-2 ring-purple-400"
+              : "hover:scale-105"
           }`}
         >
           Questions for Audience
         </Button>
       </div>
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-full sm:max-w-4xl">
         <PptxViewer src={pptUrl} filename={filename} />
       </div>
     </div>

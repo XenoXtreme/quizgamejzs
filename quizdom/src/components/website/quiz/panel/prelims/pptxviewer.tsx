@@ -68,8 +68,7 @@ export default function PptxViewer({
   return (
     <div
       ref={containerRef}
-      className={`mx-auto mb-8 flex w-full max-w-3xl flex-col items-center rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-slate-900/80 shadow-2xl backdrop-blur-lg transition-all
-        ${isFullscreen ? "fixed top-0 left-0 z-50 h-screen w-screen max-w-none bg-white/90 dark:bg-slate-900/95" : ""}`}
+      className={`mx-auto mb-8 flex w-full max-w-3xl flex-col items-center rounded-2xl border border-gray-200 bg-white/70 shadow-2xl backdrop-blur-lg transition-all dark:border-gray-700 dark:bg-slate-900/80 ${isFullscreen ? "fixed top-0 left-0 z-50 h-screen w-screen max-w-none bg-white/90 dark:bg-slate-900/95" : ""} max-w-full rounded-none sm:max-w-3xl sm:rounded-2xl`}
       style={{
         width: isFullscreen
           ? "100vw"
@@ -87,43 +86,43 @@ export default function PptxViewer({
       }}
     >
       {/* Header */}
-      <div className="relative flex w-full items-center rounded-t-2xl border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-orange-400/80 via-pink-400/60 to-red-400/80 dark:from-orange-900/80 dark:via-pink-900/60 dark:to-red-900/80 px-6 py-4 shadow-sm">
+      <div className="relative flex w-full items-center rounded-t-2xl border-b border-gray-100 bg-gradient-to-r from-orange-400/80 via-pink-400/60 to-red-400/80 px-3 py-3 shadow-sm sm:rounded-t-2xl sm:px-6 sm:py-4 dark:border-gray-700 dark:from-orange-900/80 dark:via-pink-900/60 dark:to-red-900/80">
         <FontAwesomeIcon
           icon={faFilePowerpoint}
-          className="mr-2 h-6 w-6 text-orange-600 dark:text-orange-400 drop-shadow"
+          className="mr-2 h-5 w-5 text-orange-600 drop-shadow sm:h-6 sm:w-6 dark:text-orange-400"
         />
-        <span className="flex-1 truncate font-semibold text-gray-800 dark:text-gray-100 text-lg tracking-wide">
+        <span className="flex-1 truncate text-base font-semibold tracking-wide text-gray-800 sm:text-lg dark:text-gray-100">
           {filename || src.split("/").pop() || "Presentation.pptx"}
         </span>
-        <span className="ml-2 text-xs text-gray-600 dark:text-gray-300 font-medium bg-white/40 dark:bg-slate-800/40 px-2 py-1 rounded">
+        <span className="ml-2 rounded bg-white/40 px-2 py-1 text-[10px] font-medium text-gray-600 sm:text-xs dark:bg-slate-800/40 dark:text-gray-300">
           PPTX Viewer
         </span>
         {/* Fullscreen Button */}
         <button
           type="button"
           aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-          className="ml-3 cursor-pointer rounded-full p-2 transition-all hover:bg-orange-200/70 dark:hover:bg-orange-900/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="ml-2 cursor-pointer rounded-full p-1.5 transition-all hover:bg-orange-200/70 focus:ring-2 focus:ring-orange-400 focus:outline-none sm:ml-3 sm:p-2 dark:hover:bg-orange-900/40"
           onClick={toggleFullscreen}
         >
           <FontAwesomeIcon
             icon={isFullscreen ? faCompress : faExpand}
-            className="text-lg text-orange-600 dark:text-orange-300"
+            className="text-base text-orange-600 sm:text-lg dark:text-orange-300"
           />
         </button>
       </div>
 
       {/* Main content */}
-      <div className="relative flex min-h-[250px] w-full flex-1 items-center justify-center">
+      <div className="relative flex min-h-[180px] w-full flex-1 items-center justify-center sm:min-h-[250px]">
         <div
           className="w-full"
           style={{
             minHeight: isFullscreen
-              ? "calc(100vh - 100px)"
+              ? "calc(100vh - 60px)"
               : typeof height === "number"
                 ? `${height}px`
                 : height,
             height: isFullscreen
-              ? "calc(100vh - 100px)"
+              ? "calc(100vh - 60px)"
               : typeof height === "number"
                 ? `${height}px`
                 : height,
@@ -143,14 +142,15 @@ export default function PptxViewer({
               DocViewerRenderers
             }
             style={{
-              width: "100%",
+              width: "100vw",
+              maxWidth: "100%",
               minHeight: isFullscreen
-                ? "calc(100vh - 100px)"
+                ? "calc(100vh - 60px)"
                 : typeof height === "number"
                   ? `${height}px`
                   : height,
               height: isFullscreen
-                ? "calc(100vh - 100px)"
+                ? "calc(100vh - 60px)"
                 : typeof height === "number"
                   ? `${height}px`
                   : height,

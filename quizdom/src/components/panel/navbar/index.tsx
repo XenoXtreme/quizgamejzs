@@ -21,6 +21,7 @@ import {
   DropdownItem,
   DropdownHeader,
   DropdownDivider,
+  HR,
 } from "flowbite-react";
 
 export default function AppBar() {
@@ -117,8 +118,9 @@ export default function AppBar() {
       <div className="flex items-center gap-2 md:order-2">
         <DarkThemeToggle className="cursor-pointer rounded-lg p-2.5 text-gray-600 hover:text-gray-800 focus:ring-4 focus:ring-gray-200 dark:text-gray-300 dark:hover:text-white dark:focus:ring-gray-700" />
 
+        {/* Desktop user info */}
         {isAuthenticated && (
-          <div className="mr-2 hidden cursor-pointer md:flex md:flex-col md:items-end">
+          <div className="mr-2 hidden md:flex md:flex-col md:items-end">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {team?.team || "Team Member"}
             </span>
@@ -128,40 +130,59 @@ export default function AppBar() {
           </div>
         )}
 
+        {/* Desktop Dropdown */}
         {isAuthenticated ? (
-          <Dropdown
-            arrowIcon={true}
-            inline
-            label={"Controls"}
-            className="cursor-pointer"
-          >
-            <DropdownHeader>
-              <span className="block text-sm font-semibold">
-                {team?.team || "User"}
-              </span>
-              <span className="block truncate text-sm font-medium">
-                <b>
-                  <u>ROLE:</u>
-                </b>{" "}
-                {team?.role || "Member"}
-              </span>
-            </DropdownHeader>
-            <DropdownItem as={Link} href="/account">
-              Profile
-            </DropdownItem>
-            <DropdownItem as={Link} href={getBuzzerURL()}>
-              Buzzer
-            </DropdownItem>
-            {team?.role === "ADMIN" && (
-              <DropdownItem as={Link} href="/quiz/timer">
-                Timer
+          <div className="hidden md:block">
+            <Dropdown
+              arrowIcon={true}
+              label={"Controls"}
+              className="cursor-pointer"
+            >
+              <DropdownHeader>
+                <span className="block text-sm font-semibold dark:text-white">
+                  {team?.team || "User"}
+                </span>
+                <span className="block truncate text-sm font-medium dark:text-gray-300">
+                  <b>
+                    <u>ROLE:</u>
+                  </b>{" "}
+                  {team?.role || "Member"}
+                </span>
+              </DropdownHeader>
+              <DropdownItem
+                as={Link}
+                href="/account"
+                className="dark:text-gray-200"
+              >
+                Profile
               </DropdownItem>
-            )}
-            <DropdownDivider />
-            <DropdownItem onClick={handleLogOut} disabled={isLoggingOut}>
-              {isLoggingOut ? "Logging out..." : "Sign out"}
-            </DropdownItem>
-          </Dropdown>
+              <DropdownItem
+                as={Link}
+                href={getBuzzerURL()}
+                className="dark:text-gray-200"
+              >
+                Buzzer
+              </DropdownItem>
+              {team?.role === "ADMIN" && (
+                <DropdownItem
+                  as={Link}
+                  href="/quiz/timer"
+                  className="dark:text-gray-200"
+                >
+                  Timer
+                </DropdownItem>
+              )}
+              <DropdownDivider />
+              <DropdownItem
+                
+                onClick={handleLogOut}
+                disabled={isLoggingOut}
+                className="dark:text-gray-200"
+              >
+                {isLoggingOut ? "Logging out..." : "Sign out"}
+              </DropdownItem>
+            </Dropdown>
+          </div>
         ) : null}
 
         <NavbarToggle className="ml-1 focus:ring-2 focus:ring-blue-300 dark:text-white dark:focus:ring-blue-600" />
@@ -202,8 +223,74 @@ export default function AppBar() {
           >
             QNA
           </NavbarLink>
-
-          {!isAuthenticated ? (
+          {/* Mobile Dropdown */}
+          <HR />
+          {isAuthenticated && (
+            <div className="mb-2 block w-full md:hidden">
+              <div className="mb-2 flex flex-col items-start px-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {team?.team || "Team Member"}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {team?.school || "Quizdom"}
+                </span>
+              </div>
+              <Dropdown
+                arrowIcon={true}
+                label={"Controls"}
+                className="w-full cursor-pointer dark:bg-gray-900"
+                style={{ width: "100%" }}
+              >
+                <DropdownHeader>
+                  <span className="block text-sm font-semibold dark:text-white">
+                    {team?.team || "User"}
+                  </span>
+                  <span className="block truncate text-sm font-medium dark:text-gray-300">
+                    <b>
+                      <u>ROLE:</u>
+                    </b>{" "}
+                    {team?.role || "Member"}
+                  </span>
+                </DropdownHeader>
+                <DropdownItem
+                  as={Link}
+                  href="/account"
+                  className="dark:text-gray-200"
+                >
+                  Profile
+                </DropdownItem>
+                <DropdownItem
+                  as={Link}
+                  href={getBuzzerURL()}
+                  className="dark:text-gray-200"
+                >
+                  Buzzer
+                </DropdownItem>
+                {team?.role === "ADMIN" && (
+                  <DropdownItem
+                    as={Link}
+                    href="/quiz/timer"
+                    className="dark:text-gray-200"
+                  >
+                    Timer
+                  </DropdownItem>
+                )}
+              </Dropdown>
+              <HR />
+            </div>
+          )}
+          {isAuthenticated ? (
+            <div className="mt-2 md:hidden">
+              <Button
+                onClick={handleLogOut}
+                disabled={isLoggingOut}
+                color="red"
+                className="w-full rounded-lg px-5 py-2.5 text-sm font-medium"
+              >
+                {isLoggingOut ? "Logging out..." : "Sign out"}
+              </Button>
+            </div>
+          ) : (
             <div className="mt-2 flex flex-col gap-2 md:mt-0 md:ml-auto md:flex-row">
               <Button
                 as={Link}
@@ -219,17 +306,6 @@ export default function AppBar() {
                 className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 md:w-auto dark:focus:ring-blue-800"
               >
                 Register
-              </Button>
-            </div>
-          ) : (
-            <div className="mt-2 md:hidden">
-              <Button
-                onClick={handleLogOut}
-                disabled={isLoggingOut}
-                color="failure"
-                className="w-full cursor-pointer rounded-lg px-5 py-2.5 text-sm font-medium text-white"
-              >
-                {isLoggingOut ? "Logging out..." : "Sign out"}
               </Button>
             </div>
           )}
