@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button, Card, Spinner, Badge, Modal, ModalBody, ModalHeader } from "flowbite-react";
+import {
+  Button,
+  Card,
+  Spinner,
+  Badge,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "flowbite-react";
 import {
   HiArrowLeft,
   HiArrowRight,
@@ -14,6 +22,7 @@ import {
 import Component from "./component";
 import { ContextType } from "@/context/auth/context";
 import { useAuthContext } from "@/context/auth/state";
+import { General } from "@/types/qns-structures";
 
 interface QNSProps {
   category: string;
@@ -64,12 +73,45 @@ export default function QuestionPanel({
   const context = useAuthContext();
   const { team }: ContextType = context;
 
+  // Helper: Get OYF question keys in order
+  const getOYFKeys = () => General.oyf.map((q) => q.q_no);
+
   // Check if navigation should be disabled
-  const isPrevDisabled = Number(qno) <= 1;
-  const isNextDisabled = limit ? Number(qno) >= Number(limit) : false;
+  const isPrevDisabled =
+    round === "oyf" ? qno === "literature" : Number(qno) <= 1;
+
+  const isNextDisabled =
+    round === "oyf"
+      ? qno === "mystery"
+      : limit
+        ? Number(qno) >= Number(limit)
+        : false;
+
+  // Get previous URL for OYF round
+  const getPrevUrlForOYF = () => {
+    const keys = getOYFKeys();
+    const idx = keys.indexOf(qno);
+    if (idx > 0) {
+      return path.replace(`${qno}`, `${keys[idx - 1]}`);
+    }
+    return "";
+  };
+
+  // Get next URL for OYF round
+  const getNextUrlForOYF = () => {
+    const keys = getOYFKeys();
+    const idx = keys.indexOf(qno);
+    if (idx !== -1 && idx < keys.length - 1) {
+      return path.replace(`${qno}`, `${keys[idx + 1]}`);
+    }
+    return "";
+  };
 
   // Navigation URL helpers
   const getNextURL = () => {
+    if (round === "oyf") {
+      return getNextUrlForOYF();
+    }
     if (!isNextDisabled) {
       return path.replace(`${qno}`, `${Number(qno) + 1}`);
     }
@@ -77,6 +119,9 @@ export default function QuestionPanel({
   };
 
   const getPrevURL = () => {
+    if (round === "oyf") {
+      return getPrevUrlForOYF();
+    }
     if (!isPrevDisabled) {
       return path.replace(`${qno}`, `${Number(qno) - 1}`);
     }
@@ -247,35 +292,54 @@ export default function QuestionPanel({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 dark:from-gray-900 dark:to-gray-950 p-2 sm:p-4 md:p-8">
-      <Card className="mx-auto w-full max-w-6xl overflow-visible rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <div className="mb-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 p-2 sm:p-4 md:p-8 dark:from-gray-900 dark:to-gray-950">
+      <Card className="mx-auto w-full max-w-6xl overflow-visible rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900">
+        <div className="mb-4 flex flex-col items-center justify-between gap-2 sm:flex-row">
           <div className="flex flex-wrap items-center space-x-2">
-            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
+            <Badge
+              color={showAns ? "success" : "info"}
+              size="sm"
+              className="mb-1 cursor-pointer rounded-lg px-3 py-1 shadow sm:mb-0"
+            >
               {showAns ? "Answer" : "Question"}
             </Badge>
-            <Badge color="purple" size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
+            <Badge
+              color="purple"
+              size="sm"
+              className="mb-1 cursor-pointer rounded-lg px-3 py-1 shadow sm:mb-0"
+            >
               {getRoundFullName(round)}
             </Badge>
-            <Badge color="dark" size="sm" className="px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
+            <Badge
+              color="dark"
+              size="sm"
+              className="mb-1 rounded-lg px-3 py-1 shadow sm:mb-0"
+            >
               <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
             </Badge>
           </div>
-          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
-            Question {qno} {limit ? <span className="text-gray-400 dark:text-gray-500">of {limit}</span> : ""}
+          <div className="text-xs font-medium text-gray-500 sm:text-sm dark:text-gray-400">
+            Question {qno}{" "}
+            {limit ? (
+              <span className="text-gray-400 dark:text-gray-500">
+                of {limit}
+              </span>
+            ) : (
+              ""
+            )}
           </div>
         </div>
 
-        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-1 sm:p-2 md:p-6">
+        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 p-1 sm:p-2 md:p-6 dark:from-gray-800 dark:to-gray-900">
           <Component {...getComponentProps()} />
         </div>
 
-        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 mt-6 sm:mt-8 w-full">
+        <div className="mt-6 flex w-full flex-col flex-wrap items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
           <Button
             color="light"
             onClick={goToPrevious}
             disabled={isPrevDisabled}
-            className={`rounded-lg px-4 sm:px-6 py-2 font-medium transition-all ${isPrevDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'} w-full sm:w-auto`}
+            className={`rounded-lg px-4 py-2 font-medium transition-all sm:px-6 ${isPrevDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer shadow hover:bg-gray-200 dark:hover:bg-gray-800"} w-full sm:w-auto`}
           >
             <HiArrowLeft className="mr-2" />
             Previous
@@ -283,7 +347,7 @@ export default function QuestionPanel({
 
           <Button
             onClick={toggleAnswer}
-            className="cursor-pointer px-6 sm:px-8 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow hover:from-blue-600 hover:to-pink-600 transition-all w-full sm:w-auto"
+            className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 px-6 py-2 font-semibold text-white shadow transition-all hover:from-blue-600 hover:to-pink-600 sm:w-auto sm:px-8"
           >
             <HiSwitchHorizontal className="mr-2" />
             Show {showAns ? "Question" : "Answer"}
@@ -293,7 +357,7 @@ export default function QuestionPanel({
             color="light"
             onClick={goToNext}
             disabled={isNextDisabled}
-            className={`rounded-lg px-4 sm:px-6 py-2 font-medium transition-all ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'} w-full sm:w-auto`}
+            className={`rounded-lg px-4 py-2 font-medium transition-all sm:px-6 ${isNextDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer shadow hover:bg-gray-200 dark:hover:bg-gray-800"} w-full sm:w-auto`}
           >
             Next
             <HiArrowRight className="ml-2" />
@@ -314,21 +378,34 @@ export default function QuestionPanel({
                 Do you want to show the {showAns ? "question" : "answer"}?
               </h3>
               <div className="mt-6 flex justify-center gap-4">
-                <Button color="red" className="cursor-pointer" onClick={handleModalCancel}>
+                <Button
+                  color="red"
+                  className="cursor-pointer"
+                  onClick={handleModalCancel}
+                >
                   Cancel
                 </Button>
-                <Button  color="default" className="cursor-pointer" onClick={handleModalConfirm}>
+                <Button
+                  color="default"
+                  className="cursor-pointer"
+                  onClick={handleModalConfirm}
+                >
                   Yes, show {showAns ? "question" : "answer"}
                 </Button>
               </div>
             </div>
           </ModalBody>
         </Modal>
-        <div className="mt-4 sm:mt-6 text-center">
-          <div className="flex flex-col sm:flex-row items-center justify-center text-xs text-gray-500 dark:text-gray-400 gap-1 sm:gap-2">
-            <span className="flex items-center"><HiInformationCircle className="mr-1" />Use keyboard shortcuts:</span>
-            <span className="font-semibold mx-1">Left/Right arrows</span> to navigate,
-            <span className="font-semibold mx-1">A</span> to toggle question/answer
+        <div className="mt-4 text-center sm:mt-6">
+          <div className="flex flex-col items-center justify-center gap-1 text-xs text-gray-500 sm:flex-row sm:gap-2 dark:text-gray-400">
+            <span className="flex items-center">
+              <HiInformationCircle className="mr-1" />
+              Use keyboard shortcuts:
+            </span>
+            <span className="mx-1 font-semibold">Left/Right arrows</span> to
+            navigate,
+            <span className="mx-1 font-semibold">A</span> to toggle
+            question/answer
           </div>
         </div>
       </Card>
