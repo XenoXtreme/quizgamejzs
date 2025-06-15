@@ -99,16 +99,16 @@ export default function Home() {
   })
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-2 sm:px-4 py-8 sm:py-12">
       <div className="absolute inset-0 z-0 overflow-hidden opacity-30 dark:opacity-20">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 -left-4 w-44 sm:w-72 h-44 sm:h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 -right-4 w-44 sm:w-72 h-44 sm:h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-10 sm:left-20 w-44 sm:w-72 h-44 sm:h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
       
-      <Card className="w-full max-w-md shadow-xl border dark:border-gray-700 bg-white dark:bg-gray-800 z-10">
+      <Card className="w-full max-w-xs sm:max-w-md shadow-xl border dark:border-gray-700 bg-white dark:bg-gray-800 z-10">
         <div className="flex flex-col items-center mb-4">
-          <div className="relative h-16 w-16 mb-2">
+          <div className="relative h-12 w-12 sm:h-16 sm:w-16 mb-2">
             <Image
               src="/icon.png"
               alt="Quizdom Logo"
@@ -117,18 +117,18 @@ export default function Home() {
               className="object-contain"
             />
           </div>
-          <h2 className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 dark:from-purple-400 dark:to-blue-300">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 dark:from-purple-400 dark:to-blue-300">
             Welcome Back
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 text-center mt-1">
+          <p className="text-gray-500 dark:text-gray-400 text-center mt-1 text-xs sm:text-base">
             Sign in to your Quizdom account
           </p>
         </div>
         
-        <form className="flex flex-col gap-4">
+        <form className="flex flex-col gap-3 sm:gap-4">
           <div>
             <div className="mb-2 flex justify-between">
-              <Label htmlFor="_id" className="text-gray-700 dark:text-gray-300">Team ID</Label>
+              <Label htmlFor="_id" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">Team ID</Label>
             </div>
             <TextInput
               id="_id"
@@ -169,7 +169,7 @@ export default function Home() {
               >
                 {showPassword ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 ) : (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -196,7 +196,7 @@ export default function Home() {
             )}
           </Button>
           
-          <div className="text-sm text-center text-gray-500 dark:text-gray-400 mt-2">
+          <div className="text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 mt-2">
             Don't have an account yet?{" "}
             <Link href="/register" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">
               Register now

@@ -247,35 +247,35 @@ export default function QuestionPanel({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 dark:from-gray-900 dark:to-gray-950 p-4 md:p-8">
-      <Card className="mx-auto max-w-6xl overflow-visible rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 dark:from-gray-900 dark:to-gray-950 p-2 sm:p-4 md:p-8">
+      <Card className="mx-auto w-full max-w-6xl overflow-visible rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div className="mb-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center space-x-2">
+            <Badge color={showAns ? "success" : "info"} size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
               {showAns ? "Answer" : "Question"}
             </Badge>
-            <Badge color="purple" size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow">
+            <Badge color="purple" size="sm" className="cursor-pointer px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
               {getRoundFullName(round)}
             </Badge>
-            <Badge color="dark" size="sm" className="px-3 py-1 rounded-lg shadow">
+            <Badge color="dark" size="sm" className="px-3 py-1 rounded-lg shadow mb-1 sm:mb-0">
               <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
             </Badge>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
             Question {qno} {limit ? <span className="text-gray-400 dark:text-gray-500">of {limit}</span> : ""}
           </div>
         </div>
 
-        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-2 md:p-6">
+        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-1 sm:p-2 md:p-6">
           <Component {...getComponentProps()} />
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-4 mt-8 w-full">
+        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 mt-6 sm:mt-8 w-full">
           <Button
             color="light"
             onClick={goToPrevious}
             disabled={isPrevDisabled}
-            className={`rounded-lg px-6 py-2 font-medium transition-all ${isPrevDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'}`}
+            className={`rounded-lg px-4 sm:px-6 py-2 font-medium transition-all ${isPrevDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'} w-full sm:w-auto`}
           >
             <HiArrowLeft className="mr-2" />
             Previous
@@ -283,7 +283,7 @@ export default function QuestionPanel({
 
           <Button
             onClick={toggleAnswer}
-            className="cursor-pointer px-8 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow hover:from-blue-600 hover:to-pink-600 transition-all"
+            className="cursor-pointer px-6 sm:px-8 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow hover:from-blue-600 hover:to-pink-600 transition-all w-full sm:w-auto"
           >
             <HiSwitchHorizontal className="mr-2" />
             Show {showAns ? "Question" : "Answer"}
@@ -293,7 +293,7 @@ export default function QuestionPanel({
             color="light"
             onClick={goToNext}
             disabled={isNextDisabled}
-            className={`rounded-lg px-6 py-2 font-medium transition-all ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'}`}
+            className={`rounded-lg px-4 sm:px-6 py-2 font-medium transition-all ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer shadow'} w-full sm:w-auto`}
           >
             Next
             <HiArrowRight className="ml-2" />
@@ -324,10 +324,11 @@ export default function QuestionPanel({
             </div>
           </ModalBody>
         </Modal>
-        <div className="mt-6 text-center">
-          <div className="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
-            <HiInformationCircle className="mr-1" />
-            Use keyboard shortcuts: <span className="font-semibold mx-1">Left/Right arrows</span> to navigate, <span className="font-semibold mx-1">A</span> to toggle question/answer
+        <div className="mt-4 sm:mt-6 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center text-xs text-gray-500 dark:text-gray-400 gap-1 sm:gap-2">
+            <span className="flex items-center"><HiInformationCircle className="mr-1" />Use keyboard shortcuts:</span>
+            <span className="font-semibold mx-1">Left/Right arrows</span> to navigate,
+            <span className="font-semibold mx-1">A</span> to toggle question/answer
           </div>
         </div>
       </Card>

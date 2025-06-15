@@ -155,17 +155,17 @@ const CustomCarousel: React.FC<CarouselProps> = ({
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100 px-2 py-12 transition-colors duration-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-yellow-100 bg-white/90 p-8 shadow-xl backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/90">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100 px-1 sm:px-2 py-6 sm:py-12 transition-colors duration-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-yellow-100 bg-white/90 p-4 sm:p-8 shadow-xl backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/90">
         <div className="flex flex-col items-center">
-          <div className="mb-8 w-full">
+          <div className="mb-4 sm:mb-8 w-full">
             {/* Custom Carousel */}
             <CustomCarousel images={images} />
           </div>
-          <h1 className="mb-6 text-center text-4xl font-extrabold text-gray-800 drop-shadow dark:text-yellow-300">
+          <h1 className="mb-4 sm:mb-6 text-center text-2xl sm:text-4xl font-extrabold text-gray-800 drop-shadow dark:text-yellow-300">
             About Jalpaiguri Zilla School
           </h1>
-          <p className="mb-6 text-center text-lg text-gray-700 dark:text-gray-200">
+          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg text-gray-700 dark:text-gray-200">
             <span className="font-semibold text-yellow-700 dark:text-yellow-400">
               Celebrating 150 Years of Excellence!
             </span>
@@ -176,11 +176,11 @@ const About = () => {
             With a rich heritage and a commitment to excellence, Jalpaiguri
             Zilla School has been shaping young minds for generations.
           </p>
-          <div className="mb-8 w-full rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-6 shadow dark:border-yellow-600 dark:bg-gray-800">
-            <h2 className="mb-2 text-2xl font-bold text-yellow-800 dark:text-yellow-400">
+          <div className="mb-4 sm:mb-8 w-full rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 sm:p-6 shadow dark:border-yellow-600 dark:bg-gray-800">
+            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-yellow-800 dark:text-yellow-400">
               150th Anniversary Special
             </h2>
-            <p className="text-gray-700 dark:text-gray-200">
+            <p className="text-gray-700 dark:text-gray-200 text-sm sm:text-base">
               In 2026, Jalpaiguri Zilla School proudly marks its{" "}
               <span className="font-semibold">150th anniversary</span>. For a
               century and a half, we have been dedicated to nurturing talent,
@@ -188,22 +188,22 @@ const About = () => {
               celebrating this historic milestone!
             </p>
           </div>
-          <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2">
+          <div className="grid w-full grid-cols-1 gap-4 sm:gap-8 md:grid-cols-2">
             <div>
-              <h2 className="mt-4 mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
                 Our Mission
               </h2>
-              <p className="mb-6 text-gray-700 dark:text-gray-200">
+              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
                 Our mission is to provide quality education that fosters
                 intellectual growth, creativity, and character development. We
                 strive to create a nurturing environment where students are
                 encouraged to achieve their full potential and become
                 responsible citizens.
               </p>
-              <h2 className="mt-4 mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
                 Vision
               </h2>
-              <p className="mb-6 text-gray-700 dark:text-gray-200">
+              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
                 Jalpaiguri Zilla School envisions empowering students to become
                 lifelong learners and leaders, equipped with knowledge, skills,
                 and values to meet the challenges of a rapidly changing world.
@@ -212,20 +212,20 @@ const About = () => {
               </p>
             </div>
             <div>
-              <h2 className="mt-4 mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
                 History & Values
               </h2>
-              <p className="mb-6 text-gray-700 dark:text-gray-200">
+              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
                 Founded over a century ago, Jalpaiguri Zilla School has a proud
                 tradition of academic achievement and holistic development. We
                 value integrity, respect, and a passion for learning. Our
                 dedicated faculty and staff work tirelessly to ensure that every
                 student receives the guidance and support they need to succeed.
               </p>
-              <h2 className="mt-4 mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
                 Facilities
               </h2>
-              <p className="mb-6 text-gray-700 dark:text-gray-200">
+              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
                 The school campus features spacious classrooms, well-equipped
                 science and computer laboratories, a library with a rich
                 collection of books, and sports facilities that encourage
@@ -234,21 +234,21 @@ const About = () => {
               </p>
             </div>
           </div>
-          <div className="mt-8 w-full">
-            <h2 className="mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+          <div className="mt-4 sm:mt-8 w-full">
+            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
               Holistic Development
             </h2>
-            <p className="mb-6 text-gray-700 dark:text-gray-200">
+            <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
               At Jalpaiguri Zilla School, we believe in nurturing not just
               academic excellence but also creativity, leadership, and social
               responsibility. Our students participate in a wide range of
               co-curricular and extracurricular activities, including sports,
               arts, debates, and community service.
             </p>
-            <h2 className="mb-2 text-2xl font-bold text-gray-800 dark:text-yellow-300">
+            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
               Why Choose Jalpaiguri Zilla School?
             </h2>
-            <ul className="mb-8 list-inside list-disc space-y-1 text-gray-700 dark:text-gray-200">
+            <ul className="mb-6 sm:mb-8 list-inside list-disc space-y-1 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
               <li>Over 150 years of educational excellence</li>
               <li>Experienced and caring teachers</li>
               <li>Focus on both academics and co-curricular activities</li>

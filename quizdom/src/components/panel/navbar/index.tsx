@@ -39,6 +39,7 @@ export default function AppBar() {
     toast.success("Successfully logged out.");
 
     setTimeout(() => {
+      setIsLoggingOut(false);
       router.push("/login");
     }, 2000);
   };

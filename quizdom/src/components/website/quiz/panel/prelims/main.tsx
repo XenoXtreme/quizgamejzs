@@ -23,36 +23,36 @@ const nunito = Nunito({
 export default function Panel() {
   return (
     <div className={nunito.className}>
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-950 py-8 px-2">
-        <h1 className="flex items-center gap-2 text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 bg-white/80 dark:bg-gray-900/80 rounded-lg px-6 py-3 shadow mb-10 mt-4">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-950 py-6 sm:py-8 px-2">
+        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 bg-white/80 dark:bg-gray-900/80 rounded-lg px-4 sm:px-6 py-3 shadow mb-6 sm:mb-10 mt-4">
           <FontAwesomeIcon icon={faCube} />
           Category:
         </h1>
-        <section className="w-full max-w-xl grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <section className="w-full max-w-xl grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 px-2">
           {/* Intra School (Junior) */}
           <Link href="/quiz/prelims/intraschool/junior" className="group">
-            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-blue-200 dark:border-blue-900 bg-white/80 dark:bg-gray-900/80 p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[200px] min-w-[200px] h-[240px]">
+            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-blue-200 dark:border-blue-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[120px] sm:min-h-[200px] min-w-[120px] sm:min-w-[200px] h-[160px] sm:h-[240px]">
               <img
                 src="/assets/static/prelims.png"
                 loading="lazy"
                 alt="person"
-                className="w-24 h-24 object-cover rounded-xl mb-4 shadow"
+                className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
               />
-              <h1 className="text-xl font-bold text-blue-900 dark:text-blue-200 group-hover:text-blue-600 dark:group-hover:text-pink-400 transition">
+              <h1 className="text-base sm:text-xl font-bold text-blue-900 dark:text-blue-200 group-hover:text-blue-600 dark:group-hover:text-pink-400 transition">
                 Intra School (Junior)
               </h1>
             </div>
           </Link>
           {/* Intra School (Senior) */}
           <Link href="/quiz/prelims/intraschool/senior" className="group">
-            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-pink-200 dark:border-pink-900 bg-white/80 dark:bg-gray-900/80 p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[200px] min-w-[200px] h-[240px]">
+            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-pink-200 dark:border-pink-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[120px] sm:min-h-[200px] min-w-[120px] sm:min-w-[200px] h-[160px] sm:h-[240px]">
               <img
                 src="/assets/static/prelims.png"
                 loading="lazy"
                 alt="person"
-                className="w-24 h-24 object-cover rounded-xl mb-4 shadow"
+                className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
               />
-              <h1 className="text-xl font-bold text-pink-700 dark:text-pink-200 group-hover:text-pink-500 transition">
+              <h1 className="text-base sm:text-xl font-bold text-pink-700 dark:text-pink-200 group-hover:text-pink-500 transition">
                 Intra School (Senior)
               </h1>
             </div>
@@ -63,14 +63,14 @@ export default function Panel() {
               href="/quiz/prelims/interschool"
               className="group w-full sm:w-auto flex justify-center"
             >
-              <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-indigo-200 dark:border-indigo-900 bg-white/80 dark:bg-gray-900/80 p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[200px] min-w-[200px] h-[240px]">
+              <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-indigo-200 dark:border-indigo-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-8 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer aspect-square min-h-[120px] sm:min-h-[200px] min-w-[120px] sm:min-w-[200px] h-[160px] sm:h-[240px]">
                 <img
                   src="/assets/static/prelims.png"
                   loading="lazy"
                   alt="person"
-                  className="w-24 h-24 object-cover rounded-xl mb-4 shadow"
+                  className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
                 />
-                <h1 className="text-xl font-bold text-indigo-700 dark:text-indigo-200 group-hover:text-indigo-500 transition">
+                <h1 className="text-base sm:text-xl font-bold text-indigo-700 dark:text-indigo-200 group-hover:text-indigo-500 transition">
                   Inter School
                 </h1>
               </div>

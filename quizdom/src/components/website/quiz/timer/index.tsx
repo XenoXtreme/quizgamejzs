@@ -285,17 +285,17 @@ export default function QuizTimer() {
     };
 
     return (
-        <div className="mt-6 px-2 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8">
+        <div className="mt-6 px-1 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-8">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-extrabold text-center mb-2 text-indigo-900 dark:text-indigo-100 drop-shadow">Quiz Timer</h1>
-                <p className="text-center text-gray-600 dark:text-gray-300 mb-8">Set, save, and manage timers for your quiz rounds</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2 text-indigo-900 dark:text-indigo-100 drop-shadow">Quiz Timer</h1>
+                <p className="text-center text-gray-600 dark:text-gray-300 mb-8 text-sm sm:text-base">Set, save, and manage timers for your quiz rounds</p>
 
                 {/* Timer Direction Toggle */}
-                <div className="flex gap-4 mb-6 justify-center">
+                <div className="flex gap-2 sm:gap-4 mb-6 justify-center flex-wrap">
                     <Badge
                         color={direction === "countdown" ? "info" : "gray"}
                         size="xl"
-                        className={`px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "countdown" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
+                        className={`px-3 sm:px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "countdown" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
                         onClick={() => setDirection("countdown")}
                     >
                         Countdown
@@ -303,7 +303,7 @@ export default function QuizTimer() {
                     <Badge
                         color={direction === "stopwatch" ? "info" : "gray"}
                         size="xl"
-                        className={`px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "stopwatch" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
+                        className={`px-3 sm:px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "stopwatch" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
                         onClick={() => setDirection("stopwatch")}
                     >
                         Stopwatch
@@ -315,7 +315,7 @@ export default function QuizTimer() {
                     <Card className="mb-8 shadow-2xl border-2 border-indigo-100 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl">
                         <div className="flex flex-col items-center">
                             {/* Timer Display */}
-                            <div className="relative w-72 h-72 mb-6">
+                            <div className="relative w-44 h-44 sm:w-72 sm:h-72 mb-6">
                                 {/* Circular Progress Background */}
                                 <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-800 shadow-inner"></div>
                                 {/* Circular Progress Indicator */}
@@ -328,10 +328,10 @@ export default function QuizTimer() {
                                 ></div>
                                 {/* Timer Value Display */}
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div className="text-4xl sm:text-5xl font-extrabold text-indigo-700 dark:text-indigo-200 drop-shadow-lg tracking-widest select-none">
+                                    <div className="text-2xl sm:text-4xl font-extrabold text-indigo-700 dark:text-indigo-200 drop-shadow-lg tracking-widest select-none">
                                         {formatTime(hours, minutes, seconds)}
                                     </div>
-                                    <div className="mt-2 text-indigo-500 dark:text-indigo-300 font-medium">
+                                    <div className="mt-2 text-indigo-500 dark:text-indigo-300 font-medium text-sm sm:text-base">
                                         Remaining
                                     </div>
                                     {remainingTimeInSeconds === 0 && !isRunning && (
@@ -355,9 +355,9 @@ export default function QuizTimer() {
                                 </div>
                             </div>
                             {/* Timer Controls */}
-                            <div className="grid grid-cols-4 gap-3 mb-6 w-full max-w-md">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6 w-full max-w-xs sm:max-w-md">
                                 <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition"
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition text-xs sm:text-base"
                                     color={isRunning ? "gray" : "success"}
                                     disabled={isRunning}
                                     onClick={handleStart}
@@ -369,7 +369,7 @@ export default function QuizTimer() {
                                     </span>
                                 </Button>
                                 <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition"
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition text-xs sm:text-base"
                                     color="warning"
                                     disabled={!isRunning}
                                     onClick={handlePause}
@@ -379,7 +379,7 @@ export default function QuizTimer() {
                                     Pause
                                 </Button>
                                 <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition"
+                                    className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition text-xs sm:text-base"
                                     color="failure"
                                     disabled={!isRunning && !isPaused}
                                     onClick={handleStop}
@@ -389,7 +389,7 @@ export default function QuizTimer() {
                                     Stop
                                 </Button>
                                 <Button
-                                    className="cursor-pointer hover:bg-purple-700 transition"
+                                    className="cursor-pointer hover:bg-purple-700 transition text-xs sm:text-base"
                                     color="purple"
                                     onClick={handleReset}
                                     size="lg"
@@ -412,7 +412,7 @@ export default function QuizTimer() {
                                 <div className="w-full space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
                                     <h3 className="text-lg font-semibold text-center text-indigo-700 dark:text-indigo-200">Timer Settings</h3>
                                     {/* Input Fields for Timer */}
-                                    <div className="grid grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
                                         <div>
                                             <Label htmlFor="hours">Hours</Label>
                                             <TextInput
@@ -451,7 +451,7 @@ export default function QuizTimer() {
                                         </div>
                                     </div>
                                     {/* Sound Settings */}
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                                         <div className="flex items-center">
                                             <input
                                                 id="tickSound"
@@ -498,7 +498,7 @@ export default function QuizTimer() {
                                     {/* Save Timer */}
                                     <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                                         <Label htmlFor="timerName" className="mb-2 block">Save Current Timer</Label>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col sm:flex-row gap-2">
                                             <TextInput
                                                 id="timerName"
                                                 placeholder="Enter timer name..."
@@ -528,17 +528,17 @@ export default function QuizTimer() {
                 {savedTimers.length > 0 && (
                     <Card className="shadow-lg bg-white dark:bg-gray-900">
                         <div>
-                            <h3 className="text-xl font-semibold mb-4 text-indigo-700 dark:text-indigo-200">Saved Timers</h3>
+                            <h3 className="text-lg sm:text-xl font-semibold mb-4 text-indigo-700 dark:text-indigo-200">Saved Timers</h3>
                             <div className="space-y-3">
                                 {savedTimers.map((timer, index) => {
                                     const h = Math.floor(timer.timeInSeconds / 3600);
                                     const m = Math.floor((timer.timeInSeconds % 3600) / 60);
                                     const s = timer.timeInSeconds % 60;
                                     return (
-                                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div key={index} className="flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg gap-2">
                                             <div>
                                                 <p className="font-medium text-indigo-800 dark:text-indigo-100">{timer.name}</p>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">{formatTime(h, m, s)}</p>
+                                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{formatTime(h, m, s)}</p>
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
@@ -568,7 +568,7 @@ export default function QuizTimer() {
             </div>
             {/* Toast Notification */}
             {showToast && (
-                <div className="fixed bottom-4 right-4 z-50">
+                <div className="fixed bottom-4 right-2 sm:right-4 z-50">
                     <Toast>
                         <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                             toastType === "success" ? "bg-green-100 dark:bg-green-900 text-green-500" :
@@ -581,7 +581,7 @@ export default function QuizTimer() {
                             {toastType === "warning" && <HiClock className="h-5 w-5" />}
                             {toastType === "info" && <span>ℹ️</span>}
                         </div>
-                        <div className="ml-3 text-sm font-normal dark:text-gray-100">{toastMessage}</div>
+                        <div className="ml-3 text-xs sm:text-sm font-normal dark:text-gray-100">{toastMessage}</div>
                         <ToastToggle className="cursor-pointer" onClick={() => setShowToast(false)} />
                     </Toast>
                 </div>

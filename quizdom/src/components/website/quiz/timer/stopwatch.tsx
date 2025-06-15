@@ -89,23 +89,23 @@ export default function Stopwatch() {
     };
 
     return (
-        <Card className="mb-8 shadow-2xl border-2 border-indigo-100 bg-white rounded-2xl">
+        <Card className="mb-8 shadow-2xl border-2 border-indigo-100 bg-white rounded-2xl w-full max-w-md sm:max-w-xl mx-auto">
             <div className="flex flex-col items-center">
                 {/* Stopwatch Display */}
-                <div className="relative w-72 h-72 mb-6">
+                <div className="relative w-48 h-48 sm:w-72 sm:h-72 mb-6">
                     <div className="absolute inset-0 rounded-full bg-gray-200 shadow-inner"></div>
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-pink-300 transition-all duration-700" style={{ opacity: 0.25 }}></div>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <div className="text-3xl sm:text-4xl font-extrabold text-indigo-700 drop-shadow-lg tracking-widest select-none">
+                        <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-indigo-700 drop-shadow-lg tracking-widest select-none">
                             {formatTime(elapsedSeconds, milliseconds)}
                         </div>
                         <div className="mt-2 text-indigo-500 font-medium">Elapsed</div>
                     </div>
                 </div>
                 {/* Stopwatch Controls */}
-                <div className="grid grid-cols-4 gap-3 mb-6 w-full max-w-md">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6 w-full max-w-xs sm:max-w-md">
                     <Button
-                        className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition"
+                        className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition text-xs sm:text-base"
                         color={isRunning ? "gray" : "success"}
                         disabled={isRunning}
                         onClick={handleStart}
@@ -115,7 +115,7 @@ export default function Stopwatch() {
                         {isPaused ? "Resume" : "Start"}
                     </Button>
                     <Button
-                        className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition"
+                        className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition text-xs sm:text-base"
                         color="warning"
                         disabled={!isRunning}
                         onClick={handlePause}
@@ -125,7 +125,7 @@ export default function Stopwatch() {
                         Pause
                     </Button>
                     <Button
-                        className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition"
+                        className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition text-xs sm:text-base"
                         color="failure"
                         disabled={!isRunning && !isPaused}
                         onClick={handleStop}
@@ -135,7 +135,7 @@ export default function Stopwatch() {
                         Stop
                     </Button>
                     <Button
-                        className="cursor-pointer hover:bg-purple-700 transition"
+                        className="cursor-pointer hover:bg-purple-700 transition text-xs sm:text-base"
                         color="purple"
                         onClick={handleReset}
                         size="lg"
@@ -146,7 +146,7 @@ export default function Stopwatch() {
                 </div>
                 {/* Lap Button */}
                 <Button
-                    className="cursor-pointer mb-4 bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                    className="cursor-pointer mb-4 bg-indigo-600 text-white hover:bg-indigo-700 transition w-full max-w-xs sm:max-w-md"
                     color="info"
                     onClick={handleLap}
                     disabled={!isRunning}
@@ -163,7 +163,7 @@ export default function Stopwatch() {
                                 const totalSec = Math.floor(lap / 100);
                                 const ms = lap % 100;
                                 return (
-                                    <div key={idx} className="flex justify-between px-2 py-1 bg-indigo-50 dark:bg-indigo-800 dark:text-amber-500 rounded">
+                                    <div key={idx} className="flex justify-between px-2 py-1 bg-indigo-50 dark:bg-indigo-800 dark:text-amber-500 rounded text-xs sm:text-base">
                                         <span className="font-medium dark:text-white">Lap {laps.length - idx}</span>
                                         <span className="font-mono">{formatTime(totalSec, ms)}</span>
                                     </div>

@@ -154,18 +154,18 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <form className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 transition-all duration-300 hover:shadow-2xl">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600 dark:text-blue-400">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-2 sm:p-4">
+      <form className="w-full max-w-lg sm:max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-8 md:p-12 transition-all duration-300 hover:shadow-2xl">
+        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 text-blue-600 dark:text-blue-400">
           Team Registration
-          <div className="mt-2 w-20 h-1 bg-blue-400 dark:bg-blue-600 mx-auto rounded-full" />
+          <div className="mt-2 w-16 sm:w-20 h-1 bg-blue-400 dark:bg-blue-600 mx-auto rounded-full" />
         </h1>
 
         {/* Password Field */}
-        <div className="mb-8 relative">
+        <div className="mb-6 sm:mb-8 relative">
           <Label
             htmlFor="password"
-            className="block mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
+            className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
           >
             Team Password
           </Label>
@@ -174,7 +174,7 @@ export default function Home() {
               id="password"
               type="text"
               value={data?.password as string}
-              className="w-full text-lg py-2.5 font-mono"
+              className="w-full text-base sm:text-lg py-2.5 font-mono"
               disabled
             />
             <ClipboardWithIcon
@@ -182,16 +182,16 @@ export default function Home() {
               valueToCopy={data?.password as string}
             />
           </div>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             Save this password for future login
           </p>
         </div>
 
         {/* Team Members Section */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {[1, 2, 3, 4].map((num) => (
-            <div key={num} className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+            <div key={num} className="space-y-3 sm:space-y-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300">
                 Member {num}
               </h3>
               <div>
@@ -239,11 +239,11 @@ export default function Home() {
         </div>
 
         {/* Team Details Section */}
-        <div className="space-y-6 mb-8">
+        <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
           <div>
             <Label
               htmlFor="category"
-              className="block mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
             >
               Competition Category
             </Label>
@@ -251,7 +251,7 @@ export default function Home() {
               id="category"
               value={data?.category as string}
               onChange={handleSelect}
-              className="w-full py-2.5 text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
               required
             >
               {[
@@ -269,7 +269,7 @@ export default function Home() {
           <div>
             <Label
               htmlFor="team"
-              className="block mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
             >
               Team Name
             </Label>
@@ -278,7 +278,7 @@ export default function Home() {
               placeholder="Enter your team name"
               value={data?.team as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -286,7 +286,7 @@ export default function Home() {
           <div>
             <Label
               htmlFor="school"
-              className="block mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
             >
               School Name
             </Label>
@@ -296,14 +296,14 @@ export default function Home() {
               placeholder="Your school's name"
               value={data?.school as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
         </div>
 
         <Button
-          className="cursor-pointer w-full py-3 text-lg font-semibold rounded-lg transition-transform hover:scale-105"
+          className="cursor-pointer w-full py-3 text-base sm:text-lg font-semibold rounded-lg transition-transform hover:scale-105"
           onClick={handleRegister}
           disabled={verified}
         >

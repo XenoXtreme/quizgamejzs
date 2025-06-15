@@ -204,8 +204,8 @@ export default function EnhancedImageViewer({
                 >
                     {/* Title bar (visible in normal mode and when hovering in fullscreen) */}
                     {(displayTitle && (!isFullscreen || controlsVisible)) && (
-                        <div className={`p-3 ${isFullscreen ? 'absolute top-0 left-0 right-0 bg-black/70 z-10' : 'bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700'}`}>
-                            <h3 className={`text-lg font-medium truncate ${isFullscreen ? 'text-white' : 'text-gray-800 dark:text-gray-100'}`}>
+                        <div className={`p-2 sm:p-3 ${isFullscreen ? 'absolute top-0 left-0 right-0 bg-black/70 z-10' : 'bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700'}`}>
+                            <h3 className={`text-base sm:text-lg font-medium truncate ${isFullscreen ? 'text-white' : 'text-gray-800 dark:text-gray-100'}`}>
                                 {displayTitle}
                             </h3>
                         </div>
@@ -224,7 +224,7 @@ export default function EnhancedImageViewer({
                                 ref={imageRef}
                                 src={src}
                                 alt={alt}
-                                className="max-w-full max-h-full object-contain transition-transform duration-200 rounded shadow-md"
+                                className="max-w-full max-h-[60vh] sm:max-h-[80vh] object-contain transition-transform duration-200 rounded shadow-md"
                                 style={{
                                     transform: `rotate(${rotation}deg) scale(${zoom})`,
                                     display: isLoading ? 'none' : 'block',
@@ -247,11 +247,11 @@ export default function EnhancedImageViewer({
                     {/* Controls overlay (shown in fullscreen or if controls are enabled) */}
                     {showControls && (!isFullscreen || controlsVisible) && (
                         <div className={`
-                            flex items-center justify-between p-3
+                            flex flex-wrap items-center justify-between p-2 sm:p-3
                             ${isFullscreen ? 'absolute bottom-0 left-0 right-0 bg-black/70 transition-opacity duration-300' : 'bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700'}
                             ${isFullscreen && !controlsVisible ? 'opacity-0' : 'opacity-100'}
                         `}>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
                                 {/* Zoom controls */}
                                 <Button
                                     color={isFullscreen ? "dark" : "light"}
@@ -286,7 +286,7 @@ export default function EnhancedImageViewer({
                                 </Button>
                             </div>
                             
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1 sm:space-x-2 mt-2 sm:mt-0">
                                 {/* Rotation controls */}
                                 <Button
                                     color={isFullscreen ? "dark" : "light"}

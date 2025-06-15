@@ -41,14 +41,14 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
             src={URI}
             alt={alt}
             title={alt}
-            className="w-full max-w-4xl mx-auto"
+            className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
             downloadable={true}
             showControls={true}
           />
         );
       case "video":
         return (
-          <div className="w-full max-w-4xl mx-auto">
+          <div className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0">
             <EnhancedVideoPlayer
               src={URI}
               title={alt || "Video"}
@@ -70,12 +70,12 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
         );
       case "visualaudio":
         return (
-          <div className="flex flex-col items-center justify-center w-full gap-8">
+          <div className="flex flex-col items-center justify-center w-full gap-4 sm:gap-8">
             <EnhancedImageViewer
               src={URI}
               alt={alt}
               title={alt}
-              className="w-full max-w-4xl mx-auto"
+              className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
               downloadable={true}
               showControls={true}
             />
@@ -94,17 +94,17 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
         );
       case "visualvideoans":
         return (
-          <div className="flex flex-col items-center justify-center w-full gap-8">
+          <div className="flex flex-col items-center justify-center w-full gap-4 sm:gap-8">
             <EnhancedImageViewer
               src={URI}
               alt={alt}
               title={alt}
-              className="w-full max-w-4xl mx-auto"
+              className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
               downloadable={true}
               showControls={true}
             />
             {vURI && (
-              <div className="w-full max-w-4xl mx-auto mt-6">
+              <div className="w-full max-w-full sm:max-w-4xl mx-auto mt-4 sm:mt-6">
                 <EnhancedVideoPlayer
                   src={vURI}
                   title={`Video for ${alt || "Visual Question"}`}

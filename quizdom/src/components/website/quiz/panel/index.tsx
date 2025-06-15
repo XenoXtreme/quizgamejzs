@@ -30,31 +30,31 @@ export default function Panel() {
             boxShadow: "0 0 80px 20px rgba(0,0,0,0.7) inset",
           }}
         />
-        <section className="relative z-10 mt-8 flex w-full flex-col items-center justify-center">
+        <section className="relative z-10 mt-4 sm:mt-8 flex w-full flex-col items-center justify-center">
           {/* Prelims */}
           <section
-            className={`my-4 flex h-[25vh] w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
+            className={`my-2 sm:my-4 flex h-[18vh] sm:h-[25vh] w-[95vw] sm:w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-2 sm:px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
           >
-            <div className="mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
+            <div className="mr-2 sm:mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
               <img
                 src="/assets/static/jzs.png"
                 loading="lazy"
                 alt="Logo"
-                className="w-4/5 rounded-xl shadow"
+                className="w-3/5 sm:w-4/5 rounded-xl shadow"
               />
             </div>
             <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-2 rounded-lg bg-white/70 px-4 py-2 text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
+              <h1 className="mb-1 sm:mb-2 rounded-lg bg-white/70 px-2 sm:px-4 py-1 sm:py-2 text-lg sm:text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
                 Prelims
               </h1>
-              <p className="w-4/5 rounded-lg px-3 py-1 text-base text-gray-700 dark:text-gray-300">
+              <p className="w-4/5 rounded-lg px-1 sm:px-3 py-1 text-xs sm:text-base text-gray-700 dark:text-gray-300">
                 Questions for Prelims.
               </p>
             </div>
             <div className="flex w-1/5 items-center justify-center">
-              <Link href="/quiz/prelims" className="flex w-3/5 justify-center">
+              <Link href="/quiz/prelims" className="flex w-4/5 sm:w-3/5 justify-center">
                 <button
-                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600`}
+                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600 text-xs sm:text-base`}
                 >
                   View
                 </button>
@@ -63,21 +63,21 @@ export default function Panel() {
           </section>
           {/* Intra School - Junior */}
           <section
-            className={`my-4 flex h-[25vh] w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
+            className={`my-2 sm:my-4 flex h-[18vh] sm:h-[25vh] w-[95vw] sm:w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-2 sm:px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
           >
-            <div className="mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
+            <div className="mr-2 sm:mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
               <img
                 src="/assets/static/jzs.png"
                 loading="lazy"
                 alt="Logo"
-                className="w-4/5 rounded-xl shadow"
+                className="w-3/5 sm:w-4/5 rounded-xl shadow"
               />
             </div>
             <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-2 rounded-lg bg-white/70 px-4 py-2 text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
+              <h1 className="mb-1 sm:mb-2 rounded-lg bg-white/70 px-2 sm:px-4 py-1 sm:py-2 text-lg sm:text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
                 Intra School - (Junior)
               </h1>
-              <p className="w-4/5 rounded-lg px-3 py-1 text-base text-gray-700 dark:text-gray-300">
+              <p className="w-4/5 rounded-lg px-1 sm:px-3 py-1 text-xs sm:text-base text-gray-700 dark:text-gray-300">
                 Access the questions meant for students of class VI- VIII.
                 Explore the world gain knowlgde and do much more!
               </p>
@@ -85,10 +85,10 @@ export default function Panel() {
             <div className="flex w-1/5 items-center justify-center">
               <Link
                 href="/quiz/intraschool/junior"
-                className="flex w-3/5 justify-center"
+                className="flex w-4/5 sm:w-3/5 justify-center"
               >
                 <button
-                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600`}
+                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600 text-xs sm:text-base`}
                 >
                   View
                 </button>
@@ -97,21 +97,21 @@ export default function Panel() {
           </section>
           {/* Intra School - Senior */}
           <section
-            className={`my-4 flex h-[25vh] w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
+            className={`my-2 sm:my-4 flex h-[18vh] sm:h-[25vh] w-[95vw] sm:w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-2 sm:px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
           >
-            <div className="mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
+            <div className="mr-2 sm:mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
               <img
                 src="/assets/static/jzs.png"
                 loading="lazy"
                 alt="Logo"
-                className="w-4/5 rounded-xl shadow"
+                className="w-3/5 sm:w-4/5 rounded-xl shadow"
               />
             </div>
             <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-2 rounded-lg bg-white/70 px-4 py-2 text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
+              <h1 className="mb-1 sm:mb-2 rounded-lg bg-white/70 px-2 sm:px-4 py-1 sm:py-2 text-lg sm:text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
                 Intra School - (Senior)
               </h1>
-              <p className="w-4/5 rounded-lg px-3 py-1 text-base text-gray-700 dark:text-gray-300">
+              <p className="w-4/5 rounded-lg px-1 sm:px-3 py-1 text-xs sm:text-base text-gray-700 dark:text-gray-300">
                 Access the questions meant for students of class IX-XII. Explore
                 the world gain knowlgde and do much more!
               </p>
@@ -119,10 +119,10 @@ export default function Panel() {
             <div className="flex w-1/5 items-center justify-center">
               <Link
                 href="/quiz/intraschool/senior"
-                className="flex w-3/5 justify-center"
+                className="flex w-4/5 sm:w-3/5 justify-center"
               >
                 <button
-                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600`}
+                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600 text-xs sm:text-base`}
                 >
                   View
                 </button>
@@ -131,21 +131,21 @@ export default function Panel() {
           </section>
           {/* Inter School */}
           <section
-            className={`my-4 flex h-[25vh] w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
+            className={`my-2 sm:my-4 flex h-[18vh] sm:h-[25vh] w-[95vw] sm:w-[63vw] cursor-pointer flex-row items-center justify-center overflow-hidden rounded-lg border border-blue-100 bg-white/80 px-2 sm:px-4 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.03] hover:bg-blue-50 dark:border-blue-900 dark:bg-gray-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.7)] dark:backdrop-blur-md dark:hover:bg-gray-800/80`}
           >
-            <div className="mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
+            <div className="mr-2 sm:mr-[13%] flex h-4/5 w-1/5 items-center justify-center">
               <img
                 src="/assets/static/jzs.png"
                 loading="lazy"
                 alt="Logo"
-                className="w-4/5 rounded-xl shadow"
+                className="w-3/5 sm:w-4/5 rounded-xl shadow"
               />
             </div>
             <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-2 rounded-lg bg-white/70 px-4 py-2 text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
+              <h1 className="mb-1 sm:mb-2 rounded-lg bg-white/70 px-2 sm:px-4 py-1 sm:py-2 text-lg sm:text-2xl font-extrabold text-gray-900 shadow dark:bg-gray-900/70 dark:text-gray-100">
                 Inter School Quiz Competition
               </h1>
-              <p className="w-4/5 rounded-lg px-3 py-1 text-base text-gray-700 dark:text-gray-300">
+              <p className="w-4/5 rounded-lg px-1 sm:px-3 py-1 text-xs sm:text-base text-gray-700 dark:text-gray-300">
                 Access the questions meant for students of class IX-XII. Explore
                 the world gain knowlgde and do much more!
               </p>
@@ -153,10 +153,10 @@ export default function Panel() {
             <div className="flex w-1/5 items-center justify-center">
               <Link
                 href="/quiz/interschool"
-                className="flex w-3/5 justify-center"
+                className="flex w-4/5 sm:w-3/5 justify-center"
               >
                 <button
-                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-4 py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600`}
+                  className={`w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 px-2 sm:px-4 py-1 sm:py-2 font-semibold text-white shadow transition hover:from-blue-800 hover:to-blue-600 text-xs sm:text-base`}
                 >
                   View
                 </button>
