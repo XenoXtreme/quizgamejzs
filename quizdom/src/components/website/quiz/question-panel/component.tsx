@@ -41,14 +41,14 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
             src={URI}
             alt={alt}
             title={alt}
-            className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
+            className="mx-auto w-full max-w-full px-1 sm:max-w-4xl sm:px-0"
             downloadable={true}
             showControls={true}
           />
         );
       case "video":
         return (
-          <div className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0">
+          <div className="mx-auto w-full max-w-full px-1 sm:max-w-4xl sm:px-0">
             <EnhancedVideoPlayer
               src={URI}
               title={alt || "Video"}
@@ -58,7 +58,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
         );
       case "audio":
         return (
-          <div className="flex flex-col items-center justify-center w-full h-full py-4">
+          <div className="flex h-full w-full flex-col items-center justify-center py-4">
             <EnhancedAudioPlayer
               src={URI}
               title={alt || "Audio Track"}
@@ -70,12 +70,12 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
         );
       case "visualaudio":
         return (
-          <div className="flex flex-col items-center justify-center w-full gap-4 sm:gap-8">
+          <div className="flex w-full flex-col items-center justify-center gap-4 sm:gap-8">
             <EnhancedImageViewer
               src={URI}
               alt={alt}
               title={alt}
-              className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
+              className="mx-auto w-full max-w-full px-1 sm:max-w-4xl sm:px-0"
               downloadable={true}
               showControls={true}
             />
@@ -94,17 +94,17 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
         );
       case "visualvideoans":
         return (
-          <div className="flex flex-col items-center justify-center w-full gap-4 sm:gap-8">
+          <div className="flex w-full flex-col items-center justify-center gap-4 sm:gap-8">
             <EnhancedImageViewer
               src={URI}
               alt={alt}
               title={alt}
-              className="w-full max-w-full sm:max-w-4xl mx-auto px-1 sm:px-0"
+              className="mx-auto w-full max-w-full px-1 sm:max-w-4xl sm:px-0"
               downloadable={true}
               showControls={true}
             />
             {vURI && (
-              <div className="w-full max-w-full sm:max-w-4xl mx-auto mt-4 sm:mt-6">
+              <div className="mx-auto mt-4 w-full max-w-full sm:mt-6 sm:max-w-4xl">
                 <EnhancedVideoPlayer
                   src={vURI}
                   title={`Video for ${alt || "Visual Question"}`}
@@ -120,7 +120,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center">
       {renderContent()}
     </div>
   );
