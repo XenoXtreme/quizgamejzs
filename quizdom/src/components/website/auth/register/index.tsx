@@ -6,7 +6,13 @@ import * as React from "react";
 import { redirect } from "next/navigation";
 
 // FLOWBITE
-import { Button, ClipboardWithIcon, Label, TextInput, Select } from "flowbite-react";
+import {
+  Button,
+  ClipboardWithIcon,
+  Label,
+  TextInput,
+  Select,
+} from "flowbite-react";
 
 // CONTEXT
 import { useAuthContext } from "@/context/auth/state";
@@ -108,7 +114,7 @@ export default function Home() {
       return (
         Object.values(data.members).every(
           (member) =>
-            (member?.name?.length ?? 0) < 6 && (member?.class?.length ?? 0) < 1
+            (member?.name?.length ?? 0) < 6 && (member?.class?.length ?? 0) < 1,
         ) || [data.school].some((field) => (field?.length ?? 0) < 6)
       );
     }
@@ -126,20 +132,22 @@ export default function Home() {
     await register(data)
       .then((res) => {
         if (res.id) {
-          navigator.clipboard.writeText(res.id)
-          toast.success(`Successfully created account. ID: ${res.id}, {duration: 2000}`);
+          navigator.clipboard.writeText(res.id);
+          toast.success(`Successfully created account. ID: ${res.id}`, {
+            duration: 6000,
+          });
           setLoading(false);
           setTimeout(() => {
-            toast.info("Log in to your account.", {duration: 700});
+            toast.info("Log in to your account.", { duration: 700 });
             redirect("/login");
           }, 3000);
         } else {
-          toast.error("Failed to login.", {duration: 1000});
+          toast.error("Failed to login.", { duration: 1000 });
           setLoading(false);
         }
       })
       .catch(() => {
-        toast.error("Failed to login.", {duration: 1000});
+        toast.error("Failed to login.", { duration: 1000 });
         setLoading(false);
       });
   }
@@ -154,18 +162,18 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-2 sm:p-4">
-      <form className="w-full max-w-lg sm:max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-8 md:p-12 transition-all duration-300 hover:shadow-2xl">
-        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 text-blue-600 dark:text-blue-400">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-2 sm:p-4 dark:from-gray-900 dark:to-gray-800">
+      <form className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-xl transition-all duration-300 hover:shadow-2xl sm:max-w-2xl sm:p-8 md:p-12 dark:bg-gray-800">
+        <h1 className="mb-6 text-center text-2xl font-bold text-blue-600 sm:mb-8 sm:text-4xl dark:text-blue-400">
           Team Registration
-          <div className="mt-2 w-16 sm:w-20 h-1 bg-blue-400 dark:bg-blue-600 mx-auto rounded-full" />
+          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-blue-400 sm:w-20 dark:bg-blue-600" />
         </h1>
 
         {/* Password Field */}
-        <div className="mb-6 sm:mb-8 relative">
+        <div className="relative mb-6 sm:mb-8">
           <Label
             htmlFor="password"
-            className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
+            className="mb-2 block text-base font-semibold text-gray-700 sm:text-lg dark:text-gray-300"
           >
             Team Password
           </Label>
@@ -174,30 +182,30 @@ export default function Home() {
               id="password"
               type="text"
               value={data?.password as string}
-              className="w-full text-base sm:text-lg py-2.5 font-mono"
+              className="w-full py-2.5 font-mono text-base sm:text-lg"
               disabled
             />
             <ClipboardWithIcon
-              className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="cursor-pointer rounded-lg bg-blue-600 text-white transition-colors hover:bg-blue-700"
               valueToCopy={data?.password as string}
             />
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-gray-500 sm:text-sm dark:text-gray-400">
             Save this password for future login
           </p>
         </div>
 
         {/* Team Members Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:mb-8 sm:grid-cols-2 sm:gap-6">
           {[1, 2, 3, 4].map((num) => (
             <div key={num} className="space-y-3 sm:space-y-4">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300">
+              <h3 className="text-lg font-semibold text-gray-700 sm:text-xl dark:text-gray-300">
                 Member {num}
               </h3>
               <div>
                 <Label
                   htmlFor={`_M${num}N`}
-                  className="block mb-2 text-gray-600 dark:text-gray-400"
+                  className="mb-2 block text-gray-600 dark:text-gray-400"
                 >
                   Full Name
                 </Label>
@@ -206,25 +214,31 @@ export default function Home() {
                   name={`member${num}.name`}
                   type="text"
                   placeholder={`Member ${num} name`}
-                  value={data?.members[`member${num}` as keyof typeof data.members].name as string}
+                  value={
+                    data?.members[`member${num}` as keyof typeof data.members]
+                      .name as string
+                  }
                   onChange={handleChange}
-                  className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
                 <Label
                   htmlFor={`_M${num}C`}
-                  className="block mb-2 text-gray-600 dark:text-gray-400"
+                  className="mb-2 block text-gray-600 dark:text-gray-400"
                 >
                   Class
                 </Label>
                 <Select
                   id={`_M${num}C`}
                   name={`member${num}.class`}
-                  value={data?.members[`member${num}` as keyof typeof data.members].class}
+                  value={
+                    data?.members[`member${num}` as keyof typeof data.members]
+                      .class
+                  }
                   onChange={handleSelect}
-                  className="w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   {["IX", "X", "XI", "XII"].map((cls) => (
@@ -239,11 +253,11 @@ export default function Home() {
         </div>
 
         {/* Team Details Section */}
-        <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
+        <div className="mb-6 space-y-4 sm:mb-8 sm:space-y-6">
           <div>
             <Label
               htmlFor="category"
-              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="mb-2 block text-base font-semibold text-gray-700 sm:text-lg dark:text-gray-300"
             >
               Competition Category
             </Label>
@@ -251,7 +265,7 @@ export default function Home() {
               id="category"
               value={data?.category as string}
               onChange={handleSelect}
-              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
               required
             >
               {[
@@ -269,7 +283,7 @@ export default function Home() {
           <div>
             <Label
               htmlFor="team"
-              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="mb-2 block text-base font-semibold text-gray-700 sm:text-lg dark:text-gray-300"
             >
               Team Name
             </Label>
@@ -278,7 +292,7 @@ export default function Home() {
               placeholder="Enter your team name"
               value={data?.team as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
               required
             />
           </div>
@@ -286,7 +300,7 @@ export default function Home() {
           <div>
             <Label
               htmlFor="school"
-              className="block mb-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300"
+              className="mb-2 block text-base font-semibold text-gray-700 sm:text-lg dark:text-gray-300"
             >
               School Name
             </Label>
@@ -296,20 +310,23 @@ export default function Home() {
               placeholder="Your school's name"
               value={data?.school as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-base sm:text-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
               required
             />
           </div>
         </div>
 
         <Button
-          className="cursor-pointer w-full py-3 text-base sm:text-lg font-semibold rounded-lg transition-transform hover:scale-105"
+          className="w-full cursor-pointer rounded-lg py-3 text-base font-semibold transition-transform hover:scale-105 sm:text-lg"
           onClick={handleRegister}
           disabled={verified}
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24">
+              <svg
+                className="mr-3 h-5 w-5 animate-spin ..."
+                viewBox="0 0 24 24"
+              >
                 {/* Loading spinner SVG */}
               </svg>
               Registering...
