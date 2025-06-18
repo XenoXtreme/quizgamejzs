@@ -134,13 +134,13 @@ export default function Home() {
         if (res.id) {
           navigator.clipboard.writeText(res.id);
           toast.success(`Successfully created account. ID: ${res.id}`, {
-            duration: 6000,
+            duration: 3000,
           });
           setLoading(false);
           setTimeout(() => {
-            toast.info("Log in to your account.", { duration: 700 });
+            toast.info("Log in to your account.", { duration: 900 });
             redirect("/login");
-          }, 3000);
+          }, 3500);
         } else {
           toast.error("Failed to login.", { duration: 1000 });
           setLoading(false);
