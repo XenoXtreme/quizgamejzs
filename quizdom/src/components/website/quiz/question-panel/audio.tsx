@@ -375,13 +375,14 @@ export default function EnhancedAudioPlayer({
         preload="metadata"
         onError={handleAudioElementError}
         tabIndex={-1}
+        crossOrigin="anonymous"
       >
         <source src={src} type="audio/mp3" onError={handleAudioElementError} />
         Your browser does not support the audio element.
       </audio>
       {/* If error, show only error UI (no controls, no animation, nothing else) */}
       {error ? (
-        <div className="flex flex-col items-center justify-center w-full py-8">
+        <div className="flex w-full flex-col items-center justify-center py-8">
           <AudioError message={error} />
         </div>
       ) : (
