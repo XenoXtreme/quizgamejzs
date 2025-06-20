@@ -262,84 +262,58 @@ export default function EnhancedAudioPlayer({
     }
   }, [duration]);
 
-  // --- Audio visualizer logic ---
+  // --- Synchronized and Rhythmic Fake Audio Visualizer logic (no MediaSource/MediaElementAudioSource) ---
+  // Add smoothing for bar heights
+  const lastBarHeights = useRef<number[]>([]);
   useEffect(() => {
-    // Only activate visualizer if requested and playing, and NO ERROR
     if (!showVisualizer || !isPlaying || error) {
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
       return;
     }
-
-    let ctx = audioContextRef.current;
-    if (!ctx) {
-      ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioContextRef.current = ctx;
-    }
-
-    if (!analyserRef.current && audioRef.current) {
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 512;
-      analyserRef.current = analyser;
-
-      sourceRef.current = ctx.createMediaElementSource(audioRef.current);
-      sourceRef.current.connect(analyser);
-      analyser.connect(ctx.destination);
-    }
-
-    const analyser = analyserRef.current;
     const canvas = canvasRef.current;
-
-    let lastDrawTime = 0;
-    const targetFPS = 30;
-    const frameInterval = 1000 / targetFPS;
-
-    function draw(now: number) {
-      if (!canvas || !analyser) return;
-      if (now - lastDrawTime < frameInterval) {
-        animationFrameRef.current = requestAnimationFrame(draw);
-        return;
-      }
-      lastDrawTime = now;
-
+    let animationId: number;
+    const barCount = 48;
+    if (!lastBarHeights.current.length) {
+      lastBarHeights.current = Array(barCount).fill(0);
+    }
+    function draw() {
+      if (!canvas) return;
       const ctx2d = canvas.getContext("2d");
       if (!ctx2d) return;
-
-      const bufferLength = analyser.fftSize;
-      const dataArray = new Uint8Array(bufferLength);
-
-      analyser.getByteTimeDomainData(dataArray);
-
       ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-      ctx2d.lineWidth = 2;
-      ctx2d.strokeStyle = "#2563eb";
-
-      ctx2d.beginPath();
-      const sliceWidth = canvas.width / bufferLength;
-      let x = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        const v = dataArray[i] / 128.0;
-        const y = (v * canvas.height) / 2;
-        if (i === 0) {
-          ctx2d.moveTo(x, y);
-        } else {
-          ctx2d.lineTo(x, y);
-        }
-        x += sliceWidth;
+      const barWidth = canvas.width / barCount;
+      const t = audioRef.current ? audioRef.current.currentTime : 0;
+      const d = duration || 1;
+      const beat = Math.abs(Math.sin(Math.PI * t * 2));
+      const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
+      for (let i = 0; i < barCount; i++) {
+        const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
+        const base = Math.abs(Math.sin(t * freq + i * 0.25));
+        const pulse = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI + i * 0.1);
+        const noise = (Math.sin(t * 3.7 + i) + 1) / 8;
+        const targetHeight =
+          (base * beat * envelope * pulse + noise) * canvas.height * 0.7 +
+          canvas.height * 0.1;
+        // Smooth the animation by interpolating previous and target heights
+        const prev = lastBarHeights.current[i] || 0;
+        const smoothHeight = prev + (targetHeight - prev) * 0.25;
+        lastBarHeights.current[i] = smoothHeight;
+        ctx2d.fillStyle = "#2563eb";
+        ctx2d.fillRect(
+          i * barWidth,
+          canvas.height - smoothHeight,
+          barWidth * 0.7,
+          smoothHeight,
+        );
       }
-      ctx2d.lineTo(canvas.width, canvas.height / 2);
-      ctx2d.stroke();
-
-      animationFrameRef.current = requestAnimationFrame(draw);
+      animationId = requestAnimationFrame(draw);
     }
-    animationFrameRef.current = requestAnimationFrame(draw);
-
+    animationId = requestAnimationFrame(draw);
     return () => {
-      if (animationFrameRef.current)
-        cancelAnimationFrame(animationFrameRef.current);
+      cancelAnimationFrame(animationId);
     };
-  }, [showVisualizer, isPlaying, src, error]);
+  }, [showVisualizer, isPlaying, error, duration]);
 
   // Clean up audio context and analyser on unmount
   useEffect(() => {
@@ -375,7 +349,6 @@ export default function EnhancedAudioPlayer({
         preload="metadata"
         onError={handleAudioElementError}
         tabIndex={-1}
-        crossOrigin="anonymous"
       >
         <source src={src} type="audio/mp3" onError={handleAudioElementError} />
         Your browser does not support the audio element.

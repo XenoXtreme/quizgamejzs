@@ -67,6 +67,8 @@ export default function EnhancedVideoPlayer({
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSpeedDropdown, setShowSpeedDropdown] = useState<boolean>(false);
+  const speedDropdownRef = useRef<HTMLDivElement>(null);
 
   // Format time in MM:SS format
   const formatTime = (timeInSeconds: number): string => {
@@ -311,6 +313,21 @@ export default function EnhancedVideoPlayer({
     };
   }, [onPlayStateChange, volume, hoverTimer]);
 
+  // Close speed dropdown on outside click
+  useEffect(() => {
+    if (!showSpeedDropdown) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        speedDropdownRef.current &&
+        !speedDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowSpeedDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showSpeedDropdown]);
+
   return (
     <Card
       className={`w-full overflow-hidden border border-gray-200 bg-white p-0 shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
@@ -335,7 +352,6 @@ export default function EnhancedVideoPlayer({
             onClick={handleVideoClick}
             className="max-h-[60vh] w-full cursor-pointer rounded-t-lg bg-black sm:max-h-[80vh]"
             onError={handleVideoError}
-            crossOrigin="anonymous"
           >
             <source src={src} type="video/mp4" />
             Your browser does not support the video element.
@@ -472,28 +488,37 @@ export default function EnhancedVideoPlayer({
 
                 <div className="mt-2 flex items-center space-x-1 sm:mt-0 sm:space-x-2">
                   {/* Playback speed control */}
-                  <div className="group relative">
+                  <div className="relative">
                     <Button
                       color="light"
                       size="xs"
                       pill
                       className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                      onClick={() => setShowSpeedDropdown((v: boolean) => !v)}
                     >
                       <span className="text-xs font-medium">
                         {playbackRate}x
                       </span>
                     </Button>
-                    <div className="absolute right-0 bottom-full z-10 mb-2 hidden rounded-md bg-gray-800 p-1 shadow-lg group-hover:block">
-                      {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
-                        <button
-                          key={rate}
-                          onClick={() => changePlaybackRate(rate)}
-                          className={`block w-full cursor-pointer rounded px-3 py-1 text-left text-xs hover:bg-gray-700 ${playbackRate === rate ? "text-blue-400" : "text-white"}`}
-                        >
-                          {rate}x
-                        </button>
-                      ))}
-                    </div>
+                    {showSpeedDropdown && (
+                      <div
+                        ref={speedDropdownRef}
+                        className="absolute right-0 bottom-full z-10 mb-2 rounded-md bg-gray-800 p-1 shadow-lg"
+                      >
+                        {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
+                          <button
+                            key={rate}
+                            onClick={() => {
+                              changePlaybackRate(rate);
+                              setShowSpeedDropdown(false);
+                            }}
+                            className={`block w-full cursor-pointer rounded px-3 py-1 text-left text-xs hover:bg-gray-700 ${playbackRate === rate ? "text-blue-400" : "text-white"}`}
+                          >
+                            {rate}x
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Reset button */}
