@@ -208,12 +208,22 @@ export default function EnhancedVideoPlayer({
 
   // Handler for video error (for JSX usage)
   const handleVideoError = (
-    e?: React.SyntheticEvent<HTMLVideoElement, Event>,
+    e?: React.SyntheticEvent<HTMLVideoElement | HTMLSourceElement, Event>,
   ) => {
     let message =
       "Video file could not be loaded (not found or network error).";
-    if (videoRef.current && videoRef.current.error) {
-      switch (videoRef.current.error.code) {
+    let errorObj: MediaError | null = null;
+    if (e && e.currentTarget) {
+      const el = e.currentTarget as HTMLVideoElement | HTMLSourceElement;
+      if ("error" in el && el.error) {
+        errorObj = el.error;
+      }
+    }
+    if (!errorObj && videoRef.current && videoRef.current.error) {
+      errorObj = videoRef.current.error;
+    }
+    if (errorObj) {
+      switch (errorObj.code) {
         case 1:
           message = "Video loading aborted by user.";
           break;

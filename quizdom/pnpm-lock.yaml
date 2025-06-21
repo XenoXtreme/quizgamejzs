@@ -44,6 +44,9 @@ importers:
       react:
         specifier: ^19.1.0
         version: 19.1.0
+      react-audio-visualize:
+        specifier: ^1.2.0
+        version: 1.2.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-doc-viewer:
         specifier: ^0.1.14
         version: 0.1.14(@babel/core@7.27.4)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-is@16.13.1)(react@19.1.0)
@@ -3224,6 +3227,12 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
+
+  react-audio-visualize@1.2.0:
+    resolution: {integrity: sha512-rfO5nmT0fp23gjU0y2WQT6+ZOq2ZsuPTMphchwX1PCz1Di4oaIr6x7JZII8MLrbHdG7UB0OHfGONTIsWdh67kQ==}
+    peerDependencies:
+      react: '>=16.2.0'
+      react-dom: '>=16.2.0'
 
   react-doc-viewer@0.1.14:
     resolution: {integrity: sha512-v2GVGjMMz0NNldBybHGEIbEXaDrSsc+VFostnL2KP8emdzeTf3BOwa1sizSC0YoIUGJljqgDNKduhf+xSImQgw==}
@@ -7370,6 +7379,11 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+
+  react-audio-visualize@1.2.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   react-doc-viewer@0.1.14(@babel/core@7.27.4)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-is@16.13.1)(react@19.1.0):
     dependencies:

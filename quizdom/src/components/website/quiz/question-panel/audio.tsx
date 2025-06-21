@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState, useEffect } from "react";
 import { Button, Card, Tooltip } from "flowbite-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +12,82 @@ import {
   faStepBackward,
   faStepForward,
 } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "sonner";
+
+// Custom AudioVisualizer
+function AudioVisualizer({
+  isPlaying,
+  currentTime,
+  duration,
+  volume,
+  width = 480,
+  height = 140,
+  barColor = "#2563eb",
+}: {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  width?: number;
+  height?: number;
+  barColor?: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastBarHeights = useRef<number[]>([]);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let animationId: number;
+    const barCount = 48;
+    if (!lastBarHeights.current.length) {
+      lastBarHeights.current = Array(barCount).fill(0);
+    }
+    function draw() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+      const barWidth = width / barCount;
+      const t = currentTime + performance.now() / 1000 / 2;
+      const d = duration || 1;
+      const v = volume / 100;
+      const beat = Math.abs(Math.sin(Math.PI * t * 2));
+      const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
+      for (let i = 0; i < barCount; i++) {
+        const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
+        const base = Math.abs(Math.sin(t * freq + i * 0.25));
+        const pulse = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI + i * 0.1);
+        const noise = (Math.sin(t * 3.7 + i) + 1) / 8;
+        const targetHeight =
+          (base * beat * envelope * pulse * v + noise) * height * 0.7 +
+          height * 0.1;
+        // Smooth the animation by interpolating previous and target heights
+        const prev = lastBarHeights.current[i] || 0;
+        const smoothHeight = prev + (targetHeight - prev) * 0.18;
+        lastBarHeights.current[i] = smoothHeight;
+        ctx.fillStyle = barColor;
+        ctx.fillRect(
+          i * barWidth,
+          height - smoothHeight,
+          barWidth * 0.7,
+          smoothHeight,
+        );
+      }
+      animationId = requestAnimationFrame(draw);
+    }
+    animationId = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animationId);
+  }, [isPlaying, currentTime, duration, volume, width, height, barColor]);
+  return (
+    <canvas
+      ref={canvasRef}
+      width={width}
+      height={height}
+      className="h-full w-full rounded-lg bg-gray-100 dark:bg-gray-900"
+    />
+  );
+}
 
 interface AudioPlayerProps {
   src?: string;
@@ -56,7 +132,6 @@ export default function EnhancedAudioPlayer({
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -67,12 +142,6 @@ export default function EnhancedAudioPlayer({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [wasPlayingBeforeSeek, setWasPlayingBeforeSeek] =
     useState<boolean>(false);
-
-  // For the visualizer
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
 
   // Error state
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +164,7 @@ export default function EnhancedAudioPlayer({
         audioRef.current.currentTime = 0;
         setCurrentTime(0);
       }
-      audioRef.current.play().catch((error) => {
+      audioRef.current.play().catch(() => {
         setError("Failed to play audio. Please try again.");
         setIsPlaying(false);
       });
@@ -140,7 +209,6 @@ export default function EnhancedAudioPlayer({
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseInt(e.target.value);
     setVolume(newVolume);
-
     if (audioRef.current) {
       audioRef.current.volume = newVolume / 100;
       if (isMuted && newVolume > 0) {
@@ -168,18 +236,16 @@ export default function EnhancedAudioPlayer({
   // Handle end of seeking
   const handleSeekEnd = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const seekTime = parseFloat((e.target as HTMLInputElement).value);
-
     if (audioRef.current) {
       const validTime = Math.min(seekTime, duration);
       audioRef.current.currentTime = validTime;
       setCurrentTime(validTime);
       if (wasPlayingBeforeSeek) {
-        audioRef.current.play().catch((error) => {
+        audioRef.current.play().catch(() => {
           setIsPlaying(false);
         });
       }
     }
-
     setIsDragging(false);
   };
 
@@ -198,9 +264,7 @@ export default function EnhancedAudioPlayer({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     audio.volume = volume / 100;
-
     const handleAudioPlay = () => setIsPlaying(true);
     const handleAudioPause = () => setIsPlaying(false);
     const handleLoadedMetadata = () => {
@@ -221,22 +285,12 @@ export default function EnhancedAudioPlayer({
       if (onPlayStateChange) onPlayStateChange(false);
     };
     const handleCanPlay = () => setIsLoading(false);
-    const handleError = () => {
-      setError("Audio file could not be loaded (not found or network error).");
-      setIsLoading(false);
-      setIsPlaying(false);
-    };
-
     audio.addEventListener("play", handleAudioPlay);
     audio.addEventListener("pause", handleAudioPause);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("canplay", handleCanPlay);
-
-    // Remove event listener if you add onError directly in JSX
-    // audio.addEventListener('error', handleError as EventListener);
-
     return () => {
       audio.removeEventListener("play", handleAudioPlay);
       audio.removeEventListener("pause", handleAudioPause);
@@ -244,13 +298,41 @@ export default function EnhancedAudioPlayer({
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("canplay", handleCanPlay);
-      // audio.removeEventListener('error', handleError as EventListener);
     };
   }, [isDragging, onPlayStateChange, volume]);
 
   // Attach onError to <audio> and <source> directly for reliability
-  const handleAudioElementError = () => {
-    setError("Audio file could not be loaded (not found or network error).");
+  const handleAudioElementError = (
+    e?: React.SyntheticEvent<HTMLAudioElement | HTMLSourceElement, Event>,
+  ) => {
+    let message =
+      "Audio file could not be loaded (not found or network error).";
+    if (e && e.currentTarget) {
+      const el = e.currentTarget as HTMLAudioElement | HTMLSourceElement;
+      if ("error" in el && el.error) {
+        switch (el.error.code) {
+          case 1:
+            message =
+              "Aborted: The fetching process for the media resource was aborted by the user agent at the user's request.";
+            break;
+          case 2:
+            message =
+              "Network error: A network error caused the audio download to fail.";
+            break;
+          case 3:
+            message =
+              "Decode error: The audio playback was aborted due to a corruption problem or unsupported features.";
+            break;
+          case 4:
+            message =
+              "Source not supported: The audio could not be loaded because the format is not supported.";
+            break;
+          default:
+            message = "Unknown audio error occurred.";
+        }
+      }
+    }
+    setError(message);
     setIsLoading(false);
     setIsPlaying(false);
   };
@@ -262,79 +344,11 @@ export default function EnhancedAudioPlayer({
     }
   }, [duration]);
 
-  // --- Synchronized and Rhythmic Fake Audio Visualizer logic (no MediaSource/MediaElementAudioSource) ---
-  // Add smoothing for bar heights
-  const lastBarHeights = useRef<number[]>([]);
-  useEffect(() => {
-    if (!showVisualizer || !isPlaying || error) {
-      if (animationFrameRef.current)
-        cancelAnimationFrame(animationFrameRef.current);
-      return;
-    }
-    const canvas = canvasRef.current;
-    let animationId: number;
-    const barCount = 48;
-    if (!lastBarHeights.current.length) {
-      lastBarHeights.current = Array(barCount).fill(0);
-    }
-    function draw() {
-      if (!canvas) return;
-      const ctx2d = canvas.getContext("2d");
-      if (!ctx2d) return;
-      ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-      const barWidth = canvas.width / barCount;
-      const t = audioRef.current ? audioRef.current.currentTime : 0;
-      const d = duration || 1;
-      const beat = Math.abs(Math.sin(Math.PI * t * 2));
-      const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
-      for (let i = 0; i < barCount; i++) {
-        const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
-        const base = Math.abs(Math.sin(t * freq + i * 0.25));
-        const pulse = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI + i * 0.1);
-        const noise = (Math.sin(t * 3.7 + i) + 1) / 8;
-        const targetHeight =
-          (base * beat * envelope * pulse + noise) * canvas.height * 0.7 +
-          canvas.height * 0.1;
-        // Smooth the animation by interpolating previous and target heights
-        const prev = lastBarHeights.current[i] || 0;
-        const smoothHeight = prev + (targetHeight - prev) * 0.25;
-        lastBarHeights.current[i] = smoothHeight;
-        ctx2d.fillStyle = "#2563eb";
-        ctx2d.fillRect(
-          i * barWidth,
-          canvas.height - smoothHeight,
-          barWidth * 0.7,
-          smoothHeight,
-        );
-      }
-      animationId = requestAnimationFrame(draw);
-    }
-    animationId = requestAnimationFrame(draw);
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [showVisualizer, isPlaying, error, duration]);
-
   // Clean up audio context and analyser on unmount
   useEffect(() => {
     return () => {
-      if (animationFrameRef.current)
-        cancelAnimationFrame(animationFrameRef.current);
-      if (analyserRef.current) {
-        try {
-          analyserRef.current.disconnect();
-        } catch {}
-        analyserRef.current = null;
-      }
-      if (sourceRef.current) {
-        try {
-          sourceRef.current.disconnect();
-        } catch {}
-        sourceRef.current = null;
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
+      if (audioRef.current) {
+        audioRef.current.src = "";
       }
     };
   }, []);
@@ -371,12 +385,14 @@ export default function EnhancedAudioPlayer({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <canvas
-                    ref={canvasRef}
+                  <AudioVisualizer
+                    isPlaying={isPlaying}
+                    currentTime={currentTime}
+                    duration={duration}
+                    volume={volume}
                     width={480}
                     height={140}
-                    className="h-full w-full"
-                    style={{ background: "#fafafa" }}
+                    barColor="#2563eb"
                   />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center">
