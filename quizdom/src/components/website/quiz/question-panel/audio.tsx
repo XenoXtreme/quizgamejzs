@@ -377,7 +377,7 @@ export default function EnhancedAudioPlayer({
           {/* Album cover or waveform visualizer */}
           {showVisualizer && (
             <div className="mb-4 flex w-full justify-center">
-              <div className="relative flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg bg-gray-100 shadow-md">
+              <div className="relative flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg bg-gray-100 shadow-md dark:bg-gray-900">
                 {!isPlaying ? (
                   <img
                     alt="album cover"
