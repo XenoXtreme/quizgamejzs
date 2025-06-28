@@ -353,6 +353,58 @@ export default function EnhancedAudioPlayer({
     };
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        document.activeElement &&
+        ["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(
+          document.activeElement.tagName,
+        )
+      )
+        return;
+      switch (e.code) {
+        case "Space":
+        case "KeyK":
+          e.preventDefault();
+          togglePlayPause();
+          break;
+        case "KeyM":
+          toggleMute();
+          break;
+        case "ArrowUp":
+          setVolume((v) => Math.min(v + 10, 100));
+          break;
+        case "ArrowDown":
+          setVolume((v) => Math.max(v - 10, 0));
+          break;
+        case "KeyR":
+          resetAudio();
+          break;
+        default:
+          break;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line
+  }, [isPlaying, volume, isMuted, duration, currentTime]);
+
+  const lastTap = useRef<number>(0);
+  const handleVisualizerTap = (e: React.TouchEvent<HTMLDivElement>) => {
+    const now = Date.now();
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    const x = e.touches[0]?.clientX ?? 0;
+    if (now - lastTap.current < 300) {
+      // Double tap: seek
+      if (x - rect.left < rect.width / 2) {
+        skipBackward();
+      } else {
+        skipForward();
+      }
+    }
+    lastTap.current = now;
+  };
+
   return (
     <Card
       className={`w-full overflow-hidden border border-gray-200 bg-white p-0 shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
@@ -377,7 +429,10 @@ export default function EnhancedAudioPlayer({
           {/* Album cover or waveform visualizer */}
           {showVisualizer && (
             <div className="mb-4 flex w-full justify-center">
-              <div className="relative flex aspect-video w-full max-w-md items-center justify-center overflow-hidden rounded-lg bg-gray-100 shadow-md dark:bg-gray-900">
+              <div
+                className="xs:max-w-sm relative flex aspect-video w-full max-w-xs items-center justify-center overflow-hidden rounded-lg bg-gray-100 shadow-md sm:max-w-md dark:bg-gray-900"
+                onTouchEnd={handleVisualizerTap}
+              >
                 {!isPlaying ? (
                   <img
                     alt="album cover"
@@ -390,8 +445,8 @@ export default function EnhancedAudioPlayer({
                     currentTime={currentTime}
                     duration={duration}
                     volume={volume}
-                    width={480}
-                    height={140}
+                    width={320}
+                    height={90}
                     barColor="#2563eb"
                   />
                 )}
@@ -430,20 +485,20 @@ export default function EnhancedAudioPlayer({
 
           {/* Title */}
           <div className="mb-2 text-center">
-            <h3 className="truncate text-base font-medium text-[silver] sm:text-lg">
+            <h3 className="xs:text-base truncate text-sm font-medium text-[silver] sm:text-lg">
               {title}
             </h3>
           </div>
 
           {/* Progress bar */}
-          <div className="mb-2">
+          <div className="xs:px-4 mb-2 px-2">
             <div className="mb-1 flex justify-between text-xs text-gray-500">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
             </div>
-            <div className="relative mb-2 h-2.5 w-full rounded-full bg-gray-200">
+            <div className="relative mb-2 h-2 w-full rounded-full bg-gray-200">
               <div
-                className="pointer-events-none absolute top-0 left-0 h-2.5 rounded-full bg-blue-600"
+                className="pointer-events-none absolute top-0 left-0 h-2 rounded-full bg-blue-600"
                 style={{
                   width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
                 }}
@@ -461,29 +516,32 @@ export default function EnhancedAudioPlayer({
                 onMouseUp={handleSeekEnd}
                 onTouchEnd={handleSeekEnd}
                 disabled={duration <= 0 || isLoading || !!error}
-                className="absolute z-10 h-2.5 w-full cursor-pointer appearance-none bg-transparent opacity-0"
+                className="absolute z-10 h-2 w-full cursor-pointer appearance-none bg-transparent opacity-0"
               />
             </div>
           </div>
 
           {/* Main controls */}
-          <div className="mb-4 flex flex-wrap items-center justify-center space-x-2 sm:space-x-4">
+          <div className="xs:gap-3 mb-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
             <Tooltip content="Go back 10 seconds">
               <Button
-                className="cursor-pointer"
+                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow-md transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
                 color="light"
-                size="sm"
+                size="md"
                 onClick={skipBackward}
                 pill
                 disabled={isLoading || currentTime <= 0 || !!error}
               >
-                <FontAwesomeIcon icon={faStepBackward} />
+                <FontAwesomeIcon
+                  icon={faStepBackward}
+                  className="text-lg sm:text-xl"
+                />
               </Button>
             </Tooltip>
             <Button
-              className="cursor-pointer bg-pink-700 text-white"
+              className="scale-110 cursor-pointer !rounded-full !border-0 !bg-blue-600 !text-white !shadow-lg transition-all duration-150 hover:!bg-blue-700 focus:!ring-2 focus:!ring-blue-400"
               color={isPlaying ? "failure" : "success"}
-              size="lg"
+              size="md"
               onClick={togglePlayPause}
               disabled={isLoading || (duration <= 0 && !src) || !!error}
               pill
@@ -495,9 +553,9 @@ export default function EnhancedAudioPlayer({
             </Button>
             <Tooltip content="Go forward 10 seconds">
               <Button
-                className="cursor-pointer"
+                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow-md transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
                 color="light"
-                size="sm"
+                size="md"
                 onClick={skipForward}
                 pill
                 disabled={
@@ -506,25 +564,28 @@ export default function EnhancedAudioPlayer({
                   !!error
                 }
               >
-                <FontAwesomeIcon icon={faStepForward} />
+                <FontAwesomeIcon
+                  icon={faStepForward}
+                  className="text-lg sm:text-xl"
+                />
               </Button>
             </Tooltip>
           </div>
 
           {/* Secondary controls */}
-          <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
+          <div className="mb-2 flex flex-row items-center justify-center gap-4">
             <div className="flex items-center">
               <Button
                 color="light"
-                size="xs"
+                size="md"
                 onClick={toggleMute}
-                className="mr-2 cursor-pointer"
+                className="mr-2 cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
                 disabled={isLoading || !!error}
                 pill
               >
                 <FontAwesomeIcon
                   icon={isMuted ? faVolumeMute : faVolumeUp}
-                  className="text-gray-600"
+                  className="text-lg sm:text-xl"
                 />
               </Button>
               <input
@@ -533,20 +594,20 @@ export default function EnhancedAudioPlayer({
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="h-1 w-16 cursor-pointer appearance-none rounded-lg bg-gray-200 sm:w-20"
+                className="xs:w-24 h-2 w-16 cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 sm:w-28"
                 disabled={isMuted || isLoading || !!error}
               />
             </div>
             <Tooltip content="Reset to beginning">
               <Button
-                className="cursor-pointer"
+                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
                 color="light"
-                size="xs"
+                size="md"
                 onClick={resetAudio}
                 disabled={isLoading || currentTime === 0 || !!error}
                 pill
               >
-                <FontAwesomeIcon icon={faRedo} className="text-gray-600" />
+                <FontAwesomeIcon icon={faRedo} className="text-lg sm:text-xl" />
               </Button>
             </Tooltip>
           </div>

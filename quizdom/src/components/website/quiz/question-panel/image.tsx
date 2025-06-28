@@ -14,7 +14,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
-// Error display component (styled like audio error)
+// Error display component
 function ImageError({ message }: { message: string }) {
   return (
     <div className="flex w-full flex-col items-center justify-center px-4 py-8">
@@ -106,7 +106,6 @@ export default function EnhancedImageViewer({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    // toast.success("Download started");
   };
 
   // Rotate image left
@@ -155,6 +154,94 @@ export default function EnhancedImageViewer({
     }
   };
 
+  const lastTouchDistance = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+      lastTouchDistance.current = dist;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+      const delta = dist - lastTouchDistance.current;
+      if (Math.abs(delta) > 5) {
+        setZoom((prev) => {
+          let next = prev + delta * 0.005;
+          next = Math.max(0.5, Math.min(3, next));
+          return next;
+        });
+        lastTouchDistance.current = dist;
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length < 2) {
+      lastTouchDistance.current = null;
+    }
+  };
+
+  // --- Responsive: Double-tap to zoom/reset on mobile ---
+  const lastTap = useRef<number>(0);
+  const handleImageTap = (e: React.TouchEvent<HTMLImageElement>) => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      // Double tap: toggle zoom
+      setZoom((prev) => (prev === 1 ? 2 : 1));
+    }
+    lastTap.current = now;
+  };
+
+  // --- Responsive: Keyboard shortcuts for accessibility ---
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        document.activeElement &&
+        ["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(
+          document.activeElement.tagName,
+        )
+      )
+        return;
+      switch (e.code) {
+        case "ArrowLeft":
+          rotateLeft();
+          break;
+        case "ArrowRight":
+          rotateRight();
+          break;
+        case "ArrowUp":
+          zoomIn();
+          break;
+        case "ArrowDown":
+          zoomOut();
+          break;
+        case "KeyR":
+          resetZoom();
+          break;
+        case "KeyF":
+          toggleFullscreen();
+          break;
+        case "KeyD":
+          if (downloadable) downloadImage();
+          break;
+        default:
+          break;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line
+  }, [zoom, downloadable]);
+
   // Listen for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -163,6 +250,13 @@ export default function EnhancedImageViewer({
         // Reset zoom and rotation when exiting fullscreen
         setZoom(1);
         setRotation(0);
+        // Fix: force image to re-render by updating key
+        if (imageRef.current) {
+          imageRef.current.style.display = "none";
+          setTimeout(() => {
+            if (imageRef.current) imageRef.current.style.display = "block";
+          }, 10);
+        }
       }
     };
 
@@ -190,7 +284,7 @@ export default function EnhancedImageViewer({
     <Card
       className={`w-full overflow-hidden border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
     >
-      {/* Loading spinner (always show while loading, even if error) */}
+      {/* Loading spinner */}
       {isLoading && (
         <div className="absolute inset-0 z-45 flex items-center justify-center bg-white/80 dark:bg-gray-900/80">
           <Spinner size="xl" color="info" />
@@ -207,6 +301,9 @@ export default function EnhancedImageViewer({
           className={`relative flex h-full w-full flex-col ${isFullscreen ? "bg-black" : "bg-white dark:bg-gray-900"}`}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => isFullscreen && setControlsVisible(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Title bar (visible in normal mode and when hovering in fullscreen) */}
           {displayTitle && (!isFullscreen || controlsVisible) && (
@@ -214,7 +311,7 @@ export default function EnhancedImageViewer({
               className={`p-2 sm:p-3 ${isFullscreen ? "absolute top-0 right-0 left-0 z-10 bg-black/70" : "border-b border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"}`}
             >
               <h3
-                className={`truncate text-base font-medium sm:text-lg ${isFullscreen ? "text-white" : "text-gray-800 dark:text-gray-100"}`}
+                className={`truncate text-xs font-medium sm:text-base sm:text-lg ${isFullscreen ? "text-white" : "text-gray-800 dark:text-gray-100"}`}
               >
                 {displayTitle}
               </h3>
@@ -234,131 +331,108 @@ export default function EnhancedImageViewer({
                 ref={imageRef}
                 src={src}
                 alt={alt}
-                className="max-h-[60vh] max-w-full rounded object-contain shadow-md transition-transform duration-200 sm:max-h-[80vh]"
+                className="xs:max-h-[60vh] max-h-[40vh] w-auto max-w-full cursor-pointer rounded object-contain shadow-md transition-transform duration-200 sm:max-h-[80vh]"
                 style={{
                   transform: `rotate(${rotation}deg) scale(${zoom})`,
                   display: isLoading ? "none" : "block",
-                  cursor: isFullscreen ? "zoom-out" : "default",
+                  cursor: isFullscreen ? "zoom-out" : "pointer",
                   background:
                     "linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)",
+                  touchAction: "none",
                 }}
                 onLoad={handleImageLoad}
                 onError={handleImageError}
+                onTouchEnd={handleImageTap}
               />
             )}
-            {/* Spinner removed from here */}
           </div>
 
           {/* Controls overlay (shown in fullscreen or if controls are enabled) */}
           {showControls && (!isFullscreen || controlsVisible) && (
             <div
-              className={`flex flex-wrap items-center justify-between p-2 sm:p-3 ${isFullscreen ? "absolute right-0 bottom-0 left-0 bg-black/70 transition-opacity duration-300" : "border-t border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"} ${isFullscreen && !controlsVisible ? "opacity-0" : "opacity-100"} `}
+              className={`flex flex-col flex-wrap items-center justify-between gap-2 p-2 sm:flex-row sm:gap-0 sm:p-3 ${isFullscreen ? "absolute right-0 bottom-0 left-0 bg-black/70 transition-opacity duration-300" : "border-t border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"} ${isFullscreen && !controlsVisible ? "opacity-0" : "opacity-100"} `}
             >
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex w-full flex-wrap items-center justify-center gap-2 sm:w-auto">
                 {/* Zoom controls */}
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={zoomOut}
                   disabled={zoom <= 0.5}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                   pill
+                  aria-label="Zoom out"
                 >
                   <FontAwesomeIcon icon={faSearchMinus} />
                 </Button>
-
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={resetZoom}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                   pill
+                  aria-label="Reset zoom"
                 >
                   <FontAwesomeIcon icon={faSearch} />
                 </Button>
-
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={zoomIn}
                   disabled={zoom >= 3}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                   pill
+                  aria-label="Zoom in"
                 >
                   <FontAwesomeIcon icon={faSearchPlus} />
                 </Button>
               </div>
 
-              <div className="mt-2 flex items-center space-x-1 sm:mt-0 sm:space-x-2">
+              <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2 sm:mt-0 sm:w-auto">
                 {/* Rotation controls */}
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={rotateLeft}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                   pill
+                  aria-label="Rotate left"
                 >
                   <FontAwesomeIcon icon={faRotateLeft} />
                 </Button>
-
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={rotateRight}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "hover:bg_gray-800 border-gray-600 bg-transparent text-white" : ""}`}
                   pill
+                  aria-label="Rotate right"
                 >
                   <FontAwesomeIcon icon={faRotateRight} />
                 </Button>
-
                 {/* Download button */}
                 {downloadable && (
                   <Button
                     color={isFullscreen ? "dark" : "light"}
                     size="xs"
                     onClick={downloadImage}
-                    className={
-                      isFullscreen
-                        ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                        : "cursor-pointer"
-                    }
+                    className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                     pill
+                    aria-label="Download image"
                   >
                     <FontAwesomeIcon icon={faDownload} />
                   </Button>
                 )}
-
                 {/* Fullscreen toggle */}
                 <Button
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={toggleFullscreen}
-                  className={
-                    isFullscreen
-                      ? "cursor-pointer border-gray-600 bg-transparent text-white hover:bg-gray-800"
-                      : "cursor-pointer"
-                  }
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
                   pill
+                  aria-label={
+                    isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+                  }
                 >
                   <FontAwesomeIcon
                     icon={isFullscreen ? faCompress : faExpand}

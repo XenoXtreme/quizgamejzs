@@ -69,6 +69,11 @@ export default function EnhancedVideoPlayer({
   const [error, setError] = useState<string | null>(null);
   const [showSpeedDropdown, setShowSpeedDropdown] = useState<boolean>(false);
   const speedDropdownRef = useRef<HTMLDivElement>(null);
+  const [seekIndicator, setSeekIndicator] = useState<null | {
+    dir: "forward" | "backward";
+    key: number;
+  }>(null);
+  const seekIndicatorKey = useRef(0);
 
   // Format time in MM:SS format
   const formatTime = (timeInSeconds: number): string => {
@@ -77,6 +82,103 @@ export default function EnhancedVideoPlayer({
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  // --- Enhanced: Keyboard shortcuts ---
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!videoRef.current) return;
+      // Only trigger if focused on player or no input is focused
+      if (
+        document.activeElement &&
+        ["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(
+          document.activeElement.tagName,
+        )
+      )
+        return;
+
+      switch (e.code) {
+        case "Space":
+        case "KeyK":
+          e.preventDefault();
+          togglePlayPause();
+          break;
+        case "KeyM":
+          e.preventDefault();
+          toggleMute();
+          break;
+        case "KeyF":
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          changeVolume(Math.min(volume + 10, 100));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          changeVolume(Math.max(volume - 10, 0));
+          break;
+        default:
+          break;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line
+  }, [isPlaying, volume, isMuted, isFullscreen, duration]);
+
+  // --- Enhanced: Volume change helper for keyboard ---
+  const changeVolume = (newVolume: number) => {
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume / 100;
+      if (isMuted && newVolume > 0) {
+        videoRef.current.muted = false;
+        setIsMuted(false);
+      }
+    }
+  };
+
+  // --- Enhanced: Double-tap seek for mobile ---
+  let lastTap = useRef<number>(0);
+  let tapTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleVideoTouch = (e: React.TouchEvent<HTMLVideoElement>) => {
+    if (!videoRef.current) return;
+    const touch = e.touches[0];
+    const rect = videoRef.current.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const width = rect.width;
+    const now = Date.now();
+
+    if (now - lastTap.current < 300) {
+      // Double tap detected
+      if (x < width * 0.4) {
+        skipBackward();
+        showSeekIndicator("backward");
+      } else if (x > width * 0.6) {
+        skipForward();
+        showSeekIndicator("forward");
+      } else {
+        togglePlayPause();
+      }
+      if (tapTimeout.current) clearTimeout(tapTimeout.current);
+    } else {
+      tapTimeout.current = setTimeout(() => {
+        // Single tap: show controls
+        setShowControls(true);
+      }, 300);
+    }
+    lastTap.current = now;
+  };
+
+  const showSeekIndicator = (dir: "forward" | "backward") => {
+    seekIndicatorKey.current += 1;
+    setSeekIndicator({ dir, key: seekIndicatorKey.current });
+    setTimeout(() => {
+      setSeekIndicator(null);
+    }, 700);
   };
 
   // Handle play/pause toggle
@@ -191,6 +293,12 @@ export default function EnhancedVideoPlayer({
       }, 3000);
       setHoverTimer(timer);
     }
+  };
+
+  // Prevent controls from hiding when interacting
+  const handleControlsMouseEnter = () => {
+    if (hoverTimer) clearTimeout(hoverTimer);
+    setShowControls(true);
   };
 
   // Reset video state when source changes
@@ -353,6 +461,8 @@ export default function EnhancedVideoPlayer({
           className="relative w-full"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => isPlaying && setShowControls(false)}
+          tabIndex={0}
+          aria-label="Video player container"
         >
           {/* Video element */}
           <video
@@ -360,8 +470,11 @@ export default function EnhancedVideoPlayer({
             preload="metadata"
             poster={poster}
             onClick={handleVideoClick}
-            className="max-h-[60vh] w-full cursor-pointer rounded-t-lg bg-black sm:max-h-[80vh]"
+            onTouchEnd={handleVideoTouch}
+            className="max-h-[32vh] w-full cursor-pointer rounded-t-lg bg-black object-contain transition-all duration-200 sm:max-h-[40vh] md:max-h-[60vh] lg:max-h-[80vh]"
             onError={handleVideoError}
+            tabIndex={0}
+            aria-label="Video"
           >
             <source src={src} type="video/mp4" />
             Your browser does not support the video element.
@@ -369,7 +482,7 @@ export default function EnhancedVideoPlayer({
 
           {/* Loading overlay */}
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/80">
               <div className="flex animate-pulse flex-col items-center justify-center text-white">
                 <svg
                   className="h-10 w-10 animate-spin text-white sm:h-12 sm:w-12"
@@ -398,13 +511,32 @@ export default function EnhancedVideoPlayer({
             </div>
           )}
 
+          {/* Seek indicator overlay (double-tap/keyboard) */}
+          {seekIndicator && (
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+              <span className="flex animate-bounce items-center justify-center rounded-full bg-black/60 px-3 py-1 text-lg text-white select-none sm:text-2xl md:text-3xl">
+                <FontAwesomeIcon
+                  icon={
+                    seekIndicator.dir === "forward"
+                      ? faStepForward
+                      : faStepBackward
+                  }
+                  className="mr-2"
+                />
+                {seekIndicator.dir === "forward" ? "+10s" : "-10s"}
+              </span>
+            </div>
+          )}
+
           {/* Video controls overlay */}
           <div
-            className={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 z-10 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            onMouseEnter={handleControlsMouseEnter}
+            onTouchStart={handleControlsMouseEnter}
           >
             {/* Title */}
             <div className="absolute top-0 right-0 left-0 bg-gradient-to-b from-black/80 to-transparent p-2 sm:p-3">
-              <h3 className="truncate text-base font-medium text-white drop-shadow sm:text-lg">
+              <h3 className="xs:text-sm truncate text-xs font-medium text-white drop-shadow sm:text-base md:text-lg">
                 {title}
               </h3>
             </div>
@@ -412,21 +544,22 @@ export default function EnhancedVideoPlayer({
             <div className="p-2 sm:p-3">
               {/* Progress bar */}
               <div className="mb-2">
-                <div className="mb-1 flex justify-between text-xs text-white">
+                <div className="xs:text-xs mb-1 flex justify-between text-[10px] text-white sm:text-sm">
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration)}</span>
                 </div>
-                <div className="group relative mb-2 h-2 w-full rounded-full bg-gray-600/70">
+                <div className="group xs:h-3 relative mb-2 h-2 w-full rounded-full bg-gray-600/70">
                   <input
                     type="range"
                     min="0"
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="absolute z-10 h-2 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
+                    className="xs:h-3 absolute z-10 h-2 w-full cursor-pointer appearance-none bg-transparent [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
+                    aria-label="Seek"
                   />
                   <div
-                    className="h-2 rounded-full bg-blue-500"
+                    className="xs:h-3 h-2 rounded-full bg-blue-500"
                     style={{
                       width: `${(currentTime / (duration || 1)) * 100}%`,
                     }}
@@ -435,14 +568,17 @@ export default function EnhancedVideoPlayer({
               </div>
 
               {/* Main controls */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center space-x-1 sm:space-x-2">
+              {/* --- Responsive controls layout --- */}
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                {/* Controls row: stack vertically on mobile, horizontally on md+ */}
+                <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 md:w-auto">
                   <Button
                     color="light"
                     size="xs"
                     onClick={skipBackward}
                     pill
-                    className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    aria-label="Skip backward 10 seconds"
+                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                   >
                     <FontAwesomeIcon icon={faStepBackward} />
                   </Button>
@@ -452,11 +588,12 @@ export default function EnhancedVideoPlayer({
                     size="sm"
                     onClick={togglePlayPause}
                     pill
-                    className="cursor-pointer border border-blue-700 bg-blue-600 text-white hover:bg-blue-700"
+                    aria-label={isPlaying ? "Pause" : "Play"}
+                    className="min-h-[44px] min-w-[44px] cursor-pointer border border-blue-700 bg-blue-600 text-white hover:bg-blue-700"
                   >
                     <FontAwesomeIcon
                       icon={isPlaying ? faPauseCircle : faPlayCircle}
-                      className="text-lg sm:text-xl"
+                      className="text-lg sm:text-xl md:text-2xl"
                     />
                   </Button>
 
@@ -465,24 +602,25 @@ export default function EnhancedVideoPlayer({
                     size="xs"
                     onClick={skipForward}
                     pill
-                    className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    aria-label="Skip forward 10 seconds"
+                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                   >
                     <FontAwesomeIcon icon={faStepForward} />
                   </Button>
 
-                  <div className="ml-1 flex items-center sm:ml-2">
+                  <div className="ml-2 flex items-center">
                     <Button
                       color="light"
                       size="xs"
                       onClick={toggleMute}
                       pill
-                      className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                      aria-label={isMuted ? "Unmute" : "Mute"}
+                      className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                     >
                       <FontAwesomeIcon
                         icon={isMuted ? faVolumeMute : faVolumeUp}
                       />
                     </Button>
-
                     {!isMuted && (
                       <input
                         type="range"
@@ -490,20 +628,23 @@ export default function EnhancedVideoPlayer({
                         max="100"
                         value={volume}
                         onChange={handleVolumeChange}
-                        className="ml-1 h-1 w-12 cursor-pointer appearance-none rounded-lg bg-gray-600 sm:w-16 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                        className="ml-1 h-2 w-16 cursor-pointer appearance-none rounded-lg bg-gray-600 sm:w-20 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                        aria-label="Volume"
                       />
                     )}
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-center space-x-1 sm:mt-0 sm:space-x-2">
+                {/* Second row for extra controls, stacked below on mobile */}
+                <div className="mt-2 flex w-full flex-row items-center justify-center gap-2 md:mt-0 md:w-auto">
                   {/* Playback speed control */}
                   <div className="relative">
                     <Button
                       color="light"
                       size="xs"
                       pill
-                      className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                      aria-label="Playback speed"
+                      className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                       onClick={() => setShowSpeedDropdown((v: boolean) => !v)}
                     >
                       <span className="text-xs font-medium">
@@ -513,7 +654,7 @@ export default function EnhancedVideoPlayer({
                     {showSpeedDropdown && (
                       <div
                         ref={speedDropdownRef}
-                        className="absolute right-0 bottom-full z-10 mb-2 rounded-md bg-gray-800 p-1 shadow-lg"
+                        className="absolute right-0 bottom-full z-10 mb-2 min-w-[70px] rounded-md bg-gray-800 p-1 shadow-lg"
                       >
                         {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
                           <button
@@ -523,6 +664,7 @@ export default function EnhancedVideoPlayer({
                               setShowSpeedDropdown(false);
                             }}
                             className={`block w-full cursor-pointer rounded px-3 py-1 text-left text-xs hover:bg-gray-700 ${playbackRate === rate ? "text-blue-400" : "text-white"}`}
+                            aria-label={`Set speed to ${rate}x`}
                           >
                             {rate}x
                           </button>
@@ -537,7 +679,8 @@ export default function EnhancedVideoPlayer({
                     size="xs"
                     onClick={resetVideo}
                     pill
-                    className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    aria-label="Restart video"
+                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                   >
                     <FontAwesomeIcon icon={faRedo} />
                   </Button>
@@ -548,7 +691,10 @@ export default function EnhancedVideoPlayer({
                     size="xs"
                     onClick={toggleFullscreen}
                     pill
-                    className="cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    aria-label={
+                      isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+                    }
+                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
                   >
                     <FontAwesomeIcon
                       icon={isFullscreen ? faCompress : faExpand}
@@ -562,13 +708,14 @@ export default function EnhancedVideoPlayer({
           {/* Play/Pause Button Overlay (visible when paused) */}
           {!isPlaying && !isLoading && (
             <button
-              className="group absolute inset-0 flex cursor-pointer items-center justify-center bg-black/30"
+              className="group absolute inset-0 z-20 flex cursor-pointer items-center justify-center bg-black/30"
               onClick={togglePlayPause}
+              aria-label="Play"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white/30 bg-blue-600/80 text-white shadow-lg transition-colors group-hover:bg-blue-600 sm:h-16 sm:w-16">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white/30 bg-blue-600/80 text-white shadow-lg transition-colors group-hover:bg-blue-600 sm:h-16 sm:w-16 md:h-20 md:w-20">
                 <FontAwesomeIcon
                   icon={faPlayCircle}
-                  className="text-2xl sm:text-3xl"
+                  className="text-2xl sm:text-3xl md:text-4xl"
                 />
               </span>
             </button>
