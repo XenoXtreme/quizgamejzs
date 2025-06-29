@@ -153,6 +153,7 @@ export default function QuestionPanel({
     if (!isPrevDisabled) {
       router.push(getPrevURL());
     }
+    return;
   };
 
   // Navigate to next question
@@ -160,6 +161,7 @@ export default function QuestionPanel({
     if (!isNextDisabled) {
       router.push(getNextURL());
     }
+    return;
   };
 
   // Check authorization on component mount
@@ -330,7 +332,7 @@ export default function QuestionPanel({
           </div>
         </div>
 
-        <div className="relative flex h-full w-full flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 p-1 sm:p-2 md:p-6 dark:from-gray-800 dark:to-gray-900">
+        <div className="block flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 p-1 sm:h-[80vh] sm:w-[89vw] sm:p-2 md:h-full md:w-full md:p-6 dark:from-gray-800 dark:to-gray-900">
           <Component {...getComponentProps()} />
         </div>
 

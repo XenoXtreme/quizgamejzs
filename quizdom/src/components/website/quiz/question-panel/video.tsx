@@ -74,6 +74,7 @@ export default function EnhancedVideoPlayer({
     key: number;
   }>(null);
   const seekIndicatorKey = useRef(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Format time in MM:SS format
   const formatTime = (timeInSeconds: number): string => {
@@ -84,7 +85,6 @@ export default function EnhancedVideoPlayer({
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  // --- Enhanced: Keyboard shortcuts ---
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!videoRef.current) return;
@@ -128,7 +128,6 @@ export default function EnhancedVideoPlayer({
     // eslint-disable-next-line
   }, [isPlaying, volume, isMuted, isFullscreen, duration]);
 
-  // --- Enhanced: Volume change helper for keyboard ---
   const changeVolume = (newVolume: number) => {
     setVolume(newVolume);
     if (videoRef.current) {
@@ -140,13 +139,48 @@ export default function EnhancedVideoPlayer({
     }
   };
 
-  // --- Enhanced: Double-tap seek for mobile ---
   let lastTap = useRef<number>(0);
   let tapTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  // Detect mobile (phone) mode
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 640);
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Auto-hide controls after a period of inactivity (3s) on mobile
+  useEffect(() => {
+    if (!isMobile) return;
+    if (!isPlaying) return;
+    if (!showControls) return;
+    const timer = setTimeout(() => setShowControls(false), 3000);
+    return () => clearTimeout(timer);
+  }, [isMobile, isPlaying, showControls]);
+
+  // Show seek indicator for double-tap/keyboard skip
+  const showSeekIndicator = (dir: "forward" | "backward") => {
+    seekIndicatorKey.current += 1;
+    setSeekIndicator({ dir, key: seekIndicatorKey.current });
+    setTimeout(() => {
+      setSeekIndicator(null);
+    }, 800);
+  };
+
+  // Show controls for a few seconds on touch (like YouTube)
   const handleVideoTouch = (e: React.TouchEvent<HTMLVideoElement>) => {
     if (!videoRef.current) return;
+    setShowControls(true);
+    if (isMobile) {
+      // Hide after 3s
+      setTimeout(() => setShowControls(false), 3000);
+    }
+    // Double tap logic
     const touch = e.touches[0];
+    if (!touch) return; // Guard for undefined touch
     const rect = videoRef.current.getBoundingClientRect();
     const x = touch.clientX - rect.left;
     const width = rect.width;
@@ -166,19 +200,11 @@ export default function EnhancedVideoPlayer({
       if (tapTimeout.current) clearTimeout(tapTimeout.current);
     } else {
       tapTimeout.current = setTimeout(() => {
-        // Single tap: show controls
         setShowControls(true);
+        if (isMobile) setTimeout(() => setShowControls(false), 3000);
       }, 300);
     }
     lastTap.current = now;
-  };
-
-  const showSeekIndicator = (dir: "forward" | "backward") => {
-    seekIndicatorKey.current += 1;
-    setSeekIndicator({ dir, key: seekIndicatorKey.current });
-    setTimeout(() => {
-      setSeekIndicator(null);
-    }, 700);
   };
 
   // Handle play/pause toggle
@@ -229,7 +255,6 @@ export default function EnhancedVideoPlayer({
     if (!videoRef.current) return;
     videoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
-    toast.info(isMuted ? "Unmuted video" : "Muted video");
   };
 
   // Handle volume change
@@ -530,36 +555,44 @@ export default function EnhancedVideoPlayer({
 
           {/* Video controls overlay */}
           <div
-            className={`absolute inset-0 z-10 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            className={`absolute inset-0 z-10 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "pointer-events-none opacity-0"} ${isMobile ? "p-1" : ""} `}
             onMouseEnter={handleControlsMouseEnter}
             onTouchStart={handleControlsMouseEnter}
           >
             {/* Title */}
-            <div className="absolute top-0 right-0 left-0 bg-gradient-to-b from-black/80 to-transparent p-2 sm:p-3">
-              <h3 className="xs:text-sm truncate text-xs font-medium text-white drop-shadow sm:text-base md:text-lg">
+            <div
+              className={`absolute top-0 right-0 left-0 bg-gradient-to-b from-black/80 to-transparent ${isMobile ? "p-1" : "p-2 sm:p-3"}`}
+            >
+              <h3
+                className={`truncate font-medium text-white drop-shadow ${isMobile ? "text-xs" : "xs:text-sm text-xs sm:text-base md:text-lg"}`}
+              >
                 {title}
               </h3>
             </div>
 
-            <div className="p-2 sm:p-3">
+            <div className={isMobile ? "p-1" : "p-2 sm:p-3"}>
               {/* Progress bar */}
               <div className="mb-2">
-                <div className="xs:text-xs mb-1 flex justify-between text-[10px] text-white sm:text-sm">
+                <div
+                  className={`mb-1 flex justify-between text-white ${isMobile ? "text-[10px]" : "xs:text-xs text-[10px] sm:text-sm"}`}
+                >
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration)}</span>
                 </div>
-                <div className="group xs:h-3 relative mb-2 h-2 w-full rounded-full bg-gray-600/70">
+                <div
+                  className={`group relative mb-2 w-full rounded-full bg-gray-600/70 ${isMobile ? "h-1" : "xs:h-3 h-2"}`}
+                >
                   <input
                     type="range"
                     min="0"
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="xs:h-3 absolute z-10 h-2 w-full cursor-pointer appearance-none bg-transparent [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500"
+                    className={`absolute z-10 w-full cursor-pointer appearance-none bg-transparent ${isMobile ? "h-1 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2" : "xs:h-3 h-2 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4"} [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500`}
                     aria-label="Seek"
                   />
                   <div
-                    className="xs:h-3 h-2 rounded-full bg-blue-500"
+                    className={`rounded-full bg-blue-500 ${isMobile ? "h-1" : "xs:h-3 h-2"}`}
                     style={{
                       width: `${(currentTime / (duration || 1)) * 100}%`,
                     }}
@@ -568,54 +601,62 @@ export default function EnhancedVideoPlayer({
               </div>
 
               {/* Main controls */}
-              {/* --- Responsive controls layout --- */}
-              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                {/* Controls row: stack vertically on mobile, horizontally on md+ */}
-                <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2 md:w-auto">
+              <div
+                className={`flex flex-col gap-2 md:flex-row md:items-center md:justify-between`}
+              >
+                <div
+                  className={`flex w-full flex-row flex-wrap items-center justify-center gap-2 md:w-auto ${isMobile ? "gap-1" : ""}`}
+                >
                   <Button
                     color="light"
-                    size="xs"
+                    size={isMobile ? "xs" : "xs"}
                     onClick={skipBackward}
                     pill
                     aria-label="Skip backward 10 seconds"
-                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                   >
                     <FontAwesomeIcon icon={faStepBackward} />
                   </Button>
 
                   <Button
                     color="light"
-                    size="sm"
+                    size={isMobile ? "xs" : "sm"}
                     onClick={togglePlayPause}
                     pill
                     aria-label={isPlaying ? "Pause" : "Play"}
-                    className="min-h-[44px] min-w-[44px] cursor-pointer border border-blue-700 bg-blue-600 text-white hover:bg-blue-700"
+                    className={`cursor-pointer border border-blue-700 bg-blue-600 text-white hover:bg-blue-700 ${isMobile ? "min-h-[32px] min-w-[32px] text-base" : "min-h-[44px] min-w-[44px]"}`}
                   >
                     <FontAwesomeIcon
                       icon={isPlaying ? faPauseCircle : faPlayCircle}
-                      className="text-lg sm:text-xl md:text-2xl"
+                      className={
+                        isMobile
+                          ? "text-base"
+                          : "text-lg sm:text-xl md:text-2xl"
+                      }
                     />
                   </Button>
 
                   <Button
                     color="light"
-                    size="xs"
+                    size={isMobile ? "xs" : "xs"}
                     onClick={skipForward}
                     pill
                     aria-label="Skip forward 10 seconds"
-                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                   >
                     <FontAwesomeIcon icon={faStepForward} />
                   </Button>
 
-                  <div className="ml-2 flex items-center">
+                  <div
+                    className={`ml-2 flex items-center ${isMobile ? "ml-1" : ""}`}
+                  >
                     <Button
                       color="light"
-                      size="xs"
+                      size={isMobile ? "xs" : "xs"}
                       onClick={toggleMute}
                       pill
                       aria-label={isMuted ? "Unmute" : "Mute"}
-                      className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                      className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                     >
                       <FontAwesomeIcon
                         icon={isMuted ? faVolumeMute : faVolumeUp}
@@ -628,7 +669,7 @@ export default function EnhancedVideoPlayer({
                         max="100"
                         value={volume}
                         onChange={handleVolumeChange}
-                        className="ml-1 h-2 w-16 cursor-pointer appearance-none rounded-lg bg-gray-600 sm:w-20 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                        className={`ml-1 cursor-pointer appearance-none rounded-lg bg-gray-600 ${isMobile ? "h-1 w-10 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2" : "h-2 w-16 sm:w-20 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3"} [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white`}
                         aria-label="Volume"
                       />
                     )}
@@ -636,15 +677,17 @@ export default function EnhancedVideoPlayer({
                 </div>
 
                 {/* Second row for extra controls, stacked below on mobile */}
-                <div className="mt-2 flex w-full flex-row items-center justify-center gap-2 md:mt-0 md:w-auto">
+                <div
+                  className={`mt-2 flex w-full flex-row items-center justify-center gap-2 md:mt-0 md:w-auto ${isMobile ? "gap-1" : ""}`}
+                >
                   {/* Playback speed control */}
                   <div className="relative">
                     <Button
                       color="light"
-                      size="xs"
+                      size={isMobile ? "xs" : "xs"}
                       pill
                       aria-label="Playback speed"
-                      className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                      className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                       onClick={() => setShowSpeedDropdown((v: boolean) => !v)}
                     >
                       <span className="text-xs font-medium">
@@ -676,11 +719,11 @@ export default function EnhancedVideoPlayer({
                   {/* Reset button */}
                   <Button
                     color="light"
-                    size="xs"
+                    size={isMobile ? "xs" : "xs"}
                     onClick={resetVideo}
                     pill
                     aria-label="Restart video"
-                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                   >
                     <FontAwesomeIcon icon={faRedo} />
                   </Button>
@@ -688,13 +731,13 @@ export default function EnhancedVideoPlayer({
                   {/* Fullscreen button */}
                   <Button
                     color="light"
-                    size="xs"
+                    size={isMobile ? "xs" : "xs"}
                     onClick={toggleFullscreen}
                     pill
                     aria-label={
                       isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
                     }
-                    className="min-h-[36px] min-w-[36px] cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20"
+                    className={`cursor-pointer border border-white/20 bg-transparent text-white hover:bg-white/20 ${isMobile ? "min-h-[28px] min-w-[28px] text-xs" : "min-h-[36px] min-w-[36px]"}`}
                   >
                     <FontAwesomeIcon
                       icon={isFullscreen ? faCompress : faExpand}

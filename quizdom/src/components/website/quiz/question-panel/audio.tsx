@@ -21,6 +21,7 @@ function AudioVisualizer({
   volume,
   width = 480,
   height = 140,
+  barColor = "#2563eb",
 }: {
   isPlaying: boolean;
   currentTime: number;
@@ -29,203 +30,62 @@ function AudioVisualizer({
   width?: number;
   height?: number;
   barColor?: string;
-  glowColor?: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const barHeights = useRef<number[]>([]);
-  const particles = useRef<
-    Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      life: number;
-      hue: number;
-    }>
-  >([]);
+  const lastBarHeights = useRef<number[]>([]);
 
   useEffect(() => {
+    if (!isPlaying) return;
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!ctx || !canvas) return;
-
-    const barCount = 80;
-    const barWidth = width / barCount;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     let animationId: number;
-
-    barHeights.current = barHeights.current.length
-      ? barHeights.current
-      : Array(barCount).fill(0);
-
-    const draw = () => {
-      if (!isPlaying) return;
-
-      // Background with radial gradient
-      const bgGrad = ctx.createRadialGradient(
-        width / 2,
-        height / 2,
-        0,
-        width / 2,
-        height / 2,
-        Math.max(width, height) / 2,
-      );
-      bgGrad.addColorStop(0, "#1a1a2e");
-      bgGrad.addColorStop(1, "#0f0f1e");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const t = currentTime + performance.now() / 2000;
-      const v = Math.max(0.15, volume / 100);
-      const beat =
-        Math.abs(Math.sin(Math.PI * t * 1.8)) *
-        Math.abs(Math.sin(Math.PI * t * 1.1));
-
-      // Spawn particles on strong beats with smoother timing
-      if (beat > 0.65 && Math.random() < 0.25) {
-        particles.current.push({
-          x: Math.random() * width,
-          y: height,
-          vx: (Math.random() - 0.5) * 3,
-          vy: -Math.random() * 4 - 2,
-          life: 80,
-          hue: Math.random() * 360,
-        });
-      }
-
-      // Update particles
-      particles.current = particles.current.filter((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.08;
-        p.life--;
-
-        const alpha = p.life / 80;
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2 * alpha, 0, Math.PI * 2);
-        ctx.fill();
-
-        return p.life > 0 && p.y < height + 20;
-      });
-
-      // Draw bars
-      for (let i = 0; i < barCount; i++) {
-        const freq = 0.3 + 0.5 * Math.sin(t * 0.7 + i * 0.08);
-        const wave1 = Math.abs(Math.sin(t * freq + i * 0.15));
-        const wave2 = Math.abs(Math.sin(t * freq * 1.3 + i * 0.12));
-        const wave3 = Math.abs(Math.sin(t * freq * 0.8 + i * 0.18));
-        const combined = (wave1 * 0.4 + wave2 * 0.35 + wave3 * 0.25) * beat * v;
-
-        // Frequency response simulation
-        const bassBoost = i < barCount * 0.25 ? 1.4 : 1.0;
-        const midBoost = i > barCount * 0.3 && i < barCount * 0.7 ? 1.1 : 1.0;
-        const trebleBoost = i > barCount * 0.75 ? 1.3 : 1.0;
-
-        const targetHeight =
-          combined * height * 0.85 * bassBoost * midBoost * trebleBoost +
-          height * 0.08;
-
-        // Ultra-smooth interpolation with momentum
-        const prev = barHeights.current[i];
-        const momentum = targetHeight > prev ? 0.12 : 0.08;
-        const smoothed = prev + (targetHeight - prev) * momentum;
-        barHeights.current[i] = smoothed;
-
-        const x = i * barWidth;
-        const actualWidth = barWidth * 0.9;
-        const h = barHeights.current[i];
-
-        // Gentle gradient per bar with slower color cycling
-        const hue = (i / barCount) * 360 + t * 15;
-        const grad = ctx.createLinearGradient(x, height - h, x, height);
-        grad.addColorStop(0, `hsl(${hue}, 75%, 65%)`);
-        grad.addColorStop(0.6, `hsl(${(hue + 40) % 360}, 70%, 55%)`);
-        grad.addColorStop(1, `hsl(${(hue + 80) % 360}, 65%, 45%)`);
-
-        // Main bar
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.roundRect(x + 1, height - h, actualWidth - 2, h, 4);
-        ctx.fill();
-
-        // Glow effect
-        if (h > height * 0.5) {
-          ctx.shadowColor = `hsl(${hue}, 80%, 60%)`;
-          ctx.shadowBlur = (h / height) * 25;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-
-        // Peak dot
-        if (h > height * 0.8) {
-          ctx.fillStyle = `hsl(${hue + 120}, 90%, 80%)`;
-          ctx.beginPath();
-          ctx.arc(x + actualWidth / 2, height - h - 5, 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Subtle reflection
-        const refGrad = ctx.createLinearGradient(
-          x,
-          height,
-          x,
-          height + h * 0.2,
-        );
-        refGrad.addColorStop(0, `hsla(${hue}, 60%, 50%, 0.3)`);
-        refGrad.addColorStop(1, `hsla(${hue}, 60%, 50%, 0)`);
-        ctx.fillStyle = refGrad;
-        ctx.fillRect(x + 1, height, actualWidth - 2, h * 0.2);
-      }
-
-      // Smooth waveform overlay
-      ctx.strokeStyle = `hsla(${(t * 25) % 360}, 70%, 60%, 0.25)`;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      for (let x = 0; x < width; x += 4) {
-        const wave = Math.sin(x * 0.015 + t * 2.5) * beat * 12;
-        ctx.lineTo(x, height / 2 + wave);
-      }
-      ctx.stroke();
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    const fadeOut = () => {
+    const barCount = 20;
+    if (!lastBarHeights.current.length) {
+      lastBarHeights.current = Array(barCount).fill(0);
+    }
+    function draw() {
       if (!ctx) return;
-      ctx.fillStyle = "rgba(15, 15, 30, 0.1)";
-      ctx.fillRect(0, 0, width, height);
-
-      let hasActive = false;
-      for (let i = 0; i < barHeights.current.length; i++) {
-        barHeights.current[i] *= 0.96; // Slower fade
-        if (barHeights.current[i] > 1.5) {
-          hasActive = true;
-          const x = i * barWidth;
-          const h = barHeights.current[i];
-          const hue = (i / barCount) * 360;
-          ctx.fillStyle = `hsla(${hue}, 60%, 50%, 0.8)`;
-          ctx.fillRect(x + 1, height - h, barWidth * 0.9 - 2, h);
-        }
+      ctx.clearRect(0, 0, width, height);
+      const barWidth = width / barCount;
+      const t = currentTime + performance.now() / 1000 / 2;
+      const d = duration || 1;
+      const v = volume / 100;
+      const beat = Math.abs(Math.sin(Math.PI * t * 2));
+      const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
+      for (let i = 0; i < barCount; i++) {
+        const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
+        const base = Math.abs(Math.sin(t * freq + i * 0.25));
+        const pulse = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI + i * 0.1);
+        const noise = v ? (Math.sin(t * 3.7 + i) + 1) / 8 : 0;
+        const targetHeight =
+          (base * beat * envelope * pulse * v + noise) * height * 0.7 +
+          height * 0.1;
+        // Smooth the animation by interpolating previous and target heights
+        const prev = lastBarHeights.current[i] || 0;
+        const smoothHeight = prev + (targetHeight - prev) * 0.18;
+        lastBarHeights.current[i] = smoothHeight;
+        ctx.fillStyle = barColor;
+        ctx.fillRect(
+          i * barWidth,
+          height - smoothHeight,
+          barWidth * 0.7,
+          smoothHeight,
+        );
       }
-      if (hasActive) requestAnimationFrame(fadeOut);
-    };
-
-    isPlaying ? draw() : fadeOut();
+      animationId = requestAnimationFrame(draw);
+    }
+    animationId = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animationId);
-  }, [isPlaying, currentTime, duration, volume, width, height]);
-
+  }, [isPlaying, currentTime, duration, volume, width, height, barColor]);
   return (
-    <div className="h-full w-full p-1">
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        className="h-full w-full rounded-xl transition-all duration-500"
-        style={{
-          filter: `brightness(1.15) saturate(1.3) contrast(1.1)`,
-        }}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      width={width}
+      height={height}
+      className="h-full w-full rounded-lg bg-gray-100 dark:bg-gray-900"
+    />
   );
 }
 
@@ -317,8 +177,11 @@ export default function EnhancedAudioPlayer({
 
   // Skip forward 10 seconds
   const skipForward = () => {
-    if (!audioRef.current || duration <= 0) return;
-    const newTime = Math.min(currentTime + 10, duration);
+    if (!audioRef.current || audioRef.current.duration <= 0) return;
+    const newTime = Math.min(
+      audioRef.current.currentTime + 10,
+      audioRef.current.duration,
+    );
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -326,7 +189,7 @@ export default function EnhancedAudioPlayer({
   // Skip backward 10 seconds
   const skipBackward = () => {
     if (!audioRef.current) return;
-    const newTime = Math.max(currentTime - 10, 0);
+    const newTime = Math.max(audioRef.current.currentTime - 10, 0);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -662,10 +525,10 @@ export default function EnhancedAudioPlayer({
           </div>
 
           {/* Main controls */}
-          <div className="xs:gap-3 mb-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+          <div className="xs:gap-3 dark:bg mb-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
             <Tooltip content="Go back 10 seconds">
               <Button
-                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow-md transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
+                className="cursor-pointer rounded-full border-0 bg-gray-50 text-blue-600 shadow-md transition-all duration-150 hover:bg-blue-200 focus:!ring-2 focus:ring-blue-400 dark:focus:ring-pink-500"
                 color="light"
                 size="md"
                 onClick={skipBackward}
@@ -693,7 +556,7 @@ export default function EnhancedAudioPlayer({
             </Button>
             <Tooltip content="Go forward 10 seconds">
               <Button
-                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow-md transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
+                className="cursor-pointer rounded-full border-0 bg-gray-50 text-blue-600 shadow-md transition-all duration-150 hover:bg-blue-200 focus:!ring-2 focus:ring-blue-400 dark:focus:ring-pink-500"
                 color="light"
                 size="md"
                 onClick={skipForward}
@@ -715,19 +578,21 @@ export default function EnhancedAudioPlayer({
           {/* Secondary controls */}
           <div className="mb-2 flex flex-row items-center justify-center gap-4">
             <div className="flex items-center">
-              <Button
-                color="light"
-                size="md"
-                onClick={toggleMute}
-                className="mr-2 cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
-                disabled={isLoading || !!error}
-                pill
-              >
-                <FontAwesomeIcon
-                  icon={isMuted ? faVolumeMute : faVolumeUp}
-                  className="text-lg sm:text-xl"
-                />
-              </Button>
+              <Tooltip content={isMuted ? "Unmute" : "Mute"}>
+                <Button
+                  color="light"
+                  size="md"
+                  onClick={toggleMute}
+                  className="mr-2 cursor-pointer rounded-full border-0 bg-gray-50 text-blue-600 shadow-md transition-all duration-150 hover:bg-blue-200 focus:!ring-2 focus:ring-blue-400 dark:focus:ring-pink-500"
+                  disabled={isLoading || !!error}
+                  pill
+                >
+                  <FontAwesomeIcon
+                    icon={isMuted ? faVolumeMute : faVolumeUp}
+                    className="text-lg sm:text-xl"
+                  />
+                </Button>
+              </Tooltip>
               <input
                 type="range"
                 min="0"
@@ -740,7 +605,7 @@ export default function EnhancedAudioPlayer({
             </div>
             <Tooltip content="Reset to beginning">
               <Button
-                className="cursor-pointer !rounded-full !border-0 !bg-white !text-blue-600 !shadow transition-all duration-150 hover:!bg-blue-50 focus:!ring-2 focus:!ring-blue-400"
+                className="cursor-pointer rounded-full border-0 text-blue-600 shadow-md transition-all duration-150 hover:bg-blue-200 focus:!ring-2 focus:ring-blue-400 dark:focus:ring-pink-500"
                 color="light"
                 size="md"
                 onClick={resetAudio}
