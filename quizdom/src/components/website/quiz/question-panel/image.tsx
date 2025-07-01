@@ -284,12 +284,6 @@ export default function EnhancedImageViewer({
     <Card
       className={`w-full overflow-hidden border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
     >
-      {/* Loading spinner */}
-      {isLoading && (
-        <div className="absolute inset-0 z-45 flex items-center justify-center bg-white/80 dark:bg-gray-900/80">
-          <Spinner size="xl" color="info" />
-        </div>
-      )}
       {/* Error display */}
       {error ? (
         <div className="flex w-full flex-col items-center justify-center py-8">
@@ -311,7 +305,7 @@ export default function EnhancedImageViewer({
               className={`p-2 sm:p-3 ${isFullscreen ? "absolute top-0 right-0 left-0 z-10 bg-black/70" : "border-b border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"}`}
             >
               <h3
-                className={`truncate text-xs font-medium sm:text-base sm:text-lg ${isFullscreen ? "text-white" : "text-gray-800 dark:text-gray-100"}`}
+                className={`truncate text-xs font-medium sm:text-lg ${isFullscreen ? "text-white" : "text-gray-800 dark:text-gray-100"}`}
               >
                 {displayTitle}
               </h3>
@@ -325,6 +319,15 @@ export default function EnhancedImageViewer({
             }`}
             onClick={isFullscreen ? toggleFullscreen : undefined}
           >
+            {/* Loading spinner */}
+            {isLoading && (
+              <div className="bg-opacity-50 flex h-[42vh] w-full animate-pulse flex-col items-center justify-center bg-black text-white">
+                <Spinner className="h-8 w-8 text-white sm:h-10 sm:w-10" />
+                <span className="mt-2 text-xs sm:text-base">
+                  Loading pics...
+                </span>
+              </div>
+            )}
             {/* Image */}
             {src && (
               <img
