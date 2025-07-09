@@ -299,7 +299,7 @@ export default function QuestionPanel({
         <div className="mb-4 flex flex-col items-center justify-between gap-2 sm:flex-row">
           <div className="flex flex-wrap items-center space-x-2">
             <Badge
-              color={showAns ? "success" : "info"}
+              color={showAns ? "green" : "blue"}
               size="sm"
               className="mb-1 cursor-pointer rounded-lg px-3 py-1 shadow sm:mb-0"
             >
@@ -313,7 +313,7 @@ export default function QuestionPanel({
               {getRoundFullName(round)}
             </Badge>
             <Badge
-              color="dark"
+              color="gray"
               size="sm"
               className="mb-1 rounded-lg px-3 py-1 shadow sm:mb-0"
             >

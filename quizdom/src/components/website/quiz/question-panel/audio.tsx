@@ -372,15 +372,19 @@ export default function EnhancedAudioPlayer({
           togglePlayPause();
           break;
         case "KeyM":
+          e.preventDefault();
           toggleMute();
           break;
         case "ArrowUp":
+          e.preventDefault();
           setVolume((v) => Math.min(v + 10, 100));
           break;
         case "ArrowDown":
+          e.preventDefault();
           setVolume((v) => Math.max(v - 10, 0));
           break;
         case "KeyR":
+          e.preventDefault();
           resetAudio();
           break;
         default:
