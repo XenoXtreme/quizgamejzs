@@ -57,6 +57,12 @@ export function AuthState({ children }: { children: ReactNode }) {
     }
   };
 
+  // SET USER
+  const getSetTeam = (_usr: Team) => {
+    setTeam(_usr);
+    setIsAuthenticated(true);
+  };
+
   // LOGIN USER WITH JWT
   const login = async (_id: string | null, password: string | null) => {
     const _req = await fetch(`${host}/api/auth/login`, {
@@ -69,8 +75,7 @@ export function AuthState({ children }: { children: ReactNode }) {
     });
     if (_req.ok) {
       const _response = await _req.json();
-      setTeam(_response);
-      setIsAuthenticated(true);
+      getSetTeam(_response);
       return _response;
     } else {
       throw new Error(`${_req.status} : ${_req.statusText}`);
@@ -92,16 +97,15 @@ export function AuthState({ children }: { children: ReactNode }) {
     const response = await req.json();
 
     if (response._id) {
-      setTeam(response);
-      setIsAuthenticated(true);
+      getSetTeam(response);
     }
     return response;
   };
 
-  // SET USER
-  const getSetTeam = (_usr: Team) => {
-    setTeam(_usr);
-    setIsAuthenticated(true)
+  // REMOVE USER
+  const removeTeam = () => {
+    setTeam(initialState);
+    setIsAuthenticated(false);
   };
 
   return (
@@ -114,6 +118,7 @@ export function AuthState({ children }: { children: ReactNode }) {
         login,
         fetchTeam,
         getSetTeam,
+        removeTeam,
       }}
     >
       {children}

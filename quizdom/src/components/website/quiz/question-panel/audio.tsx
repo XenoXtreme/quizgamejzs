@@ -21,7 +21,10 @@ function AudioVisualizer({
   volume,
   width = 480,
   height = 140,
-  barColor = "#2563eb",
+  barColor = "#2563eb", // Base color for the bars
+  peakColor = "#facc15", // Color for the peak indicator
+  gradientEndColor = "#60a5fa", // End color for the bar gradient
+  mirrorEffect = true, // Enable/disable mirror effect
 }: {
   isPlaying: boolean;
   currentTime: number;
@@ -30,9 +33,13 @@ function AudioVisualizer({
   width?: number;
   height?: number;
   barColor?: string;
+  peakColor?: string;
+  gradientEndColor?: string;
+  mirrorEffect?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastBarHeights = useRef<number[]>([]);
+  const peakHeights = useRef<number[]>([]); // To store peak heights for decay
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -40,45 +47,179 @@ function AudioVisualizer({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
     let animationId: number;
     const barCount = 20;
+    const barSpacing = 0.3; // Percentage of barWidth for spacing
+    const barCornerRadius = 2; // For rounded corners
+
     if (!lastBarHeights.current.length) {
       lastBarHeights.current = Array(barCount).fill(0);
+      peakHeights.current = Array(barCount).fill(0);
     }
+
     function draw() {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
-      const barWidth = width / barCount;
+
+      const singleBarWidth = width / (barCount + barCount * barSpacing);
+      const actualBarWidth = singleBarWidth;
+      const gap = singleBarWidth * barSpacing;
+
       const t = currentTime + performance.now() / 1000 / 2;
       const d = duration || 1;
       const v = volume / 100;
       const beat = Math.abs(Math.sin(Math.PI * t * 2));
       const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
+
+      // Draw background glow (subtle pulse)
+      const glowAlpha = 0.1 + 0.1 * Math.sin(t * Math.PI); // Pulsing alpha
+      ctx.fillStyle = `rgba(37, 99, 235, ${glowAlpha})`; // Blue glow
+      ctx.fillRect(0, 0, width, height);
+
       for (let i = 0; i < barCount; i++) {
         const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
         const base = Math.abs(Math.sin(t * freq + i * 0.25));
         const pulse = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI + i * 0.1);
         const noise = v ? (Math.sin(t * 3.7 + i) + 1) / 8 : 0;
+
         const targetHeight =
           (base * beat * envelope * pulse * v + noise) * height * 0.7 +
           height * 0.1;
+
         // Smooth the animation by interpolating previous and target heights
         const prev = lastBarHeights.current[i] || 0;
         const smoothHeight = prev + (targetHeight - prev) * 0.18;
         lastBarHeights.current[i] = smoothHeight;
-        ctx.fillStyle = barColor;
-        ctx.fillRect(
-          i * barWidth,
-          height - smoothHeight,
-          barWidth * 0.7,
+
+        // Update peak height
+        peakHeights.current[i] = Math.max(
+          peakHeights.current[i] * 0.98,
           smoothHeight,
+        ); // Decay and update
+
+        const x = i * (actualBarWidth + gap);
+        const barHeight = smoothHeight;
+
+        // Create gradient for the bar
+        const gradient = ctx.createLinearGradient(
+          x,
+          height - barHeight,
+          x,
+          height,
         );
+        gradient.addColorStop(0, barColor);
+        gradient.addColorStop(1, gradientEndColor);
+        ctx.fillStyle = gradient;
+
+        // Draw main bar (rounded rectangle)
+        ctx.beginPath();
+        ctx.moveTo(x + barCornerRadius, height - barHeight);
+        ctx.lineTo(x + actualBarWidth - barCornerRadius, height - barHeight);
+        ctx.quadraticCurveTo(
+          x + actualBarWidth,
+          height - barHeight,
+          x + actualBarWidth,
+          height - barHeight + barCornerRadius,
+        );
+        ctx.lineTo(x + actualBarWidth, height - barCornerRadius);
+        ctx.quadraticCurveTo(
+          x + actualBarWidth,
+          height,
+          x + actualBarWidth - barCornerRadius,
+          height,
+        );
+        ctx.lineTo(x + barCornerRadius, height);
+        ctx.quadraticCurveTo(x, height, x, height - barCornerRadius);
+        ctx.lineTo(x, height - barHeight + barCornerRadius);
+        ctx.quadraticCurveTo(
+          x,
+          height - barHeight,
+          x + barCornerRadius,
+          height - barHeight,
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw peak indicator
+        ctx.fillStyle = peakColor;
+        const peakLineHeight = 2; // Height of the peak line
+        ctx.fillRect(
+          x,
+          height - peakHeights.current[i] - peakLineHeight,
+          actualBarWidth,
+          peakLineHeight,
+        );
+
+        // Mirror effect
+        if (mirrorEffect) {
+          const mirrorY = height - barHeight;
+          const mirrorHeight = barHeight * 0.5; // Half the height for mirror
+          const mirrorGradient = ctx.createLinearGradient(
+            x,
+            mirrorY + mirrorHeight,
+            x,
+            mirrorY,
+          );
+          mirrorGradient.addColorStop(
+            0,
+            `rgba(${parseInt(barColor.slice(1, 3), 16)}, ${parseInt(barColor.slice(3, 5), 16)}, ${parseInt(barColor.slice(5, 7), 16)}, 0.2)`,
+          ); // Faded start
+          mirrorGradient.addColorStop(
+            1,
+            `rgba(${parseInt(gradientEndColor.slice(1, 3), 16)}, ${parseInt(gradientEndColor.slice(3, 5), 16)}, ${parseInt(gradientEndColor.slice(5, 7), 16)}, 0)`,
+          ); // Transparent end
+          ctx.fillStyle = mirrorGradient;
+
+          ctx.beginPath();
+          ctx.moveTo(x + barCornerRadius, mirrorY + mirrorHeight);
+          ctx.lineTo(
+            x + actualBarWidth - barCornerRadius,
+            mirrorY + mirrorHeight,
+          );
+          ctx.quadraticCurveTo(
+            x + actualBarWidth,
+            mirrorY + mirrorHeight,
+            x + actualBarWidth,
+            mirrorY + mirrorHeight - barCornerRadius,
+          );
+          ctx.lineTo(x + actualBarWidth, mirrorY + barCornerRadius);
+          ctx.quadraticCurveTo(
+            x + actualBarWidth,
+            mirrorY,
+            x + actualBarWidth - barCornerRadius,
+            mirrorY,
+          );
+          ctx.lineTo(x + barCornerRadius, mirrorY);
+          ctx.quadraticCurveTo(x, mirrorY, x, mirrorY + barCornerRadius);
+          ctx.lineTo(x, mirrorY + mirrorHeight - barCornerRadius);
+          ctx.quadraticCurveTo(
+            x,
+            mirrorY + mirrorHeight,
+            x + barCornerRadius,
+            mirrorY + mirrorHeight,
+          );
+          ctx.closePath();
+          ctx.fill();
+        }
       }
       animationId = requestAnimationFrame(draw);
     }
     animationId = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animationId);
-  }, [isPlaying, currentTime, duration, volume, width, height, barColor]);
+  }, [
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    width,
+    height,
+    barColor,
+    peakColor,
+    gradientEndColor,
+    mirrorEffect,
+  ]);
+
   return (
     <canvas
       ref={canvasRef}
@@ -98,7 +239,7 @@ interface AudioPlayerProps {
   className?: string;
 }
 
-// Error display component
+// Error display component (unchanged)
 function AudioError({ message }: { message: string }) {
   return (
     <div className="flex w-full flex-col items-center justify-center px-4 py-8">
@@ -146,7 +287,7 @@ export default function EnhancedAudioPlayer({
   // Error state
   const [error, setError] = useState<string | null>(null);
 
-  // Format time in MM:SS format
+  // Format time in MM:SS format (unchanged)
   const formatTime = (timeInSeconds: number): string => {
     if (isNaN(timeInSeconds)) return "00:00";
     const minutes = Math.floor(timeInSeconds / 60);
@@ -154,7 +295,7 @@ export default function EnhancedAudioPlayer({
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  // Handle play/pause toggle
+  // Handle play/pause toggle (unchanged)
   const togglePlayPause = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -175,7 +316,7 @@ export default function EnhancedAudioPlayer({
     }
   };
 
-  // Skip forward 10 seconds
+  // Skip forward 10 seconds (unchanged)
   const skipForward = () => {
     if (!audioRef.current || audioRef.current.duration <= 0) return;
     const newTime = Math.min(
@@ -186,7 +327,7 @@ export default function EnhancedAudioPlayer({
     setCurrentTime(newTime);
   };
 
-  // Skip backward 10 seconds
+  // Skip backward 10 seconds (unchanged)
   const skipBackward = () => {
     if (!audioRef.current) return;
     const newTime = Math.max(audioRef.current.currentTime - 10, 0);
@@ -194,21 +335,21 @@ export default function EnhancedAudioPlayer({
     setCurrentTime(newTime);
   };
 
-  // Reset to beginning
+  // Reset to beginning (unchanged)
   const resetAudio = () => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = 0;
     setCurrentTime(0);
   };
 
-  // Toggle mute state
+  // Toggle mute state (unchanged)
   const toggleMute = () => {
     if (!audioRef.current) return;
     audioRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
   };
 
-  // Handle volume change
+  // Handle volume change (unchanged)
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseInt(e.target.value);
     setVolume(newVolume);
@@ -221,7 +362,7 @@ export default function EnhancedAudioPlayer({
     }
   };
 
-  // Handle start of seeking
+  // Handle start of seeking (unchanged)
   const handleSeekStart = () => {
     setIsDragging(true);
     setWasPlayingBeforeSeek(isPlaying);
@@ -230,13 +371,13 @@ export default function EnhancedAudioPlayer({
     }
   };
 
-  // Handle seeking in the progress bar
+  // Handle seeking in the progress bar (unchanged)
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const seekTime = parseFloat(e.target.value);
     setCurrentTime(seekTime);
   };
 
-  // Handle end of seeking
+  // Handle end of seeking (unchanged)
   const handleSeekEnd = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const seekTime = parseFloat((e.target as HTMLInputElement).value);
     if (audioRef.current) {
@@ -252,7 +393,7 @@ export default function EnhancedAudioPlayer({
     setIsDragging(false);
   };
 
-  // Update audio source when src prop changes
+  // Update audio source when src prop changes (unchanged)
   useEffect(() => {
     if (audioRef.current) {
       setCurrentTime(0);
@@ -263,7 +404,7 @@ export default function EnhancedAudioPlayer({
     }
   }, [src]);
 
-  // Set up audio event listeners
+  // Set up audio event listeners (unchanged)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -304,7 +445,7 @@ export default function EnhancedAudioPlayer({
     };
   }, [isDragging, onPlayStateChange, volume]);
 
-  // Attach onError to <audio> and <source> directly for reliability
+  // Attach onError to <audio> and <source> directly for reliability (unchanged)
   const handleAudioElementError = (
     e?: React.SyntheticEvent<HTMLAudioElement | HTMLSourceElement, Event>,
   ) => {
@@ -340,14 +481,14 @@ export default function EnhancedAudioPlayer({
     setIsPlaying(false);
   };
 
-  // Update progress range max value when duration changes
+  // Update progress range max value when duration changes (unchanged)
   useEffect(() => {
     if (progressRef.current && duration > 0) {
       progressRef.current.max = duration.toString();
     }
   }, [duration]);
 
-  // Clean up audio context and analyser on unmount
+  // Clean up audio context and analyser on unmount (unchanged)
   useEffect(() => {
     return () => {
       if (audioRef.current) {
@@ -356,6 +497,7 @@ export default function EnhancedAudioPlayer({
     };
   }, []);
 
+  // Keyboard shortcuts (unchanged)
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
@@ -396,6 +538,7 @@ export default function EnhancedAudioPlayer({
     // eslint-disable-next-line
   }, [isPlaying, volume, isMuted, duration, currentTime]);
 
+  // Handle visualizer double tap (unchanged)
   const lastTap = useRef<number>(0);
   const handleVisualizerTap = (e: React.TouchEvent<HTMLDivElement>) => {
     const now = Date.now();
@@ -454,7 +597,10 @@ export default function EnhancedAudioPlayer({
                     volume={volume}
                     width={320}
                     height={90}
-                    barColor="#2563eb"
+                    barColor="#2563eb" // Base blue
+                    gradientEndColor="#60a5fa" // Lighter blue for gradient
+                    peakColor="#facc15" // Yellow for peaks
+                    mirrorEffect={true} // Enable mirror effect
                   />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center">

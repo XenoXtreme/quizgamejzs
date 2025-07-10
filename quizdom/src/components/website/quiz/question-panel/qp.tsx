@@ -294,28 +294,28 @@ export default function QuestionPanel({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 p-2 sm:p-4 md:p-8 dark:from-gray-900 dark:to-gray-950">
-      <Card className="mx-auto w-full max-w-6xl overflow-visible rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900">
+    <div className="min-h-screen bg-pink-50 p-2 sm:p-4 md:p-8 dark:bg-gray-950">
+      <Card className="mx-auto w-full max-w-6xl overflow-visible rounded-3xl border-2 border-pink-200 bg-white shadow-2xl ring-2 ring-pink-100/40 dark:border-pink-900 dark:bg-gray-900 dark:ring-pink-900/30">
         <div className="mb-4 flex flex-col items-center justify-between gap-2 sm:flex-row">
           <div className="flex flex-wrap items-center space-x-2">
             <Badge
-              color={showAns ? "green" : "blue"}
+              color={showAns ? "success" : "info"}
               size="sm"
-              className="mb-1 cursor-pointer rounded-lg px-3 py-1 shadow sm:mb-0"
+              className="mb-1 cursor-pointer rounded-lg border px-3 py-1 text-pink-900 shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg sm:mb-0 dark:border-pink-900"
             >
               {showAns ? "Answer" : "Question"}
             </Badge>
             <Badge
               color="purple"
               size="sm"
-              className="mb-1 cursor-pointer rounded-lg px-3 py-1 shadow sm:mb-0"
+              className="mb-1 cursor-pointer rounded-lg border px-3 py-1 text-purple-900 shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg sm:mb-0 dark:border-pink-900"
             >
               {getRoundFullName(round)}
             </Badge>
             <Badge
               color="gray"
               size="sm"
-              className="mb-1 rounded-lg px-3 py-1 shadow sm:mb-0"
+              className="mb-1 rounded-lg border border-pink-100 bg-white px-3 py-1 text-gray-700 shadow-md transition-all duration-200 hover:scale-105 hover:bg-blue-50 hover:shadow-lg sm:mb-0 dark:border-pink-900 dark:bg-pink-900 dark:text-gray-200 dark:hover:bg-pink-800"
             >
               <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
             </Badge>
@@ -332,7 +332,7 @@ export default function QuestionPanel({
           </div>
         </div>
 
-        <div className="block flex-1 items-center justify-center rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 p-1 sm:h-[80vh] sm:w-[89vw] sm:p-2 md:h-full md:w-full md:p-6 dark:from-gray-800 dark:to-gray-900">
+        <div className="block flex-1 items-center justify-center rounded-2xl bg-white p-1 sm:h-[80vh] sm:w-[89vw] sm:p-2 md:h-full md:w-full md:p-6 dark:bg-gray-900">
           <Component {...getComponentProps()} />
         </div>
 
@@ -341,7 +341,7 @@ export default function QuestionPanel({
             color="light"
             onClick={goToPrevious}
             disabled={isPrevDisabled}
-            className={`rounded-lg px-4 py-2 font-medium transition-all sm:px-6 ${isPrevDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer shadow hover:bg-gray-200 dark:hover:bg-gray-800"} w-full sm:w-auto`}
+            className={`rounded-lg border border-pink-100 bg-pink-100 px-4 py-2 font-medium text-blue-900 shadow-md transition-all sm:px-6 dark:border-pink-900 dark:bg-pink-900 dark:text-blue-100 ${isPrevDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-pink-200/80 dark:hover:bg-pink-800/80"} w-full sm:w-auto`}
           >
             <HiArrowLeft className="mr-2" />
             Previous
@@ -349,7 +349,7 @@ export default function QuestionPanel({
 
           <Button
             onClick={toggleAnswer}
-            className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 px-6 py-2 font-semibold text-white shadow transition-all hover:from-blue-600 hover:to-pink-600 sm:w-auto sm:px-8"
+            className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 via-pink-400 to-pink-500 px-6 py-2 font-semibold text-white shadow-lg ring-2 ring-pink-100/40 transition-all hover:from-blue-600 hover:via-pink-500 hover:to-pink-600 sm:w-auto sm:px-8 dark:ring-pink-900/30"
           >
             <HiSwitchHorizontal className="mr-2" />
             Show {showAns ? "Question" : "Answer"}
@@ -359,7 +359,7 @@ export default function QuestionPanel({
             color="light"
             onClick={goToNext}
             disabled={isNextDisabled}
-            className={`rounded-lg px-4 py-2 font-medium transition-all sm:px-6 ${isNextDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer shadow hover:bg-gray-200 dark:hover:bg-gray-800"} w-full sm:w-auto`}
+            className={`rounded-lg border border-pink-100 bg-pink-100 px-4 py-2 font-medium text-blue-900 shadow-md transition-all sm:px-6 dark:border-pink-900 dark:bg-pink-900 dark:text-blue-100 ${isNextDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-pink-200/80 dark:hover:bg-pink-800/80"} w-full sm:w-auto`}
           >
             Next
             <HiArrowRight className="ml-2" />

@@ -27,7 +27,8 @@ import {
 export default function AppBar() {
   const path = usePathname();
   const router = useRouter();
-  const { team, isAuthenticated, getSetTeam }: ContextType = useAuthContext();
+  const { team, isAuthenticated, getSetTeam, removeTeam }: ContextType =
+    useAuthContext();
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   const handleLogOut = () => {
@@ -37,12 +38,14 @@ export default function AppBar() {
     localStorage.removeItem("_id");
     localStorage.removeItem("_user");
 
-    toast.success("Successfully logged out.");
+    toast.success("Successfully logged out.", { duration: 600 });
 
     setTimeout(() => {
+      router.refresh();
       setIsLoggingOut(false);
+      removeTeam();
       router.push("/login");
-    }, 2000);
+    }, 500);
   };
 
   useEffect(() => {
@@ -174,7 +177,6 @@ export default function AppBar() {
               )}
               <DropdownDivider />
               <DropdownItem
-                
                 onClick={handleLogOut}
                 disabled={isLoggingOut}
                 className="dark:text-gray-200"

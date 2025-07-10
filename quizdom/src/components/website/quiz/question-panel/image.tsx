@@ -270,6 +270,20 @@ export default function EnhancedImageViewer({
     };
   }, [hoverTimer]);
 
+  // Hide controls after 3 seconds of inactivity (hover/tap)
+  useEffect(() => {
+    if (!controlsVisible) return;
+    if (hoverTimer) clearTimeout(hoverTimer);
+    const timer = setTimeout(() => setControlsVisible(false), 3000);
+    setHoverTimer(timer);
+    return () => clearTimeout(timer);
+  }, [controlsVisible]);
+
+  // Show controls on mouse move or tap
+  const handleShowControls = () => {
+    setControlsVisible(true);
+  };
+
   // Handle source changes
   useEffect(() => {
     if (src) {
@@ -282,7 +296,7 @@ export default function EnhancedImageViewer({
 
   return (
     <Card
-      className={`w-full overflow-hidden border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
+      className={`w-full overflow-hidden border-2 border-pink-200 bg-white shadow-xl dark:border-pink-900 dark:bg-gray-900 ${className} rounded-2xl ring-2 ring-pink-100/40 dark:ring-pink-900/30`}
     >
       {/* Error display */}
       {error ? (
@@ -292,20 +306,20 @@ export default function EnhancedImageViewer({
       ) : (
         <div
           ref={containerRef}
-          className={`relative flex h-full w-full flex-col ${isFullscreen ? "bg-black" : "bg-white dark:bg-gray-900"}`}
-          onMouseMove={handleMouseMove}
+          className={`relative flex h-full w-full flex-col ${isFullscreen ? "bg-black" : "bg-white dark:bg-gray-900"} rounded-2xl`}
+          onMouseMove={handleShowControls}
           onMouseLeave={() => isFullscreen && setControlsVisible(false)}
-          onTouchStart={handleTouchStart}
+          onTouchStart={handleShowControls}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           {/* Title bar (visible in normal mode and when hovering in fullscreen) */}
           {displayTitle && (!isFullscreen || controlsVisible) && (
             <div
-              className={`p-2 sm:p-3 ${isFullscreen ? "absolute top-0 right-0 left-0 z-10 bg-black/70" : "border-b border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"}`}
+              className={`p-2 sm:p-3 ${isFullscreen ? "absolute top-0 right-0 left-0 z-10 bg-pink-900/80 shadow-lg" : "border-b border-pink-100 bg-white dark:border-pink-900 dark:bg-gray-900"}`}
             >
               <h3
-                className={`truncate text-xs font-medium sm:text-lg ${isFullscreen ? "text-white" : "text-gray-800 dark:text-gray-100"}`}
+                className={`truncate text-xs font-semibold tracking-wide sm:text-lg ${isFullscreen ? "text-white drop-shadow-[0_2px_8px_rgba(255,0,128,0.18)]" : "text-pink-900 dark:text-pink-100"}`}
               >
                 {displayTitle}
               </h3>
@@ -321,7 +335,7 @@ export default function EnhancedImageViewer({
           >
             {/* Loading spinner */}
             {isLoading && (
-              <div className="bg-opacity-50 flex h-[42vh] w-full animate-pulse flex-col items-center justify-center bg-black text-white">
+              <div className="bg-opacity-50 flex h-[42vh] w-full animate-pulse flex-col items-center justify-center rounded-2xl bg-pink-900/80 text-white shadow-lg">
                 <Spinner className="h-8 w-8 text-white sm:h-10 sm:w-10" />
                 <span className="mt-2 text-xs sm:text-base">
                   Loading pics...
@@ -331,6 +345,7 @@ export default function EnhancedImageViewer({
             {/* Image */}
             {src && (
               <img
+                fetchPriority="auto"
                 ref={imageRef}
                 src={src}
                 alt={alt}
@@ -353,7 +368,7 @@ export default function EnhancedImageViewer({
           {/* Controls overlay (shown in fullscreen or if controls are enabled) */}
           {showControls && (!isFullscreen || controlsVisible) && (
             <div
-              className={`flex flex-col flex-wrap items-center justify-between gap-2 p-2 sm:flex-row sm:gap-0 sm:p-3 ${isFullscreen ? "absolute right-0 bottom-0 left-0 bg-black/70 transition-opacity duration-300" : "border-t border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"} ${isFullscreen && !controlsVisible ? "opacity-0" : "opacity-100"} `}
+              className={`flex flex-col flex-wrap items-center justify-between gap-2 p-2 sm:flex-row sm:gap-0 sm:p-3 ${isFullscreen ? "absolute right-0 bottom-0 left-0 bg-pink-900/80 shadow-lg transition-opacity duration-300" : "border-t border-pink-100 bg-white dark:border-pink-900 dark:bg-gray-900"} ${isFullscreen && !controlsVisible ? "opacity-0" : "opacity-100"} rounded-b-2xl`}
             >
               <div className="flex w-full flex-wrap items-center justify-center gap-2 sm:w-auto">
                 {/* Zoom controls */}
@@ -362,7 +377,7 @@ export default function EnhancedImageViewer({
                   size="xs"
                   onClick={zoomOut}
                   disabled={zoom <= 0.5}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label="Zoom out"
                 >
@@ -372,7 +387,7 @@ export default function EnhancedImageViewer({
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={resetZoom}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label="Reset zoom"
                 >
@@ -383,7 +398,7 @@ export default function EnhancedImageViewer({
                   size="xs"
                   onClick={zoomIn}
                   disabled={zoom >= 3}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label="Zoom in"
                 >
@@ -397,7 +412,7 @@ export default function EnhancedImageViewer({
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={rotateLeft}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label="Rotate left"
                 >
@@ -407,7 +422,7 @@ export default function EnhancedImageViewer({
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={rotateRight}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "hover:bg_gray-800 border-gray-600 bg-transparent text-white" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label="Rotate right"
                 >
@@ -419,7 +434,7 @@ export default function EnhancedImageViewer({
                     color={isFullscreen ? "dark" : "light"}
                     size="xs"
                     onClick={downloadImage}
-                    className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                    className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                     pill
                     aria-label="Download image"
                   >
@@ -431,7 +446,7 @@ export default function EnhancedImageViewer({
                   color={isFullscreen ? "dark" : "light"}
                   size="xs"
                   onClick={toggleFullscreen}
-                  className={`min-h-[36px] min-w-[36px] cursor-pointer ${isFullscreen ? "border-gray-600 bg-transparent text-white hover:bg-gray-800" : ""}`}
+                  className={`min-h-[36px] min-w-[36px] cursor-pointer border-pink-200 bg-pink-100/80 text-pink-700 shadow-md hover:bg-pink-200/90 dark:border-pink-900 dark:bg-pink-900/80 dark:text-pink-100 dark:hover:bg-pink-800/90 ${isFullscreen ? "border-pink-700 bg-pink-900/80 text-white hover:bg-pink-800/90" : ""}`}
                   pill
                   aria-label={
                     isFullscreen ? "Exit fullscreen" : "Enter fullscreen"

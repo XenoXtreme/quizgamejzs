@@ -268,11 +268,7 @@ export default function Home() {
               className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
               required
             >
-              {[
-                "Intraschool (Junior)",
-                "Intraschool (Senior)",
-                "Interschool (Senior)",
-              ].map((opt) => (
+              {["Interschool (Senior)"].map((opt) => (
                 <option key={opt} value={opt}>
                   {opt}
                 </option>

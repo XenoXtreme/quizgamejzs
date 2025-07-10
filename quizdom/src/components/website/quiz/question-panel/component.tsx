@@ -120,7 +120,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white p-4 shadow-xl ring-2 ring-pink-100/40 sm:p-8 dark:bg-gray-900 dark:ring-pink-900/30">
       {renderContent()}
     </div>
   );

@@ -473,7 +473,7 @@ export default function EnhancedVideoPlayer({
 
   return (
     <Card
-      className={`w-full overflow-hidden border border-gray-200 bg-white p-0 shadow-lg dark:border-gray-700 dark:bg-gray-900 ${className}`}
+      className={`w-full overflow-hidden rounded-2xl border-2 border-pink-200 bg-white shadow-2xl ring-2 ring-pink-100/40 dark:border-pink-900 dark:bg-gray-900 dark:ring-pink-900/30 ${className}`}
     >
       {/* Error display */}
       {error ? (
@@ -483,7 +483,7 @@ export default function EnhancedVideoPlayer({
       ) : (
         <div
           ref={videoContainerRef}
-          className="relative w-full"
+          className="relative w-full rounded-2xl bg-white dark:bg-gray-900"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => isPlaying && setShowControls(false)}
           tabIndex={0}
@@ -496,7 +496,7 @@ export default function EnhancedVideoPlayer({
             poster={poster}
             onClick={handleVideoClick}
             onTouchEnd={handleVideoTouch}
-            className="max-h-[32vh] w-full cursor-pointer rounded-t-lg bg-black object-contain transition-all duration-200 sm:max-h-[40vh] md:max-h-[60vh] lg:max-h-[80vh]"
+            className="max-h-[32vh] w-full cursor-pointer rounded-t-2xl bg-black object-contain ring-2 ring-pink-100/40 transition-all duration-200 sm:max-h-[40vh] md:max-h-[60vh] lg:max-h-[80vh] dark:ring-pink-900/30"
             onError={handleVideoError}
             tabIndex={0}
             aria-label="Video"
@@ -561,10 +561,10 @@ export default function EnhancedVideoPlayer({
           >
             {/* Title */}
             <div
-              className={`absolute top-0 right-0 left-0 bg-gradient-to-b from-black/80 to-transparent ${isMobile ? "p-1" : "p-2 sm:p-3"}`}
+              className={`absolute top-0 right-0 left-0 bg-gradient-to-b from-black/80 to-transparent shadow-lg ${isMobile ? "p-1" : "p-2 sm:p-3"}`}
             >
               <h3
-                className={`truncate font-medium text-white drop-shadow ${isMobile ? "text-xs" : "xs:text-sm text-xs sm:text-base md:text-lg"}`}
+                className={`truncate font-semibold text-white drop-shadow-[0_2px_8px_rgba(255,0,128,0.18)] ${isMobile ? "text-xs" : "xs:text-sm text-xs sm:text-base md:text-lg"}`}
               >
                 {title}
               </h3>
@@ -755,7 +755,7 @@ export default function EnhancedVideoPlayer({
               onClick={togglePlayPause}
               aria-label="Play"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white/30 bg-blue-600/80 text-white shadow-lg transition-colors group-hover:bg-blue-600 sm:h-16 sm:w-16 md:h-20 md:w-20">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-pink-200 bg-blue-600/80 text-white shadow-lg transition-colors group-hover:bg-blue-600 sm:h-16 sm:w-16 md:h-20 md:w-20">
                 <FontAwesomeIcon
                   icon={faPlayCircle}
                   className="text-2xl sm:text-3xl md:text-4xl"
