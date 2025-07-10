@@ -87,7 +87,11 @@ const CustomCarousel: React.FC<CarouselProps> = ({
 
   return (
     <div
-      className="relative h-[26rem] overflow-hidden rounded-xl bg-gray-200 shadow-lg transition-colors duration-300 dark:bg-gray-800"
+      className="relative h-[28rem] overflow-hidden rounded-3xl border border-yellow-100/60 bg-gradient-to-br from-[#fffbe6] via-[#f5e9c8] to-[#e6d7b6] shadow-2xl transition-colors duration-300 dark:border-yellow-900/40 dark:from-[#232323] dark:via-[#2d2d2d] dark:to-[#3a2d1a]"
+      style={{
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+      }}
       onMouseEnter={stopAutoPlay}
       onMouseLeave={startAutoPlay}
     >
@@ -101,51 +105,70 @@ const CustomCarousel: React.FC<CarouselProps> = ({
             key={index}
             src={image.src}
             alt={image.alt}
-            className=" h-full w-full flex-shrink-0 object-cover"
-            // Preload images for smoother transitions
+            className="h-full w-full flex-shrink-0 object-cover"
             loading={index === 0 ? "eager" : "lazy"}
+            style={{
+              boxShadow:
+                "0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 1.5px 6px 0 rgba(255, 215, 0, 0.08)",
+              borderRadius: "1.5rem",
+              border: "1.5px solid rgba(255, 215, 0, 0.09)",
+            }}
           />
         ))}
       </div>
 
       {/* Previous Button */}
       <button
-        className="absolute top-1/2 left-3 -translate-y-1/2 transform cursor-pointer rounded-full bg-white/70 p-2.5 shadow-md transition-all duration-300 ease-in-out hover:bg-yellow-200 focus:ring-2 focus:ring-yellow-400 focus:outline-none dark:bg-gray-900/70 dark:hover:bg-yellow-900"
+        className="absolute top-1/2 left-5 -translate-y-1/2 transform cursor-pointer rounded-full border border-yellow-200/60 bg-white/60 p-3 shadow-xl transition-all duration-300 ease-in-out hover:scale-110 hover:bg-yellow-100/80 focus:ring-2 focus:ring-yellow-400 focus:outline-none dark:border-yellow-900/40 dark:bg-gray-900/70 dark:hover:bg-yellow-900/80"
+        style={{
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        }}
         onClick={handlePrev}
         aria-label="Previous Image"
         type="button"
       >
         <FontAwesomeIcon
           icon={faChevronLeft}
-          className="h-5 w-5 text-yellow-700"
+          className="h-6 w-6 text-yellow-700 drop-shadow"
         />
       </button>
 
       {/* Next Button */}
       <button
-        className="absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer rounded-full bg-white/70 p-2.5 shadow-md transition-all duration-300 ease-in-out hover:bg-yellow-200 focus:ring-2 focus:ring-yellow-400 focus:outline-none dark:bg-gray-900/70 dark:hover:bg-yellow-900"
+        className="absolute top-1/2 right-5 -translate-y-1/2 transform cursor-pointer rounded-full border border-yellow-200/60 bg-white/60 p-3 shadow-xl transition-all duration-300 ease-in-out hover:scale-110 hover:bg-yellow-100/80 focus:ring-2 focus:ring-yellow-400 focus:outline-none dark:border-yellow-900/40 dark:bg-gray-900/70 dark:hover:bg-yellow-900/80"
+        style={{
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        }}
         onClick={handleNext}
         aria-label="Next Image"
         type="button"
       >
         <FontAwesomeIcon
           icon={faChevronRight}
-          className="h-5 w-5 text-yellow-700"
+          className="h-6 w-6 text-yellow-700 drop-shadow"
         />
       </button>
 
       {/* Navigation Dots */}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
+      <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 transform space-x-3">
         {images.map((_, idx) => (
           <button
             key={idx}
             onClick={() => goToSlide(idx)}
             aria-label={`Go to slide ${idx + 1}`}
-            className={`cursor-pointer block h-2.5 w-2.5 rounded-full transition-all duration-300 ease-in-out ${
+            className={`block h-3.5 w-3.5 cursor-pointer rounded-full border-2 shadow transition-all duration-300 ease-in-out ${
               idx === activeIndex
-                ? "scale-125 bg-yellow-500"
-                : "bg-yellow-200/80 hover:bg-yellow-400 dark:bg-gray-600/80 dark:hover:bg-gray-400"
+                ? "scale-125 border-yellow-600 bg-gradient-to-tr from-yellow-400 via-yellow-300 to-yellow-200 shadow-lg"
+                : "border-yellow-200 bg-yellow-100/80 hover:bg-yellow-300 dark:border-gray-500 dark:bg-gray-700/80"
             }`}
+            style={{
+              boxShadow:
+                idx === activeIndex
+                  ? "0 2px 8px 0 rgba(255, 215, 0, 0.25)"
+                  : undefined,
+            }}
           />
         ))}
       </div>
@@ -155,55 +178,60 @@ const CustomCarousel: React.FC<CarouselProps> = ({
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100 px-1 sm:px-2 py-6 sm:py-12 transition-colors duration-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-yellow-100 bg-white/90 p-4 sm:p-8 shadow-xl backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/90">
+    <div className="min-h-screen bg-gradient-to-br from-[#fffbe6] via-[#f5e9c8] to-[#e6d7b6] px-1 py-8 transition-colors duration-300 sm:px-2 sm:py-16 dark:from-[#232323] dark:via-[#2d2d2d] dark:to-[#3a2d1a]">
+      <div className="mx-auto w-11/12 max-w-5xl rounded-[2.5rem] border border-yellow-100/70 bg-white/80 p-6 shadow-2xl backdrop-blur-2xl sm:w-3/4 sm:p-12 dark:border-yellow-900/40 dark:bg-gray-900/80">
         <div className="flex flex-col items-center">
-          <div className="mb-4 sm:mb-8 w-full">
+          <div className="mb-6 w-full sm:mb-10">
             {/* Custom Carousel */}
             <CustomCarousel images={images} />
           </div>
-          <h1 className="mb-4 sm:mb-6 text-center text-2xl sm:text-4xl font-extrabold text-gray-800 drop-shadow dark:text-yellow-300">
+          <h1 className="mb-5 bg-gradient-to-tr from-yellow-700 via-yellow-600 to-yellow-400 bg-clip-text text-center text-3xl font-extrabold text-transparent drop-shadow sm:mb-8 sm:text-5xl dark:from-yellow-300 dark:via-yellow-200 dark:to-yellow-100">
             About Jalpaiguri Zilla School
           </h1>
-          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg text-gray-700 dark:text-gray-200">
-            <span className="font-semibold text-yellow-700 dark:text-yellow-400">
+          <p className="mb-6 text-center text-lg font-medium text-gray-700 sm:mb-8 sm:text-xl dark:text-gray-200">
+            <span className="font-bold text-yellow-700 dark:text-yellow-400">
               Celebrating 150 Years of Excellence!
             </span>
             <br />
             Jalpaiguri Zilla School, established on{" "}
-            <span className="font-semibold">26th May 1876</span>, is one of the
-            oldest and most prestigious educational institutions in Jalpaiguri, West Bengal.
-            With a rich heritage and a commitment to excellence, Jalpaiguri
-            Zilla School has been shaping young minds for generations.
+            <span className="font-semibold underline decoration-yellow-400/60 underline-offset-4">
+              26th May 1876
+            </span>
+            , is one of the oldest and most prestigious educational institutions
+            in Jalpaiguri, West Bengal. With a rich heritage and a commitment to
+            excellence, Jalpaiguri Zilla School has been shaping young minds for
+            generations.
           </p>
-          <div className="mb-4 sm:mb-8 w-full rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 sm:p-6 shadow dark:border-yellow-600 dark:bg-gray-800">
-            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-yellow-800 dark:text-yellow-400">
+          <div className="mb-6 w-full rounded-2xl border-l-8 border-yellow-400/80 bg-gradient-to-r from-yellow-50/80 via-white/80 to-yellow-100/80 p-6 shadow-xl sm:mb-10 sm:p-8 dark:border-yellow-600 dark:bg-gray-800/80">
+            <h2 className="dark:text-yellow-00 mb-2 text-2xl font-bold tracking-tight text-yellow-400 sm:text-3xl">
               150th Anniversary Special
             </h2>
-            <p className="text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+            <p className="text-base font-medium text-gray-700 sm:text-lg dark:text-gray-500">
               In 2026, Jalpaiguri Zilla School proudly marks its{" "}
-              <span className="font-semibold">150th anniversary</span>. For a
-              century and a half, we have been dedicated to nurturing talent,
-              fostering values, and building a legacy of learning. Join us in
-              celebrating this historic milestone!
+              <span className="font-semibold text-yellow-700 dark:text-yellow-400">
+                150th anniversary
+              </span>
+              . For a century and a half, we have been dedicated to nurturing
+              talent, fostering values, and building a legacy of learning. Join
+              us in celebrating this historic milestone!
             </p>
           </div>
-          <div className="grid w-full grid-cols-1 gap-4 sm:gap-8 md:grid-cols-2">
+          <div className="grid w-full grid-cols-1 gap-6 sm:gap-12 md:grid-cols-2">
             <div>
-              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
                 Our Mission
               </h2>
-              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+              <p className="mb-6 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
                 Our mission is to provide quality education that fosters
                 intellectual growth, creativity, and character development. We
                 strive to create a nurturing environment where students are
                 encouraged to achieve their full potential and become
                 responsible citizens.
               </p>
-              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-6 mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
                 Vision
               </h2>
-              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+              <p className="mb-6 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
                 Jalpaiguri Zilla School envisions empowering students to become
                 lifelong learners and leaders, equipped with knowledge, skills,
                 and values to meet the challenges of a rapidly changing world.
@@ -212,20 +240,20 @@ const About = () => {
               </p>
             </div>
             <div>
-              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-4 mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
                 History & Values
               </h2>
-              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+              <p className="mb-6 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
                 Founded over a century ago, Jalpaiguri Zilla School has a proud
                 tradition of academic achievement and holistic development. We
                 value integrity, respect, and a passion for learning. Our
                 dedicated faculty and staff work tirelessly to ensure that every
                 student receives the guidance and support they need to succeed.
               </p>
-              <h2 className="mt-4 mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+              <h2 className="mt-6 mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
                 Facilities
               </h2>
-              <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+              <p className="mb-6 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
                 The school campus features spacious classrooms, well-equipped
                 science and computer laboratories, a library with a rich
                 collection of books, and sports facilities that encourage
@@ -234,21 +262,21 @@ const About = () => {
               </p>
             </div>
           </div>
-          <div className="mt-4 sm:mt-8 w-full">
-            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+          <div className="mt-6 w-full sm:mt-12">
+            <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
               Holistic Development
             </h2>
-            <p className="mb-4 sm:mb-6 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+            <p className="mb-6 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
               At Jalpaiguri Zilla School, we believe in nurturing not just
               academic excellence but also creativity, leadership, and social
               responsibility. Our students participate in a wide range of
               co-curricular and extracurricular activities, including sports,
               arts, debates, and community service.
             </p>
-            <h2 className="mb-1 sm:mb-2 text-xl sm:text-2xl font-bold text-gray-800 dark:text-yellow-300">
+            <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-yellow-300">
               Why Choose Jalpaiguri Zilla School?
             </h2>
-            <ul className="mb-6 sm:mb-8 list-inside list-disc space-y-1 text-gray-700 dark:text-gray-200 text-sm sm:text-base">
+            <ul className="mb-8 list-inside list-disc space-y-2 text-base font-medium text-gray-700 sm:text-lg dark:text-gray-200">
               <li>Over 150 years of educational excellence</li>
               <li>Experienced and caring teachers</li>
               <li>Focus on both academics and co-curricular activities</li>

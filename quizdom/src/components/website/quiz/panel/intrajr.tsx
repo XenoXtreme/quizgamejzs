@@ -23,50 +23,68 @@ const nunito = Nunito({
 export default function Panel() {
   return (
     <div className={nunito.className}>
-      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-950 py-2 px-2">
-        <h1 className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 bg-white/80 dark:bg-gray-900/80 rounded-lg px-4 sm:px-6 py-3 shadow mb-6 sm:mb-10 mt-4">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-2 py-4 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950">
+        <h1 className="mt-4 mb-8 flex items-center gap-2 rounded-2xl border border-blue-100/60 bg-white/80 px-6 py-4 text-2xl font-bold text-blue-900 shadow-2xl backdrop-blur-xl sm:mb-12 sm:text-3xl md:text-4xl dark:border-blue-900/60 dark:bg-gray-900/80 dark:text-blue-300">
           <FontAwesomeIcon icon={faCube} />
           Rounds:
         </h1>
-        <section className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-10 px-2">
+        <section className="mb-8 grid w-full max-w-3xl grid-cols-1 gap-6 px-2 sm:mb-14 sm:grid-cols-2 sm:gap-10 md:grid-cols-3">
           {/* On Your Own */}
-          <Link href="/quiz/intraschool/junior/round/on-your-own" className="group">
-            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-blue-200 dark:border-blue-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-6 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer min-h-[160px] sm:min-h-[220px] min-w-[120px] sm:min-w-[180px] h-[180px] sm:h-[250px]">
+          <Link
+            href="/quiz/intraschool/junior/round/on-your-own"
+            className="group"
+          >
+            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-blue-200/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-blue-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(0,80,255,0.18)] sm:h-[250px] sm:min-h-[220px] sm:min-w-[180px] sm:p-8 dark:border-blue-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-blue-900/70">
               <img
                 src="/assets/static/person.jpg"
                 loading="lazy"
                 alt="person"
-                className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
+                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-blue-200/60 sm:mb-5 sm:h-24 sm:w-24 dark:ring-blue-900/60"
+                style={{
+                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
+                }}
               />
-              <h1 className="text-base sm:text-lg font-bold text-blue-900 dark:text-blue-200 group-hover:text-blue-600 dark:group-hover:text-pink-400 transition">
+              <h1 className="bg-gradient-to-tr from-blue-800 via-blue-600 to-blue-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-blue-900 group-hover:to-blue-500 sm:text-lg">
                 On Your Own
               </h1>
             </div>
           </Link>
           {/* Movie Mania */}
-          <Link href="/quiz/intraschool/junior/round/movie-mania" className="group">
-            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-yellow-200 dark:border-yellow-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-6 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer min-h-[160px] sm:min-h-[220px] min-w-[120px] sm:min-w-[180px] h-[180px] sm:h-[250px]">
+          <Link
+            href="/quiz/intraschool/junior/round/movie-mania"
+            className="group"
+          >
+            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-yellow-200/60 bg-gradient-to-br from-white/80 via-yellow-50/80 to-yellow-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(255,215,0,0.13)] sm:h-[250px] sm:min-h-[220px] sm:min-w-[180px] sm:p-8 dark:border-yellow-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-yellow-900/70">
               <img
                 src="/assets/static/movie.jpg"
                 loading="lazy"
                 alt="movie"
-                className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
+                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-yellow-200/60 sm:mb-5 sm:h-24 sm:w-24 dark:ring-yellow-900/60"
+                style={{
+                  background: "linear-gradient(135deg, #fffbe0 0%, #fff 100%)",
+                }}
               />
-              <h1 className="text-base sm:text-lg font-bold text-yellow-700 dark:text-yellow-200 group-hover:text-yellow-500 transition">
+              <h1 className="bg-gradient-to-tr from-yellow-700 via-yellow-500 to-yellow-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-yellow-800 group-hover:to-yellow-600 sm:text-lg">
                 Movie Mania
               </h1>
             </div>
           </Link>
           {/* On Your Fingertips */}
-          <Link href="/quiz/intraschool/junior/round/on-your-fingertips" className="group">
-            <div className="flex flex-col items-center rounded-2xl shadow-xl border-2 border-indigo-200 dark:border-indigo-900 bg-white/80 dark:bg-gray-900/80 p-4 sm:p-6 hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer min-h-[160px] sm:min-h-[220px] min-w-[120px] sm:min-w-[180px] h-[180px] sm:h-[250px]">
+          <Link
+            href="/quiz/intraschool/junior/round/on-your-fingertips"
+            className="group"
+          >
+            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-indigo-200/60 bg-gradient-to-br from-white/80 via-indigo-50/80 to-indigo-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(80,80,255,0.13)] sm:h-[250px] sm:min-h-[220px] sm:min-w-[180px] sm:p-8 dark:border-indigo-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-indigo-900/70">
               <img
                 src="/assets/static/fingertips.png"
                 loading="lazy"
                 alt="fingertips"
-                className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl mb-2 sm:mb-4 shadow"
+                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-indigo-200/60 sm:mb-5 sm:h-24 sm:w-24 dark:ring-indigo-900/60"
+                style={{
+                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
+                }}
               />
-              <h1 className="text-base sm:text-lg font-bold text-indigo-700 dark:text-indigo-200 group-hover:text-indigo-500 transition">
+              <h1 className="xs:text-base bg-gradient-to-tr from-indigo-700 via-indigo-500 to-indigo-400 bg-clip-text text-center text-sm font-bold text-transparent transition group-hover:from-indigo-800 group-hover:to-indigo-600 sm:text-xl dark:text-indigo-200">
                 On Your Fingertips
               </h1>
             </div>

@@ -24,17 +24,17 @@ export default function PPTViewer({ category }: { category: string }) {
   }
 
   return (
-    <div className="mt-6 flex flex-col items-center gap-4 rounded-none bg-white/70 p-2 shadow-xl backdrop-blur-lg transition-all sm:rounded-2xl sm:p-6 dark:bg-slate-900/80">
-      <div className="mb-4 flex w-full gap-2 overflow-x-auto rounded-xl bg-white/60 px-2 py-2 shadow-md backdrop-blur-md sm:w-auto sm:px-4 sm:py-3 dark:bg-slate-800/60">
+    <div className="mt-8 flex flex-col items-center gap-6 rounded-3xl bg-gradient-to-br from-white/80 via-orange-50/80 to-pink-50/80 p-2 shadow-2xl backdrop-blur-2xl transition-all sm:p-8 dark:from-slate-900/80 dark:via-slate-800/80 dark:to-orange-900/80">
+      <div className="mb-6 flex w-full gap-3 overflow-x-auto rounded-xl bg-gradient-to-r from-orange-100/60 via-pink-100/60 to-white/60 px-3 py-3 shadow-lg backdrop-blur-lg sm:w-auto sm:px-6 sm:py-4 dark:from-slate-800/60 dark:via-orange-900/40 dark:to-slate-900/60">
         <Button
           onClick={() => setView("question")}
           color={view === "question" ? "alternative" : "light"}
           pill
           size="sm"
           disabled={view === "question"}
-          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
+          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
             view === "question"
-              ? "scale-105 ring-2 ring-orange-400"
+              ? "scale-110 bg-gradient-to-r from-orange-400 via-yellow-300 to-yellow-200 text-orange-900 ring-2 ring-orange-400"
               : "hover:scale-105"
           }`}
         >
@@ -46,9 +46,9 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "answer"}
-          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-green-400 ${
+          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-green-400 ${
             view === "answer"
-              ? "scale-105 ring-2 ring-green-400"
+              ? "scale-110 bg-gradient-to-r from-green-400 via-green-200 to-white text-green-900 ring-2 ring-green-400"
               : "hover:scale-105"
           }`}
         >
@@ -60,9 +60,9 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "audience"}
-          className={`flex-shrink-0 cursor-pointer shadow-sm transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
+          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
             view === "audience"
-              ? "scale-105 ring-2 ring-purple-400"
+              ? "scale-110 bg-gradient-to-r from-purple-400 via-pink-200 to-white text-purple-900 ring-2 ring-purple-400"
               : "hover:scale-105"
           }`}
         >
