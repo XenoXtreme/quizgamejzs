@@ -218,7 +218,7 @@ export default function AppBar() {
             href="/history"
             active={isActive("/history")}
             className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/quiz")
+              isActive("/history")
                 ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
                 : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
             } `}
