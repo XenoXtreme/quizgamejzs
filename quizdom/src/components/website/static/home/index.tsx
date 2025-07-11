@@ -33,14 +33,11 @@ const features = [
 
 export default function HomePage() {
   // STATE
-  const [loggedIn, setLoggedIn] = React.useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   useEffect(() => {
     if (window) {
-      const token = localStorage.getItem("_user");
-      if (token) {
+      if (localStorage.getItem("_user")) {
         setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
       }
     }
   }, [loggedIn]);
