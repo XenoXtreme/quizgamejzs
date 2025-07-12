@@ -126,7 +126,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
   // Memoized configuration for animation timings
   const animationConfig = useMemo(
     () => ({
-      baseDelay: 30,
+      baseDelay: 25,
       staggerDelay: 100,
       easeInOutQuart: "cubic-bezier(0.76, 0, 0.24, 1)",
     }),
@@ -304,7 +304,10 @@ export default function QuizHistoryPage(): React.JSX.Element {
               <h3 className="mb-4 text-xl font-bold text-yellow-800 sm:text-2xl dark:text-yellow-300">
                 📸 A Glimpse of the Past
               </h3>
-              <CustomCarousel images={season2Carousel} />
+              <CustomCarousel
+                images={season2Carousel}
+                autoPlayInterval={4579}
+              />
             </div>
           </div>
         ),
@@ -358,7 +361,10 @@ export default function QuizHistoryPage(): React.JSX.Element {
               <h3 className="mb-4 text-xl font-bold text-yellow-800 sm:text-2xl dark:text-yellow-300">
                 📸 To the New Era
               </h3>
-              <CustomCarousel images={season3Carousel} />
+              <CustomCarousel
+                images={season3Carousel}
+                autoPlayInterval={4579}
+              />
             </div>
           </div>
         ),
