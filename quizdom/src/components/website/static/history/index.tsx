@@ -222,10 +222,6 @@ export default function QuizHistoryPage(): React.JSX.Element {
       src: "/assets/history/season3/14.jpeg",
       alt: "Season 3 Image 14",
     },
-    {
-      src: "/assets/history/season3/15.jpeg",
-      alt: "Season 3 Image 15",
-    },
   ];
 
   // Data for the timeline sections
@@ -684,7 +680,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
               </div>
               <div className="space-y-2">
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  11
+                  {quizdomMembers.length}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Founding Members
