@@ -32,7 +32,7 @@ const About = () => {
         <div className="flex flex-col items-center">
           <div className="mb-6 w-full sm:mb-10">
             {/* Custom Carousel */}
-            <CustomCarousel images={images} />
+            <CustomCarousel images={images} autoPlayInterval={4000} />
           </div>
           <h1 className="mb-5 bg-gradient-to-tr from-yellow-700 via-yellow-600 to-yellow-400 bg-clip-text text-center text-3xl font-extrabold text-transparent drop-shadow sm:mb-8 sm:text-5xl dark:from-yellow-300 dark:via-yellow-200 dark:to-yellow-100">
             About Jalpaiguri Zilla School

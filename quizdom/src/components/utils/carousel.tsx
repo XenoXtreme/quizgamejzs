@@ -19,7 +19,7 @@ interface CarouselProps {
 }
 const CustomCarousel: React.FC<CarouselProps> = ({
   images,
-  autoPlayInterval = 9000,
+  autoPlayInterval = 5000,
 }) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const intervalRef = useRef<number | null>(null);
