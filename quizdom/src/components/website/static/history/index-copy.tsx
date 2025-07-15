@@ -126,8 +126,8 @@ export default function QuizHistoryPage(): React.JSX.Element {
   // Memoized configuration for animation timings
   const animationConfig = useMemo(
     () => ({
-      baseDelay: 11,
-      staggerDelay: 80,
+      baseDelay: 25,
+      staggerDelay: 100,
       easeInOutQuart: "cubic-bezier(0.76, 0, 0.24, 1)",
     }),
     [],

@@ -223,7 +223,7 @@ const About = () => {
 
           {/* Tech Stack Section */}
           <div className="mt-12 w-full sm:mt-16">
-            <div className="transform rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 p-8 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-10 dark:from-slate-900/30 dark:to-gray-900/30">
+            <div className="rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 p-8 shadow-lg sm:p-10 dark:from-slate-900/30 dark:to-gray-900/30">
               <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-800 sm:text-4xl dark:text-slate-300">
                 💻 Tech Stack
               </h2>
