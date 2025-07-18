@@ -64,6 +64,24 @@ const techStack = [
     description: "Deployment Platform",
     color: "from-black to-gray-800",
   },
+  {
+    name: "Socket.io",
+    logo: "/assets/icons/socketio.svg",
+    description: "Real-time Communication",
+    color: "from-gray-600 via-gray-700 via-white to-black",
+  },
+  {
+    name: "Github",
+    logo: "/assets/icons/github.png",
+    description: "Code Hosting",
+    color: "from-gray-500 via-gray-700 via-white to-black",
+  },
+  {
+    name: "Sufy",
+    logo: "/assets/icons/sufy.png",
+    description: "CDN Provider",
+    color: "from-black via-blue-400 to-indigo-600",
+  },
 ];
 
 const About = () => {
@@ -98,7 +116,7 @@ const About = () => {
           </p>
 
           {/* Anniversary Highlight */}
-          <div className="mb-10 w-full transform rounded-3xl border-l-8 border-yellow-400/80 bg-gradient-to-r from-yellow-50/80 via-white/80 to-yellow-100/80 p-8 shadow-xl transition-transform duration-300 hover:scale-105 sm:mb-14 sm:p-10 dark:border-yellow-600 dark:bg-gray-800/80">
+          <div className="mb-10 w-full transform cursor-pointer rounded-3xl border-l-8 border-yellow-400/80 bg-gradient-to-r from-yellow-50/80 via-white/80 to-yellow-100/80 p-8 shadow-xl transition-transform duration-300 hover:scale-105 sm:mb-14 sm:p-10 dark:border-yellow-600 dark:bg-gray-800/80">
             <h2 className="mb-4 text-3xl font-bold tracking-tight text-yellow-600 sm:text-4xl dark:text-yellow-300">
               🏛️ 150th Anniversary Special
             </h2>
@@ -117,7 +135,7 @@ const About = () => {
           <div className="grid w-full grid-cols-1 gap-8 sm:gap-12 lg:grid-cols-2">
             {/* Mission Section */}
             <div className="space-y-8">
-              <div className="transform rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-blue-900/30 dark:to-indigo-900/30">
+              <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-blue-900/30 dark:to-indigo-900/30">
                 <h2 className="mb-4 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-blue-300">
                   🎯 Our Mission
                 </h2>
@@ -130,7 +148,7 @@ const About = () => {
                 </p>
               </div>
 
-              <div className="transform rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-purple-900/30 dark:to-pink-900/30">
+              <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-purple-900/30 dark:to-pink-900/30">
                 <h2 className="mb-4 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-purple-300">
                   🌟 Vision
                 </h2>
@@ -146,7 +164,7 @@ const About = () => {
 
             {/* History & Facilities Section */}
             <div className="space-y-8">
-              <div className="transform rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-green-900/30 dark:to-emerald-900/30">
+              <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-green-900/30 dark:to-emerald-900/30">
                 <h2 className="mb-4 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-green-300">
                   📚 History & Values
                 </h2>
@@ -160,7 +178,7 @@ const About = () => {
                 </p>
               </div>
 
-              <div className="transform rounded-2xl bg-gradient-to-br from-orange-50 to-red-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-orange-900/30 dark:to-red-900/30">
+              <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-orange-50 to-red-100 p-6 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-8 dark:from-orange-900/30 dark:to-red-900/30">
                 <h2 className="mb-4 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-orange-300">
                   🏢 Facilities
                 </h2>
@@ -177,7 +195,7 @@ const About = () => {
 
           {/* Holistic Development Section */}
           <div className="mt-12 w-full space-y-8 sm:mt-16">
-            <div className="transform rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-100 p-8 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-10 dark:from-teal-900/30 dark:to-cyan-900/30">
+            <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-100 p-8 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-10 dark:from-teal-900/30 dark:to-cyan-900/30">
               <h2 className="mb-4 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-teal-300">
                 🎨 Holistic Development
               </h2>
@@ -191,7 +209,7 @@ const About = () => {
             </div>
 
             {/* Why Choose Us Section */}
-            <div className="transform rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-100 p-8 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-10 dark:from-indigo-900/30 dark:to-blue-900/30">
+            <div className="transform cursor-pointer rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-100 p-8 shadow-lg transition-transform duration-300 hover:scale-105 sm:p-10 dark:from-indigo-900/30 dark:to-blue-900/30">
               <h2 className="mb-6 flex items-center text-2xl font-bold tracking-tight text-gray-800 sm:text-3xl dark:text-indigo-300">
                 💎 Why Choose Jalpaiguri Zilla School?
               </h2>
@@ -235,7 +253,7 @@ const About = () => {
                 {techStack.map((tech, index) => (
                   <div
                     key={index}
-                    className="group relative transform overflow-hidden rounded-xl bg-white p-6 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl dark:bg-gray-800"
+                    className="group relative transform cursor-pointer overflow-hidden rounded-xl bg-white p-6 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl dark:bg-gray-800"
                   >
                     <div
                       className={`absolute inset-0 bg-gradient-to-br ${tech.color} opacity-0 transition-opacity duration-300 group-hover:opacity-10`}
@@ -245,7 +263,7 @@ const About = () => {
                         <img
                           src={tech.logo}
                           alt={tech.name}
-                          className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110"
+                          className="group-cursor-pointer h-10 w-10 object-contain transition-transform duration-300 hover:scale-110"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                             const nextElement = e.currentTarget

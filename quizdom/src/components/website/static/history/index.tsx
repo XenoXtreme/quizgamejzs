@@ -23,16 +23,18 @@ import {
   HiStar,
   HiLightningBolt,
   HiAcademicCap,
+  HiChevronDoubleDown,
 } from "react-icons/hi";
 import CustomCarousel, { ImageProps } from "@/components/utils/carousel";
 
-// Interface for a team member
+// Member interface
 interface Member {
   name: string;
   role?: string;
+  avatar?: string;
 }
 
-// Interface for timeline data entries
+// Timeline data interface
 interface TimelineData {
   id: string;
   time: string;
@@ -42,13 +44,13 @@ interface TimelineData {
   additionalContent?: React.ReactNode;
 }
 
-// Simplified animation state for each timeline item
+// Animation state for each timeline item
 interface AnimationState {
   hasAnimated: boolean;
   animationDelay: number;
 }
 
-// State for scroll metrics, used for the progress bar
+// Scroll metrics for progress bar
 interface ScrollMetrics {
   scrollY: number;
   viewportHeight: number;
@@ -56,15 +58,18 @@ interface ScrollMetrics {
   scrollProgress: number;
 }
 
-// Configuration for the Intersection Observer
+// Intersection Observer config
 interface ObserverConfig {
   threshold: number;
   rootMargin: string;
 }
 
-// Data for the founding members of Quizdom
+// Quizdom team data (now with avatars for a modern feel)
 const quizdomMembers: Member[] = [
-  { name: "Rupankar Dhar (Alumnus)", role: "President (Strategic Commander)" },
+  {
+    name: "Rupankar Dhar (Alumnus)",
+    role: "President (Strategic Commander)",
+  },
   {
     name: "Priyam Das (Alumnus)",
     role: "Vice President (Operational Catalyst)",
@@ -77,7 +82,10 @@ const quizdomMembers: Member[] = [
     name: "Rishiraj Sarkar (Alumnus)",
     role: "Treasurer (Financial Navigator)",
   },
-  { name: "Ananyo Kar", role: "Media Head (Digital Storyteller)" },
+  {
+    name: "Ananyo Kar",
+    role: "Media Head (Digital Storyteller)",
+  },
   {
     name: "Kaustav Kar (Alumnus)",
     role: "Social Influencer (Brand Ambassador)",
@@ -86,25 +94,58 @@ const quizdomMembers: Member[] = [
     name: "Prithwish Chakraborty (Alumnus)",
     role: "Secretary (Administrative Coordinator)",
   },
-  { name: "Debangik Biswas", role: "Joint Secretary (Logistics Expert)" },
-  { name: "Tanmay Das", role: "Joint Secretary (Content Strategist)" },
-  { name: "Prantik Sengupta", role: "Joint Secretary (Innovation Catalyst)" },
+  {
+    name: "Debangik Biswas",
+    role: "Joint Secretary (Logistics Expert)",
+  },
+  {
+    name: "Tanmay Das",
+    role: "Joint Secretary (Content Strategist)",
+  },
+  {
+    name: "Prantik Sengupta",
+    role: "Joint Secretary (Innovation Catalyst)",
+  },
   {
     name: "Jayostu Modak",
     role: "Post Coordinator (Communication Specialist)",
   },
-  { name: "Abhradeep Mitra", role: "Marketing Head (Growth Strategist)" },
-  { name: "Sinchan Maitra", role: "Technical Head (Tech Handler)" },
+  {
+    name: "Abhradeep Mitra",
+    role: "Marketing Head (Growth Strategist)",
+  },
+  {
+    name: "Sinchan Maitra",
+    role: "Technical Head (Tech Handler)",
+  },
 ];
 
-// Main component for the quiz history page
+// Modern gradient palettes for cards/timeline
+const gradientPalettes = [
+  "from-yellow-400 via-orange-400 to-pink-400",
+  "from-blue-400 via-purple-400 to-pink-300",
+  "from-green-300 via-blue-300 to-purple-200",
+  "from-rose-400 via-fuchsia-400 to-indigo-400",
+];
+
+// Animated background blobs
+function AnimatedBlobs() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="animate-blob1 absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-pink-400 opacity-40 blur-3xl"></div>
+      <div className="animate-blob2 absolute top-0 right-0 h-72 w-72 rounded-full bg-yellow-200 opacity-50 blur-3xl"></div>
+      <div className="animate-blob3 absolute bottom-0 left-0 h-72 w-72 rounded-full bg-purple-300 opacity-40 blur-2xl"></div>
+    </div>
+  );
+}
+
+// Main enhanced component
 export default function QuizHistoryPage(): React.JSX.Element {
-  // Refs for DOM elements and the observer
+  // Refs and states
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const animationFrameRef = useRef<number | null>(null);
 
-  // State management
   const [animationStates, setAnimationStates] = useState<AnimationState[]>([]);
   const [scrollMetrics, setScrollMetrics] = useState<ScrollMetrics>({
     scrollY: 0,
@@ -114,117 +155,55 @@ export default function QuizHistoryPage(): React.JSX.Element {
   });
   const [isReducedMotion, setIsReducedMotion] = useState<boolean>(false);
 
-  // Memoized configuration for the Intersection Observer
+  // Intersection Observer config
+
   const observerConfig: ObserverConfig = useMemo(
     () => ({
-      threshold: 0.1, // Trigger when 10% of the item is visible
-      rootMargin: "-50px 0px -100px 0px", // Adjust the viewport for triggering animations
+      threshold: 0.14,
+      rootMargin: "-100px 0px -100px 0px",
     }),
     [],
   );
 
-  // Memoized configuration for animation timings
+  // Animation config
   const animationConfig = useMemo(
     () => ({
-      baseDelay: 11,
-      staggerDelay: 80,
+      baseDelay: 23,
+      staggerDelay: 100,
       easeInOutQuart: "cubic-bezier(0.76, 0, 0.24, 1)",
     }),
     [],
   );
 
-  // Carousel images
+  // Carousels
   const season2Carousel: ImageProps[] = [
-    {
-      src: "/assets/history/season2/1.jpg",
-      alt: "Season 2 Image 1",
-    },
-    {
-      src: "/assets/history/season2/2.jpg",
-      alt: "Season 2 Image 2",
-    },
-    {
-      src: "/assets/history/season2/3.jpg",
-      alt: "Season 2 Image 3",
-    },
-    {
-      src: "/assets/history/season2/4.jpg",
-      alt: "Season 2 Image 4",
-    },
-    {
-      src: "/assets/history/season2/5.jpg",
-      alt: "Season 2 Image 5",
-    },
-    {
-      src: "/assets/history/season2/6.jpg",
-      alt: "Season 2 Image 6",
-    },
-    {
-      src: "/assets/history/season2/7.jpg",
-      alt: "Season 2 Image 7",
-    },
+    { src: "/assets/history/season2/1.jpg", alt: "Season 2 Image 1" },
+    { src: "/assets/history/season2/2.jpg", alt: "Season 2 Image 2" },
+    { src: "/assets/history/season2/3.jpg", alt: "Season 2 Image 3" },
+    { src: "/assets/history/season2/4.jpg", alt: "Season 2 Image 4" },
+    { src: "/assets/history/season2/5.jpg", alt: "Season 2 Image 5" },
+    { src: "/assets/history/season2/6.jpg", alt: "Season 2 Image 6" },
+    { src: "/assets/history/season2/7.jpg", alt: "Season 2 Image 7" },
   ];
 
   const season3Carousel: ImageProps[] = [
-    {
-      src: "/assets/history/season3/1.jpeg",
-      alt: "Season 3 Image 1",
-    },
-    {
-      src: "/assets/history/season3/2.jpeg",
-      alt: "Season 3 Image 2",
-    },
-    {
-      src: "/assets/history/season3/3.jpeg",
-      alt: "Season 3 Image 3",
-    },
-    {
-      src: "/assets/history/season3/4.jpeg",
-      alt: "Season 3 Image 4",
-    },
-    {
-      src: "/assets/history/season3/5.jpeg",
-      alt: "Season 3 Image 5",
-    },
-    {
-      src: "/assets/history/season3/6.jpeg",
-      alt: "Season 3 Image 6",
-    },
-    {
-      src: "/assets/history/season3/7.jpeg",
-      alt: "Season 3 Image 7",
-    },
-    {
-      src: "/assets/history/season3/8.jpeg",
-      alt: "Season 3 Image 8",
-    },
-    {
-      src: "/assets/history/season3/9.jpeg",
-      alt: "Season 3 Image 9",
-    },
-    {
-      src: "/assets/history/season3/10.jpeg",
-      alt: "Season 3 Image 10",
-    },
-    {
-      src: "/assets/history/season3/11.jpeg",
-      alt: "Season 3 Image 11",
-    },
-    {
-      src: "/assets/history/season3/12.jpeg",
-      alt: "Season 3 Image 12",
-    },
-    {
-      src: "/assets/history/season3/13.jpeg",
-      alt: "Season 3 Image 13",
-    },
-    {
-      src: "/assets/history/season3/14.jpeg",
-      alt: "Season 3 Image 14",
-    },
+    { src: "/assets/history/season3/1.jpeg", alt: "Season 3 Image 1" },
+    { src: "/assets/history/season3/2.jpeg", alt: "Season 3 Image 2" },
+    { src: "/assets/history/season3/3.jpeg", alt: "Season 3 Image 3" },
+    { src: "/assets/history/season3/4.jpeg", alt: "Season 3 Image 4" },
+    { src: "/assets/history/season3/5.jpeg", alt: "Season 3 Image 5" },
+    { src: "/assets/history/season3/6.jpeg", alt: "Season 3 Image 6" },
+    { src: "/assets/history/season3/7.jpeg", alt: "Season 3 Image 7" },
+    { src: "/assets/history/season3/8.jpeg", alt: "Season 3 Image 8" },
+    { src: "/assets/history/season3/9.jpeg", alt: "Season 3 Image 9" },
+    { src: "/assets/history/season3/10.jpeg", alt: "Season 3 Image 10" },
+    { src: "/assets/history/season3/11.jpeg", alt: "Season 3 Image 11" },
+    { src: "/assets/history/season3/12.jpeg", alt: "Season 3 Image 12" },
+    { src: "/assets/history/season3/13.jpeg", alt: "Season 3 Image 13" },
+    { src: "/assets/history/season3/14.jpeg", alt: "Season 3 Image 14" },
   ];
 
-  // Data for the timeline sections
+  // Timeline data (same as before)
   const timelineData: TimelineData[] = useMemo(
     () => [
       {
@@ -422,18 +401,15 @@ export default function QuizHistoryPage(): React.JSX.Element {
     ],
     [],
   );
-
-  // Simplified intersection observer callback
+  // Intersection observer logic
   const handleIntersection = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
-        // If the item is intersecting (visible on screen)
         if (entry.isIntersecting) {
           const index = parseInt(
             entry.target.getAttribute("data-index") || "-1",
           );
           if (index > -1) {
-            // Update state to mark this item as animated
             setAnimationStates((prev) => {
               const newStates = [...prev];
               if (newStates[index] && !newStates[index].hasAnimated) {
@@ -442,7 +418,6 @@ export default function QuizHistoryPage(): React.JSX.Element {
               }
               return prev;
             });
-            // PERISTENCE: Once animated, stop observing it for performance.
             observerRef.current?.unobserve(entry.target);
           }
         }
@@ -451,7 +426,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
     [],
   );
 
-  // Callback to update scroll metrics for the progress bar
+  // Update scroll metrics for progress bar
   const updateScrollMetrics = useCallback(() => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
@@ -473,11 +448,10 @@ export default function QuizHistoryPage(): React.JSX.Element {
     });
   }, []);
 
-  // Initialize animation states with staggered delays
+  // Init animation states
   const initializeAnimationStates = useCallback(() => {
     setAnimationStates(
       timelineData.map((_, index) => ({
-        // The first item should be visible by default
         hasAnimated: index === 0,
         animationDelay:
           animationConfig.baseDelay + index * animationConfig.staggerDelay,
@@ -485,7 +459,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
     );
   }, [timelineData, animationConfig.baseDelay, animationConfig.staggerDelay]);
 
-  // Check for user's preference for reduced motion
+  // Reduced motion preference
   const checkReducedMotion = useCallback(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setIsReducedMotion(mediaQuery.matches);
@@ -495,7 +469,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
     return () => mediaQuery.removeEventListener("change", handleMediaChange);
   }, []);
 
-  // Callback to assign refs to timeline items
+  // Assign refs to timeline items
   const setItemRef = useCallback(
     (el: HTMLDivElement | null, index: number) => {
       if (index >= 0 && index < timelineData.length) {
@@ -505,27 +479,24 @@ export default function QuizHistoryPage(): React.JSX.Element {
     [timelineData.length],
   );
 
-  // Generate animation classes based on the item's state
+  // Animation classes
   const getAnimationClasses = useCallback(
     (index: number): string => {
       const state = animationStates[index];
       if (!state) return "translate-y-16 opacity-0";
-
       if (isReducedMotion) {
         return "opacity-100 translate-y-0";
       }
-
-      const baseClasses = "transition-all duration-500"; // Faster duration
-      const transformClasses = state.hasAnimated
-        ? "translate-y-0 opacity-100"
-        : "translate-y-16 opacity-0";
-
-      return `${baseClasses} ${transformClasses}`;
+      return `transition-all duration-700 ${
+        state.hasAnimated
+          ? "translate-y-0 opacity-100"
+          : "translate-y-16 opacity-0"
+      }`;
     },
     [animationStates, isReducedMotion],
   );
 
-  // Get dynamic animation delay style
+  // Animation delay style
   const getAnimationDelay = useCallback(
     (index: number): React.CSSProperties => {
       const state = animationStates[index];
@@ -538,7 +509,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
     [animationStates, isReducedMotion, animationConfig.easeInOutQuart],
   );
 
-  // Main effect for setting up observers and event listeners
+  // Effect: setup observers and listeners
   useEffect(() => {
     initializeAnimationStates();
     const cleanupReducedMotion = checkReducedMotion();
@@ -548,7 +519,6 @@ export default function QuizHistoryPage(): React.JSX.Element {
       handleIntersection,
       observerConfig,
     );
-
     const currentRefs = itemRefs.current.filter(Boolean);
     currentRefs.forEach((ref) => {
       if (ref && observerRef.current) {
@@ -559,7 +529,6 @@ export default function QuizHistoryPage(): React.JSX.Element {
     window.addEventListener("scroll", updateScrollMetrics, { passive: true });
     window.addEventListener("resize", updateScrollMetrics, { passive: true });
 
-    // Cleanup function
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -577,30 +546,83 @@ export default function QuizHistoryPage(): React.JSX.Element {
     checkReducedMotion,
   ]);
 
+  // Modern floating action button for navigation
+  function ScrollToNextSectionBtn() {
+    const handleScroll = () => {
+      // Get all sections with [data-section]
+      const sections = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-section]"),
+      );
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+
+      // Find the first section whose top is greater than current scrollY + a little offset
+      const currentBottom = scrollY + viewportHeight - 10;
+
+      // Get the section which is next after the current viewport
+      let nextSection: HTMLElement | undefined;
+
+      for (let i = 0; i < sections.length; i++) {
+        const sectionTop = sections[i].getBoundingClientRect().top + scrollY;
+        if (sectionTop > currentBottom) {
+          nextSection = sections[i];
+          break;
+        }
+      }
+
+      // If no next section, scroll by one viewport height
+      if (nextSection) {
+        // Use scrollIntoView with block: "start" and smooth behavior
+        nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({
+          top: scrollY + viewportHeight - 20,
+          behavior: "smooth",
+        });
+      }
+    };
+
+    return (
+      <button
+        aria-label="Scroll to next section"
+        className="fixed right-8 bottom-10 z-50 flex h-14 w-14 animate-bounce cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-yellow-400 text-white shadow-xl transition-all duration-300 hover:from-yellow-400 hover:to-pink-500"
+        onClick={handleScroll}
+        type="button"
+      >
+        <HiChevronDoubleDown className="h-7 w-7" />
+      </button>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-rose-50 px-2 py-8 transition-colors duration-500 sm:px-4 sm:py-16 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Progress indicator */}
-      <div className="fixed top-0 right-0 left-0 z-50 h-1 bg-gray-200 dark:bg-gray-700">
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-amber-50 via-white to-rose-50 px-2 py-8 transition-colors duration-500 sm:px-4 sm:py-16 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <AnimatedBlobs />
+      {/* Progress Bar */}
+      <div className="fixed top-0 right-0 left-0 z-50 h-1 bg-gray-200 shadow-md dark:bg-gray-700">
         <div
           className="h-full bg-gradient-to-r from-yellow-400 to-pink-500 transition-all duration-300 ease-out"
           style={{
             width: `${Math.min(scrollMetrics.scrollProgress * 100, 100)}%`,
-            transform: `translateZ(0)`, // Hardware acceleration
+            transform: `translateZ(0)`,
           }}
         />
       </div>
 
-      <div className="mx-auto w-11/12 max-w-6xl rounded-[2.5rem] border border-yellow-100/70 bg-white/90 p-6 shadow-2xl backdrop-blur-xl sm:w-3/4 sm:p-12 dark:border-yellow-900/40 dark:bg-gray-900/90">
+      {/* Main Card */}
+      <div
+        className="mx-auto mt-8 w-[85vw] max-w-[1100px] rounded-3xl border-0 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-12 dark:bg-gray-900/85"
+        data-section
+      >
         <div className="flex flex-col items-center">
           {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="mb-4 bg-gradient-to-r from-yellow-600 via-orange-500 to-red-500 bg-clip-text text-3xl font-extrabold text-transparent drop-shadow-lg sm:text-6xl lg:text-7xl dark:from-yellow-300 dark:via-orange-300 dark:to-red-300">
+          <div className="mb-12 text-center">
+            <h1 className="mb-4 bg-gradient-to-r from-yellow-600 via-orange-500 to-red-500 bg-clip-text text-4xl font-extrabold text-transparent drop-shadow-lg sm:text-8xl lg:text-7xl dark:from-yellow-300 dark:via-orange-300 dark:to-red-300">
               ⚡ Jalpaiguri Zilla School
             </h1>
-            <h2 className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent sm:text-4xl dark:from-purple-400 dark:to-pink-400">
+            <h2 className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-3xl font-bold text-transparent sm:text-5xl dark:from-purple-400 dark:to-pink-400">
               Annual Interschool Quiz Competition
             </h2>
-            <p className="text-lg font-medium text-gray-700 sm:text-xl dark:text-gray-200">
+            <p className="text-xl font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
               <span className="relative">
                 <span className="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-pink-400 opacity-30 blur"></span>
                 <span className="relative font-bold text-yellow-700 dark:text-yellow-400">
@@ -613,98 +635,78 @@ export default function QuizHistoryPage(): React.JSX.Element {
           {/* Timeline */}
           <div className="w-full">
             <Timeline className="relative">
-              {timelineData.map((item, index) => (
-                <TimelineItem
-                  key={item.id}
-                  ref={(el: any) => setItemRef(el, index)}
-                  data-index={index}
-                  className={`group ${getAnimationClasses(index)}`}
-                  style={{
-                    ...getAnimationDelay(index),
-                    willChange: "transform, opacity", // Hint to browser for optimization
-                  }}
-                >
-                  <TimelinePoint
-                    icon={item.icon}
-                    className="bg-gradient-to-r from-yellow-400 to-pink-500 shadow-lg transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <TimelineContent className="ml-6 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800/80">
-                    <TimelineTime className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
-                      {item.time}
-                    </TimelineTime>
-                    <TimelineTitle className="mb-4 text-2xl font-bold text-yellow-700 dark:text-yellow-400">
-                      {item.title}
-                    </TimelineTitle>
-                    <TimelineBody className="leading-relaxed text-gray-700 dark:text-gray-200">
-                      {item.content}
-                    </TimelineBody>
-                    {item.additionalContent && (
-                      <div className="mt-6">{item.additionalContent}</div>
-                    )}
-                  </TimelineContent>
-                </TimelineItem>
-              ))}
+              {timelineData.map((item, index) => {
+                const gradientClass =
+                  gradientPalettes[index % gradientPalettes.length];
+                return (
+                  <TimelineItem
+                    key={item.id}
+                    ref={(el: any) => setItemRef(el, index)}
+                    data-index={index}
+                    className={`group ${getAnimationClasses(index)}`}
+                    style={{
+                      ...getAnimationDelay(index),
+                      willChange: "transform, opacity",
+                    }}
+                  >
+                    <TimelinePoint
+                      icon={item.icon}
+                      className={`bg-gradient-to-r ${gradientClass} border-2 border-white shadow-lg transition-transform duration-300 group-hover:scale-110 dark:border-gray-900`}
+                    />
+                    <TimelineContent
+                      className={`ml-6 rounded-3xl border-0 bg-white/90 p-8 shadow-xl backdrop-blur-md transition-all duration-500 hover:shadow-2xl dark:bg-gray-800/90`}
+                    >
+                      <TimelineTime className="mb-2 text-base font-semibold tracking-wide text-gray-600 dark:text-gray-400">
+                        {item.time}
+                      </TimelineTime>
+                      <TimelineTitle className="mb-4 text-2xl font-bold text-yellow-700 dark:text-yellow-400">
+                        {item.title}
+                      </TimelineTitle>
+                      <TimelineBody className="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
+                        {item.content}
+                      </TimelineBody>
+                      {item.additionalContent && (
+                        <div className="mt-8">{item.additionalContent}</div>
+                      )}
+                    </TimelineContent>
+                  </TimelineItem>
+                );
+              })}
             </Timeline>
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-12 flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:gap-6">
-            <Button
-              as={Link}
-              href="/quiz"
-              className="group relative overflow-hidden rounded-2xl border-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 px-8 py-4 text-lg font-bold tracking-wide text-white shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-pink-500/25 sm:px-10 sm:py-4 sm:text-xl"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-600 to-pink-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
-              <span className="relative flex items-center justify-center space-x-2">
-                <HiLightningBolt className="h-5 w-5" />
-                <span>Explore Quizzes</span>
-              </span>
-            </Button>
-            <Button
-              as={Link}
-              href="/register"
-              className="group relative overflow-hidden rounded-2xl border-0 bg-gradient-to-r from-gray-800 via-purple-800 to-indigo-800 px-8 py-4 text-lg font-bold tracking-wide text-white shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-purple-500/25 sm:px-10 sm:py-4 sm:text-xl"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-gray-900 via-purple-900 to-indigo-900 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
-              <span className="relative flex items-center justify-center space-x-2">
-                <HiAcademicCap className="h-5 w-5" />
-                <span>Register for Next Quiz</span>
-              </span>
-            </Button>
-          </div>
-
           {/* Stats Section */}
-          <div className="mt-12 w-full rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6 shadow-lg dark:border-gray-700 dark:from-blue-900/20 dark:to-purple-900/20">
-            <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
+          <div className="mt-16 w-full rounded-3xl border-0 bg-gradient-to-r from-blue-50 to-purple-50 p-8 shadow-xl dark:from-blue-900/20 dark:to-purple-900/20">
+            <div className="grid grid-cols-2 gap-8 text-center sm:grid-cols-4">
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="text-4xl font-extrabold text-blue-600 dark:text-blue-400">
                   19
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-base text-gray-600 dark:text-gray-400">
                   Schools Participated
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                <div className="text-4xl font-extrabold text-purple-600 dark:text-purple-400">
                   {quizdomMembers.length}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-base text-gray-600 dark:text-gray-400">
                   Founding Members
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
+                <div className="text-4xl font-extrabold text-pink-600 dark:text-pink-400">
                   2024
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-base text-gray-600 dark:text-gray-400">
                   Year of Revolution
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                <div className="text-4xl font-extrabold text-orange-600 dark:text-orange-400">
                   ∞
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-base text-gray-600 dark:text-gray-400">
                   Stories to Tell
                 </div>
               </div>
@@ -712,6 +714,7 @@ export default function QuizHistoryPage(): React.JSX.Element {
           </div>
         </div>
       </div>
+      <ScrollToNextSectionBtn />
     </div>
   );
 }
