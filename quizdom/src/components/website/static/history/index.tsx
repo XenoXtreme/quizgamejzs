@@ -7,8 +7,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { Button } from "flowbite-react";
-import Link from "next/link";
 import {
   Timeline,
   TimelineItem,
@@ -31,6 +29,7 @@ import CustomCarousel, { ImageProps } from "@/components/utils/carousel";
 interface Member {
   name: string;
   role?: string;
+  description?: string;
   avatar?: string;
 }
 
@@ -66,6 +65,12 @@ interface ObserverConfig {
 
 // Quizdom team data (now with avatars for a modern feel)
 const quizdomMembers: Member[] = [
+  {
+    name: "Sri Manoj Kumar Sarkar (ASSISTANT MASTER - M.A. (Economics), B.Ed.)",
+    role: "Quizdom Chief (Mentor-in-Chief, Visionary Guide, and The Pillar of Our Journey)",
+    description:
+      "He has been the guiding light of Quizdom, inspiring generations with her unwavering support and wisdom. Her belief in our potential and her pioneering spirit made every quiz possible and meaningful.",
+  },
   {
     name: "Rupankar Dhar (Alumnus)",
     role: "President (Strategic Commander)",
@@ -304,7 +309,36 @@ export default function QuizHistoryPage(): React.JSX.Element {
                 🌟 Founding Members
               </h3>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {quizdomMembers.map((member, index) => (
+                {/* Highlighted Teacher */}
+                <div className="col-span-1 mb-2 sm:col-span-2">
+                  <div className="group rounded-xl border border-purple-400 bg-white p-4 shadow-md dark:border-purple-700 dark:bg-purple-800">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-purple-700 to-pink-600 text-lg font-bold text-white">
+                        {quizdomMembers[0].name.charAt(0)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-lg font-bold text-purple-800 dark:text-purple-100">
+                          {quizdomMembers[0].name}
+                        </p>
+                        <p className="text-sm text-purple-600 dark:text-purple-300">
+                          <b>
+                            <i>{quizdomMembers[0].role}</i>
+                          </b>
+                        </p>
+                        <br />
+                        <p className="text-sm text-purple-600 dark:text-purple-300">
+                          <b>Description</b>:
+                          <i className="ml-2">
+                            {quizdomMembers[0].description}
+                          </i>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rest of the members */}
+                {quizdomMembers.slice(1, -1).map((member, index) => (
                   <div
                     key={index}
                     className="group rounded-xl border border-purple-200 bg-white/80 p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-200/50 dark:border-purple-700 dark:bg-purple-900/20 dark:hover:shadow-purple-900/30"
@@ -328,7 +362,31 @@ export default function QuizHistoryPage(): React.JSX.Element {
                     </div>
                   </div>
                 ))}
+                <div className="col-span-1 sm:col-span-2">
+                  <div className="group rounded-xl border border-purple-200 bg-white/80 p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-200/50 dark:border-purple-700 dark:bg-purple-900/20 dark:hover:shadow-purple-900/30">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-bold text-white">
+                        {quizdomMembers[quizdomMembers.length - 1].name.charAt(
+                          0,
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-gray-900 dark:text-gray-100">
+                          {quizdomMembers[quizdomMembers.length - 1].name}
+                        </p>
+                        <p className="text-xs text-purple-600 dark:text-purple-400">
+                          <b>
+                            <i>
+                              {quizdomMembers[quizdomMembers.length - 1].role}
+                            </i>
+                          </b>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <p className="mt-4 text-sm text-gray-700 dark:text-gray-300">
                 These founders had one thing in common: that a quiz is not just
                 a battle of facts. They felt that it had to challenge,
