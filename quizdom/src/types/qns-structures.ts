@@ -21,10 +21,6 @@ export const InterSch: Section = {
     { q_no: "9", display_text: "Question - IX" },
     { q_no: "10", display_text: "Question - X" },
   ],
-};
-
-// GENERAL STRUCTURE
-export const General: Section = {
   oyo: [
     { q_no: "1", display_text: "Question - I" },
     { q_no: "2", display_text: "Question - II" },

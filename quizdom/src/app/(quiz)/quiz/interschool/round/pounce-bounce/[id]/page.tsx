@@ -17,7 +17,6 @@ export default function Page() {
   return (
     <div>
       <Panel
-        category="interschool"
         round={"pnb"}
         qno={`${id}`}
         type={`${type}`}

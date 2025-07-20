@@ -13,13 +13,13 @@ export default function PPTViewer({ category }: { category: string }) {
   const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "/";
 
   if (view === "question") {
-    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims.pptx`;
+    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims.pptx`;
     filename = "prelims.pptx";
   } else if (view === "answer") {
-    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims-ans.pptx`;
+    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-ans.pptx`;
     filename = "prelims-ans.pptx";
   } else {
-    pptUrl = `${CDN_URI}/quiz/prelims/${category}/prelims-audience.pptx`;
+    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-audience.pptx`;
     filename = "prelims-audience.pptx";
   }
 
@@ -32,7 +32,7 @@ export default function PPTViewer({ category }: { category: string }) {
           pill
           size="sm"
           disabled={view === "question"}
-          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-orange-400 ${
+          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-orange-400 dark:text-white ${
             view === "question"
               ? "scale-110 bg-gradient-to-r from-orange-400 via-yellow-300 to-yellow-200 text-orange-900 ring-2 ring-orange-400"
               : "hover:scale-105"

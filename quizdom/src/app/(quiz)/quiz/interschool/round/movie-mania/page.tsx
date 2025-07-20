@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Panel from '@/components/website/quiz/panel/question-panel/general/mm';
+import Panel from '@/components/website/quiz/panel/question-panel/mm';
 
 // METADATA
 export const metadata: Metadata = {
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div><Panel category="interschool" /></div>
+    <div><Panel /></div>
   )
 }

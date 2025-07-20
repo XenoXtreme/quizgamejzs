@@ -22,10 +22,9 @@ import {
 import Component from "./component";
 import { ContextType } from "@/context/auth/context";
 import { useAuthContext } from "@/context/auth/state";
-import { General } from "@/types/qns-structures";
+import { InterSch } from "@/types/qns-structures";
 
 interface QNSProps {
-  category: string;
   qno: string;
   round: string;
   type: string;
@@ -34,7 +33,6 @@ interface QNSProps {
 }
 
 export default function QuestionPanel({
-  category,
   qno,
   round,
   type,
@@ -63,8 +61,8 @@ export default function QuestionPanel({
   const CDN_URI = process.env.NEXT_PUBLIC_CDN_URI || "";
 
   // Question and answer URIs
-  const questionURI = `${CDN_URI}/assets/quiz/${category}/${type}/${round}-${qno}.${extension}`;
-  const answerURI = `${CDN_URI}/assets/quiz/${category}/${type}/ans/${round}-${qno}.${extension}`;
+  const questionURI = `${CDN_URI}/assets/quiz/interschool/${type}/${round}-${qno}.${extension}`;
+  const answerURI = `${CDN_URI}/assets/quiz/interschool/${type}/ans/${round}-${qno}.${extension}`;
 
   // Router
   const router = useRouter();
@@ -74,7 +72,7 @@ export default function QuestionPanel({
   const { team }: ContextType = context;
 
   // Helper: Get OYF question keys in order
-  const getOYFKeys = () => General.oyf.map((q) => q.q_no);
+  const getOYFKeys = () => InterSch.oyf.map((q) => q.q_no);
 
   // Check if navigation should be disabled
   const isPrevDisabled =
@@ -213,39 +211,39 @@ export default function QuestionPanel({
     if (type === "visualaudio") {
       if (!showAns) {
         return {
-          URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
-          vURI: `${CDN_URI}/assets/quiz/${category}/audio/${round}-${qno}.mp3`,
-          alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
+          URI: `${CDN_URI}/assets/quiz/interschool/img/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/interschool/audio/${round}-${qno}.mp3`,
+          alt: `Interschool - Round: ${getRoundFullName(round)} - Q-${qno}`,
           type,
         };
       } else {
         return {
-          URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
-          vURI: `${CDN_URI}/assets/quiz/${category}/audio/ans/${round}-${qno}.mp3`,
-          alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
+          URI: `${CDN_URI}/assets/quiz/interschool/img/ans/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/interschool/audio/ans/${round}-${qno}.mp3`,
+          alt: `Interschool - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type,
         };
       }
     } else if (type === "visualvideoans") {
       if (!showAns) {
         return {
-          URI: `${CDN_URI}/assets/quiz/${category}/img/${round}-${qno}.png`,
-          vURI: `${CDN_URI}/assets/quiz/${category}/video/${round}-${qno}.mp4`,
-          alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}`,
+          URI: `${CDN_URI}/assets/quiz/interschool/img/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/interschool/video/${round}-${qno}.mp4`,
+          alt: `Interschool - Round: ${getRoundFullName(round)} - Q-${qno}`,
           type,
         };
       } else {
         return {
-          URI: `${CDN_URI}/assets/quiz/${category}/img/ans/${round}-${qno}.png`,
-          vURI: `${CDN_URI}/assets/quiz/${category}/video/ans/${round}-${qno}.mp4`,
-          alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
+          URI: `${CDN_URI}/assets/quiz/interschool/img/ans/${round}-${qno}.png`,
+          vURI: `${CDN_URI}/assets/quiz/interschool/video/ans/${round}-${qno}.mp4`,
+          alt: `Interschool - Round: ${getRoundFullName(round)} - Q-${qno} (Answer)`,
           type,
         };
       }
     } else {
       return {
         URI: showAns ? answerURI : questionURI,
-        alt: `${getCategoryName(category)} - Round: ${getRoundFullName(round)} - Q-${qno}${showAns ? " (Answer)" : ""}`,
+        alt: `Interschool - Round: ${getRoundFullName(round)} - Q-${qno}${showAns ? " (Answer)" : ""}`,
         type,
       };
     }
@@ -267,20 +265,6 @@ export default function QuestionPanel({
         return "Pounce Bounce";
       default:
         return "Unknown Round";
-    }
-  };
-
-  // Get Category name
-  const getCategoryName = (category: string) => {
-    switch (category) {
-      case "intraschool/junior":
-        return "Intra School Junior";
-      case "intraschool/senior":
-        return "Intra School Senior";
-      case "interschool":
-        return "Inter School";
-      default:
-        return "Unknown Category";
     }
   };
 
@@ -317,7 +301,7 @@ export default function QuestionPanel({
               size="sm"
               className="mb-1 rounded-lg border border-pink-100 bg-white px-3 py-1 text-gray-700 shadow-md transition-all duration-200 hover:scale-105 hover:bg-blue-50 hover:shadow-lg sm:mb-0 dark:border-pink-900 dark:bg-pink-900 dark:text-gray-200 dark:hover:bg-pink-800"
             >
-              <a href={"/quiz/" + category}>{getCategoryName(category)}</a>
+              <a href="/quiz/interschool">Interschool</a>
             </Badge>
           </div>
           <div className="text-xs font-medium text-gray-500 sm:text-sm dark:text-gray-400">
