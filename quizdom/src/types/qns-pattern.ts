@@ -57,3 +57,26 @@ export const InterSchMeta: QnMetaRoot = {
     mystery: { type: "visualvideoans" },
   },
 };
+
+export const AudienceMeta: QnMetaMap = {
+  "1": { type: "img" },
+  "2": { type: "img" },
+  "3": { type: "img" },
+  "4": { type: "img" },
+  "5": { type: "img" },
+  "6": { type: "img" },
+  "7": { type: "img" },
+  "8": { type: "img" },
+  "9": { type: "img" },
+  "10": { type: "img" },
+  "11": { type: "img" },
+  "12": { type: "img" },
+  "13": { type: "img" },
+  "14": { type: "img" },
+  "15": { type: "img" },
+  "16": { type: "img" },
+  "17": { type: "img" },
+  "18": { type: "img" },
+  "19": { type: "img" },
+  "20": { type: "img" },
+};

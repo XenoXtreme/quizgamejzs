@@ -1,9 +1,11 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { InterSch } from "@/types/qns-structures";
+
+// Tie Breaker
+import { Panel as TieBreaker } from "./tie";
 
 export default function Panel() {
   function genURL(q_no: string) {
@@ -115,6 +117,8 @@ export default function Panel() {
             </Link>
           </div>
         ))}
+        {/* Tie Breaker Section */}
+        <TieBreaker icon={faLink} genURL={genURL} />
       </div>
     </section>
   );

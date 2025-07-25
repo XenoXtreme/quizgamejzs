@@ -7,9 +7,6 @@ import { Nunito } from "next/font/google";
 // NEXT JS
 import Link from "next/link";
 
-// CSS
-import styles from "./css/round.module.css";
-
 // FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";

@@ -7,15 +7,15 @@ import { Nunito } from "next/font/google";
 // NEXT JS
 import Link from "next/link";
 
-// CSS
-import styles from "../css/q.module.css";
-
 // FONTAWESOME
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 // QNS STRUCTURE
 import { InterSch } from "@/types/qns-structures";
+
+// Tie Breaker
+import { Panel as TieBreaker } from "./tie";
 
 // FONT
 const nunito = Nunito({
@@ -53,6 +53,8 @@ export default function Panel() {
               </div>
             ))}
           </div>
+          {/* Tie Breaker Section */}
+          <TieBreaker icon={faCube} genURL={genURL} />
         </div>
       </section>
     </div>

@@ -3,7 +3,7 @@ import PptxViewer from "./pptxviewer";
 import { Button } from "flowbite-react";
 
 export default function PPTViewer({ category }: { category: string }) {
-  const [view, setView] = useState<"question" | "answer" | "audience">(
+  const [view, setView] = useState<"question" | "answer" | "tie" | "audience">(
     "question",
   );
 
@@ -18,6 +18,9 @@ export default function PPTViewer({ category }: { category: string }) {
   } else if (view === "answer") {
     pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-ans.pptx`;
     filename = "prelims-ans.pptx";
+  } else if (view === "tie") {
+    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-tie.pptx`;
+    filename = "prelims-tie.pptx";
   } else {
     pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-audience.pptx`;
     filename = "prelims-audience.pptx";
@@ -53,6 +56,20 @@ export default function PPTViewer({ category }: { category: string }) {
           }`}
         >
           Show Answer PPT
+        </Button>
+        <Button
+          onClick={() => setView("tie")}
+          color={view === "tie" ? "blue" : "light"}
+          pill
+          size="sm"
+          disabled={view === "tie"}
+          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
+            view === "tie"
+              ? "scale-110 bg-gradient-to-r from-purple-400 via-pink-200 to-white text-orange-500 ring-2 ring-purple-400"
+              : "hover:scale-105"
+          }`}
+        >
+          Tie Breaker
         </Button>
         <Button
           onClick={() => setView("audience")}
