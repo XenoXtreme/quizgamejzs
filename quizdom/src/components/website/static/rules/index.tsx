@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
-import { Card, Badge, Alert } from "flowbite-react";
+import { Badge, Alert } from "flowbite-react";
 import {
   FaTrophy,
   FaUsers,
   FaClock,
   FaStar,
+  FaHeadSideVirus,
   FaBullseye,
-  FaFilm,
   FaLink,
-  FaBolt,
-  FaHandHolding,
+  FaHandPointUp,
 } from "react-icons/fa";
+import { TbArrowBounce } from "react-icons/tb";
+import { BsFillCameraReelsFill } from "react-icons/bs";
 
 // --- Type definitions remain the same ---
 interface Rule {
@@ -45,8 +46,8 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 1,
       title: "Round 1",
-      icon: <FaBullseye className="h-5 w-5" />,
-      description: "Opening Round",
+      icon: <FaHeadSideVirus className="h-5 w-5" />,
+      description: "On Your Own",
       rules: [
         {
           type: "Direct Question",
@@ -60,8 +61,8 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 2,
       title: "Round 2",
-      icon: <FaBolt className="h-5 w-5" />,
-      description: "Multi-format Round",
+      icon: <TbArrowBounce className="h-5 w-5" />,
+      description: "Pounce Bounce",
       rules: [
         { type: "Direct Question", correct: "+20", wrong: "0" },
         {
@@ -82,7 +83,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 3,
       title: "Round 3",
-      icon: <FaFilm className="h-5 w-5" />,
+      icon: <BsFillCameraReelsFill className="h-5 w-5" />,
       description: "Movie Mania",
       rules: [
         {
@@ -136,7 +137,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 6,
       title: "Round 6",
-      icon: <FaHandHolding className="h-5 w-5" />,
+      icon: <FaHandPointUp className="h-5 w-5" />,
       description: "On Your Fingertips",
       rules: [
         { type: "Direct Question", correct: "+20", wrong: "0" },
@@ -337,14 +338,16 @@ const QuizRulesPage: React.FC = () => {
         <div className="mt-16 text-center">
           <div className="mx-auto max-w-2xl rounded-lg bg-amber-500/50 p-4 ring-1 ring-slate-700">
             <h4 className="mb-2 font-bold">Important Notes</h4>
-            <ul className="space-y-1 text-sm text-slate-400">
+            <ul className="space-y-1 text-lg text-slate-400">
               <li>• Pay attention to negative marking in later rounds.</li>
               <li>
                 • The Connection round offers the highest points but also the
                 highest risk.
               </li>
               <li>• Challenge rules apply only where specified.</li>
-              <li>• Each team combination plays only once.</li>
+              <li className="text-yellow-300">
+                • Each team combination plays only once.
+              </li>
             </ul>
           </div>
         </div>

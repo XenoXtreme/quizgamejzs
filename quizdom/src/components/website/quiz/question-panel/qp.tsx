@@ -344,7 +344,7 @@ export default function QuestionPanel({
               ? `Tie Breaker ${qno.replace("tb", "")}`
               : `Question ${qno}`}
             {limit ? (
-              <span className="ml-[0.5] text-gray-400 dark:text-gray-500">
+              <span className="ml-[3.5] text-gray-400 dark:text-gray-500">
                 of {limit}
               </span>
             ) : (
