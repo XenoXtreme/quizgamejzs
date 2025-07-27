@@ -15,7 +15,7 @@ import {
 import { TbArrowBounce } from "react-icons/tb";
 import { BsFillCameraReelsFill } from "react-icons/bs";
 
-// --- Type definitions remain the same ---
+// Type definitions
 interface Rule {
   type: string;
   correct: string;
@@ -42,7 +42,7 @@ interface Round {
 
 const QuizRulesPage: React.FC = () => {
   const rounds: Round[] = [
-    // --- Data remains the same ---
+    // Data
     {
       id: 1,
       title: "Round 1",
@@ -54,6 +54,12 @@ const QuizRulesPage: React.FC = () => {
           correct: "+20",
           wrong: "0",
           note: "Answer correctly to earn points",
+        },
+        {
+          type: "Pounce",
+          correct: "+20",
+          wrong: "-10",
+          note: "Quick buzzer round",
         },
       ],
       challenge: false,
@@ -109,7 +115,7 @@ const QuizRulesPage: React.FC = () => {
         "5th Hint": {
           correct: "+20",
           wrong: "-10",
-          note: "No guessing, must answer",
+          note: "No guessing allowed",
         },
         "6th Hint": {
           correct: "+20",
