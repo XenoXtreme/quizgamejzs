@@ -172,7 +172,7 @@ const QuizRulesPage: React.FC = () => {
         {/* General Information */}
         <div className="mb-12 grid gap-6 md:grid-cols-3">
           {/* Combination */}
-          <div className="// Make it slightly larger by default // Base styles // Add a subtle gradient // Add a larger, more vibrant // Make the brighter // Smooth transitions // Enhance effect on hover scale-105 transform rounded-xl bg-gradient-to-br from-slate-800 to-amber-900/60 p-6 text-center shadow shadow-2xl ring ring-2 shadow-amber-500/30 ring-amber-400 transition-all duration-300 hover:scale-110 hover:shadow-amber-400/50">
+          <div className="// Make it slightly larger by default // Base styles // Add a subtle gradient // Add a larger, more vibrant // Make the brighter // Smooth transitions // Enhance effect on hover scale-105 transform rounded-xl bg-gradient-to-br from-slate-800 to-amber-900/60 p-6 text-center shadow-2xl ring-2 shadow-amber-500/30 ring-amber-400 transition-all duration-300 hover:scale-110 hover:shadow-amber-400/50">
             <FaUsers className="mx-auto mb-3 h-10 w-10 text-amber-300" />
             <h3 className="text-xl font-bold text-white">Team Format</h3>
             <p className="text-slate-400">⁴C₂ combinations</p>
