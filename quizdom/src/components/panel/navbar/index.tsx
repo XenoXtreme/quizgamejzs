@@ -226,6 +226,17 @@ export default function AppBar() {
             History
           </NavbarLink>
           <NavbarLink
+            href="/rules"
+            active={isActive("/rules")}
+            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
+              isActive("/rules")
+                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
+                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+            } `}
+          >
+            Rules
+          </NavbarLink>
+          <NavbarLink
             href="/quiz"
             active={isActive("/quiz")}
             className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
