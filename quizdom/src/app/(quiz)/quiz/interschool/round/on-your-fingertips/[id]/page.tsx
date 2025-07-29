@@ -12,8 +12,10 @@ import { InterSchMeta } from "@/types/qns-pattern";
 export default function Page() {
   const { id } = useParams();
   const path = usePathname();
-  const meta = InterSchMeta.pnb[id as string];
+  const meta = InterSchMeta.oyf[id as string];
   const type = meta ? meta.type : "img";
+
+  console.log(type);
 
   return (
     <div>
