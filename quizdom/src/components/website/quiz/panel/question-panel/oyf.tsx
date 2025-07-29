@@ -35,7 +35,7 @@ export default function Panel() {
             </h1>
           </div>
         </section>
-        <div className="grid w-full max-w-5xl grid-cols-1 gap-6 px-2 py-8 sm:grid-cols-2 md:grid-cols-3 md:gap-10">
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-5 px-2 py-8 sm:grid-cols-2 md:grid-cols-4 md:gap-10">
           {InterSch.oyf.map((item, idx) => (
             <Link key={item.q_no} href={genURL(item.q_no)} className="group">
               <button
@@ -45,7 +45,9 @@ export default function Panel() {
                     "bg-[url('/assets/static/history.png')]",
                     "bg-[url('/assets/static/music.png')]",
                     "bg-[url('/assets/static/sports.png')]",
-                    "bg-[url('/assets/static/scientist.jpg')]",
+                    "bg-[url('/assets/static/mythology.jpg')]",
+                    "bg-[url('/assets/static/defence.jpg')]",
+                    "bg-[url('/assets/static/world.jpg')]",
                     "bg-[url('/assets/static/mystery.png')]",
                   ][idx]
                 } `}

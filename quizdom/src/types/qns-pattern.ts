@@ -53,7 +53,9 @@ export const InterSchMeta: QnMetaRoot = {
     history: { type: "img" },
     music: { type: "visualaudio" },
     sports: { type: "img" },
-    science: { type: "img" },
+    world: { type: "img" },
+    mythology: { type: "img" },
+    defence: { type: "img" },
     mystery: { type: "visualvideoans" },
   },
 };

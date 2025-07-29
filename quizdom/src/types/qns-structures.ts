@@ -42,7 +42,9 @@ export const InterSch: Section = {
     { q_no: "history", display_text: "History" },
     { q_no: "music", display_text: "Music" },
     { q_no: "sports", display_text: "Sports" },
-    { q_no: "science", display_text: "Science" },
+    { q_no: "mythology", display_text: "Mythology" },
+    { q_no: "defence", display_text: "Defence" },
+    { q_no: "world", display_text: "World" },
     { q_no: "mystery", display_text: "Mytery Box" },
   ],
   cc: [
