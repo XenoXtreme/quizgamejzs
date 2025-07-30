@@ -11,6 +11,8 @@ export const InterSchMeta: QnMetaRoot = {
     "4": { type: "img" },
     "5": { type: "img" },
     "6": { type: "img" },
+    "7": { type: "img" },
+    "8": { type: "img" },
   },
   pnb: {
     "1": { type: "img" },
@@ -19,6 +21,8 @@ export const InterSchMeta: QnMetaRoot = {
     "4": { type: "visualvideoans" },
     "5": { type: "img" },
     "6": { type: "img" },
+    "7": { type: "img" },
+    "8": { type: "img" },
   },
   cc: {
     "1": { type: "img" },
@@ -34,7 +38,6 @@ export const InterSchMeta: QnMetaRoot = {
     "3": { type: "img" },
     "4": { type: "img" },
     "5": { type: "img" },
-    "6": { type: "img" },
   },
   pbk: {
     "1": { type: "visualaudio" },

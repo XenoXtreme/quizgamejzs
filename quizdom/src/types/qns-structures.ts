@@ -28,6 +28,8 @@ export const InterSch: Section = {
     { q_no: "4", display_text: "Question - IV" },
     { q_no: "5", display_text: "Question - V" },
     { q_no: "6", display_text: "Question - VI" },
+    { q_no: "7", display_text: "Question - VII" },
+    { q_no: "8", display_text: "Question - VIII" },
   ],
   mm: [
     { q_no: "1", display_text: "Question - I" },
@@ -35,7 +37,6 @@ export const InterSch: Section = {
     { q_no: "3", display_text: "Question - III" },
     { q_no: "4", display_text: "Question - IV" },
     { q_no: "5", display_text: "Question - V" },
-    { q_no: "6", display_text: "Question - VI" },
   ],
   oyf: [
     { q_no: "literature", display_text: "Literature" },
@@ -62,6 +63,8 @@ export const InterSch: Section = {
     { q_no: "4", display_text: "Question - IV" },
     { q_no: "5", display_text: "Question - V" },
     { q_no: "6", display_text: "Question - VI" },
+    { q_no: "7", display_text: "Question - VII" },
+    { q_no: "8", display_text: "Question - VIII" },
   ],
   tiebreaker: [
     { q_no: "1", display_text: "Tie Breaker - I" },
