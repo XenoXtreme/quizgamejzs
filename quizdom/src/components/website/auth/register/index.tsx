@@ -47,7 +47,7 @@ export default function Home() {
   const InitialState: Team = {
     team: "",
     password: v4(),
-    category: "Intraschool (Junior)",
+    category: "Interschool (Senior)",
     members: {
       member1: { name: "", class: "IX" },
       member2: { name: "", class: "IX" },
