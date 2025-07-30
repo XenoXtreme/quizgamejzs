@@ -25,6 +25,7 @@ export default function Panel() {
           <FontAwesomeIcon icon={faCube} />
           Rounds:
         </h1>
+
         <section className="grid w-full max-w-5xl grid-cols-1 gap-6 px-2 sm:grid-cols-2 sm:gap-10 md:grid-cols-3">
           {/* On Your Own */}
           <Link href="/quiz/interschool/round/on-your-own" className="group">
@@ -132,6 +133,16 @@ export default function Panel() {
             </div>
           </Link>
         </section>
+        <div className="mt-24 flex w-full max-w-5xl items-center justify-between rounded-2xl border-2 border-yellow-200/60 bg-gradient-to-br from-white/80 via-yellow-50/80 to-yellow-100/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6 dark:border-yellow-800/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-yellow-900/70">
+          <span className="text-xl font-bold text-yellow-800 sm:text-2xl dark:text-yellow-300">
+            Tie Breaker
+          </span>
+          <Link href={"/quiz/interschool/round/tie-breaker"}>
+            <button className="transform cursor-pointer rounded-xl bg-gradient-to-r from-yellow-500 to-pink-500 px-6 py-2.5 text-base font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-yellow-300 focus:outline-none dark:focus:ring-yellow-700">
+              View
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

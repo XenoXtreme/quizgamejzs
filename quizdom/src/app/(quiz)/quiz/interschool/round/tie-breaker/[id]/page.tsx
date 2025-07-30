@@ -1,0 +1,29 @@
+"use client";
+// REACT
+import React from "react";
+
+// NEXT
+import { useParams, usePathname } from "next/navigation";
+import Panel from "@/components/website/quiz/question-panel/qp";
+
+// QNS META
+import { InterSchMeta } from "@/types/qns-pattern";
+
+export default function Page() {
+  const { id } = useParams();
+  const path = usePathname();
+  const meta = InterSchMeta.pnb[id as string];
+  const type = meta ? meta.type : "img";
+  return (
+    <div>
+      <Panel
+        round={"tie-breaker"}
+        qno={`${id}`}
+        type={`${type}`}
+        limit={Object.keys(InterSchMeta.tiebreaker).length.toString()}
+        key={"tiebreaker"}
+        path={path}
+      />
+    </div>
+  );
+}

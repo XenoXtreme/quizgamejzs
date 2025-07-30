@@ -3,9 +3,7 @@ import PptxViewer from "./pptxviewer";
 import { Button } from "flowbite-react";
 
 export default function PPTViewer({ category }: { category: string }) {
-  const [view, setView] = useState<"question" | "answer" | "tie" | "audience">(
-    "question",
-  );
+  const [view, setView] = useState<"question" | "answer">("question");
 
   let pptUrl: string;
   let filename: string;
@@ -15,15 +13,9 @@ export default function PPTViewer({ category }: { category: string }) {
   if (view === "question") {
     pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims.pptx`;
     filename = "prelims.pptx";
-  } else if (view === "answer") {
+  } else {
     pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-ans.pptx`;
     filename = "prelims-ans.pptx";
-  } else if (view === "tie") {
-    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-tie.pptx`;
-    filename = "prelims-tie.pptx";
-  } else {
-    pptUrl = `${CDN_URI}/assets/quiz/prelims/interschool/prelims-audience.pptx`;
-    filename = "prelims-audience.pptx";
   }
 
   return (
@@ -56,34 +48,6 @@ export default function PPTViewer({ category }: { category: string }) {
           }`}
         >
           Show Answer PPT
-        </Button>
-        <Button
-          onClick={() => setView("tie")}
-          color={view === "tie" ? "blue" : "light"}
-          pill
-          size="sm"
-          disabled={view === "tie"}
-          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
-            view === "tie"
-              ? "scale-110 bg-gradient-to-r from-purple-400 via-pink-200 to-white text-orange-500 ring-2 ring-purple-400"
-              : "hover:scale-105"
-          }`}
-        >
-          Tie Breaker
-        </Button>
-        <Button
-          onClick={() => setView("audience")}
-          color={view === "audience" ? "purple" : "light"}
-          pill
-          size="sm"
-          disabled={view === "audience"}
-          className={`flex-shrink-0 cursor-pointer rounded-xl font-semibold shadow-md transition-all duration-200 focus:ring-2 focus:ring-purple-400 ${
-            view === "audience"
-              ? "scale-110 bg-gradient-to-r from-purple-400 via-pink-200 to-white text-purple-900 ring-2 ring-purple-400"
-              : "hover:scale-105"
-          }`}
-        >
-          Questions for Audience
         </Button>
       </div>
       <div className="w-full max-w-full sm:max-w-4xl">

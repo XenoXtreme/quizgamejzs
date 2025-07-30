@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVideoCamera } from "@fortawesome/free-solid-svg-icons";
 import { InterSch } from "@/types/qns-structures";
 
-// Tie Breaker
-import { Panel as TieBreaker } from "./tie";
 
 export default function Panel() {
   function genURL(q_no: string) {
@@ -53,8 +51,6 @@ export default function Panel() {
             </div>
           ))}
         </div>
-        {/* Tie Breaker Section */}
-        <TieBreaker icon={faVideoCamera} genURL={genURL} />
       </div>
     </section>
   );

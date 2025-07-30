@@ -14,8 +14,6 @@ import { faBullseye } from "@fortawesome/free-solid-svg-icons";
 // QNS STRUCTURE
 import { InterSch } from "@/types/qns-structures";
 
-// Tie Breaker
-import { Panel as TieBreaker } from "./tie";
 
 // FONT
 const nunito = Nunito({
@@ -77,8 +75,6 @@ export default function Panel() {
               </div>
             ))}
           </div>
-          {/* Tie Breaker Section */}
-          <TieBreaker icon={faBullseye} genURL={genURL} />
         </div>
       </section>
     </div>

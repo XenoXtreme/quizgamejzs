@@ -64,7 +64,9 @@ export const InterSch: Section = {
     { q_no: "6", display_text: "Question - VI" },
   ],
   tiebreaker: [
-    { q_no: "tb1", display_text: "Tie Breaker - I" },
-    { q_no: "tb2", display_text: "Tie Breaker - II" },
+    { q_no: "1", display_text: "Tie Breaker - I" },
+    { q_no: "2", display_text: "Tie Breaker - II" },
+    { q_no: "3", display_text: "Tie Breaker - III" },
+    { q_no: "4", display_text: "Tie Breaker - IV" },
   ],
 };

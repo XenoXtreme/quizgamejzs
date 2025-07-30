@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 // 20 audience engagement questions
-const audienceQuestions = Array.from({ length: 20 }).map((_, i) => ({
+const audienceQuestions = Array.from({ length: 8 }).map((_, i) => ({
   q_no: `${i + 1}`,
   display_text: `Audience Engagement Question ${i + 1}`,
 }));

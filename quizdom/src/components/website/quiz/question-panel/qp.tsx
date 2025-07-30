@@ -74,14 +74,18 @@ export default function QuestionPanel({
   // Helper: Get OYF question keys in order
   const getOYFKeys = () => InterSch.oyf.map((q) => q.q_no);
 
-  // Helper: Get tie-breaker keys in order (manually listed)
-  const getTieBreakerKeys = () => ["tb1", "tb2"]; // Add more as needed
+  // Check if navigation should be disabled
+  const isPrevDisabled =
+    round === "oyf" ? qno === "literature" : Number(qno) <= 1;
 
-  // Helper: Are we in OYF or tie-breaker mode?
-  const isOYF = round === "oyf" && getOYFKeys().includes(qno);
-  const isTieBreaker = getTieBreakerKeys().includes(qno);
+  const isNextDisabled =
+    round === "oyf"
+      ? qno === "mystery"
+      : limit
+        ? Number(qno) >= Number(limit)
+        : false;
 
-  // OYF navigation
+  // Get previous URL for OYF round
   const getPrevUrlForOYF = () => {
     const keys = getOYFKeys();
     const idx = keys.indexOf(qno);
@@ -90,6 +94,8 @@ export default function QuestionPanel({
     }
     return "";
   };
+
+  // Get next URL for OYF round
   const getNextUrlForOYF = () => {
     const keys = getOYFKeys();
     const idx = keys.indexOf(qno);
@@ -99,46 +105,10 @@ export default function QuestionPanel({
     return "";
   };
 
-  // Tie-breaker navigation
-  const getPrevUrlForTieBreaker = () => {
-    const keys = getTieBreakerKeys();
-    const idx = keys.indexOf(qno);
-    if (idx > 0) {
-      return path.replace(`${qno}`, `${keys[idx - 1]}`);
-    }
-    return "";
-  };
-  const getNextUrlForTieBreaker = () => {
-    const keys = getTieBreakerKeys();
-    const idx = keys.indexOf(qno);
-    if (idx !== -1 && idx < keys.length - 1) {
-      return path.replace(`${qno}`, `${keys[idx + 1]}`);
-    }
-    return "";
-  };
-
-  // Disabled logic: OYF, tie-breaker, else default
-  const isPrevDisabled = isOYF
-    ? getOYFKeys()[0] === qno
-    : isTieBreaker
-      ? getTieBreakerKeys()[0] === qno
-      : Number(qno) <= 1;
-
-  const isNextDisabled = isOYF
-    ? getOYFKeys().slice(-1)[0] === qno
-    : isTieBreaker
-      ? getTieBreakerKeys().slice(-1)[0] === qno
-      : limit
-        ? Number(qno) >= Number(limit)
-        : false;
-
-  // Navigation URL helpers: OYF, tie-breaker, else default
+  // Navigation URL helpers
   const getNextURL = () => {
-    if (isOYF) {
+    if (round === "oyf") {
       return getNextUrlForOYF();
-    }
-    if (isTieBreaker) {
-      return getNextUrlForTieBreaker();
     }
     if (!isNextDisabled) {
       return path.replace(`${qno}`, `${Number(qno) + 1}`);
@@ -147,11 +117,8 @@ export default function QuestionPanel({
   };
 
   const getPrevURL = () => {
-    if (isOYF) {
+    if (round === "oyf") {
       return getPrevUrlForOYF();
-    }
-    if (isTieBreaker) {
-      return getPrevUrlForTieBreaker();
     }
     if (!isPrevDisabled) {
       return path.replace(`${qno}`, `${Number(qno) - 1}`);
@@ -296,8 +263,8 @@ export default function QuestionPanel({
         return "On Your Fingertips";
       case "pnb":
         return "Pounce Bounce";
-      case "audience":
-        return "Audience Engagement";
+      case "tie-breaker":
+        return "Tie Breaker";
       default:
         return "Unknown Round";
     }
@@ -340,11 +307,9 @@ export default function QuestionPanel({
             </Badge>
           </div>
           <div className="text-xs font-medium text-gray-500 sm:text-sm dark:text-gray-400">
-            {qno.startsWith("tb")
-              ? `Tie Breaker ${qno.replace("tb", "")}`
-              : `Question ${qno}`}
+            Question {qno}{" "}
             {limit ? (
-              <span className="ml-[3.5] text-gray-400 dark:text-gray-500">
+              <span className="ml-[2.75] text-gray-400 dark:text-gray-500">
                 of {limit}
               </span>
             ) : (

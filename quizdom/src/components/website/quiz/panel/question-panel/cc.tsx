@@ -4,9 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { InterSch } from "@/types/qns-structures";
 
-// Tie Breaker
-import { Panel as TieBreaker } from "./tie";
-
 export default function Panel() {
   function genURL(q_no: string) {
     return `/quiz/interschool/round/connections/${q_no}`;
@@ -23,7 +20,7 @@ export default function Panel() {
             animation: "pulse 2s ease-in-out infinite, spin 6s linear infinite",
           }}
         />
-        <h1 className="animate-fade-in-right bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-2xl font-bold tracking-tight text-gray-900 text-transparent transition-all duration-500 hover:from-pink-600 hover:via-blue-600 hover:to-purple-600 md:text-3xl dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 dark:text-white">
+        <h1 className="animate-fade-in-right bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-2xl font-bold tracking-tight text-gray-900 transition-all duration-500 hover:from-pink-600 hover:via-blue-600 hover:to-purple-600 md:text-3xl dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 dark:text-white">
           Connections
         </h1>
       </div>
@@ -132,16 +129,6 @@ export default function Panel() {
             </Link>
           </div>
         ))}
-        {/* Tie Breaker Section with enhanced delayed animation */}
-        <div
-          className="animate-fade-in-up smooth-hover opacity-0"
-          style={{
-            animationDelay: `${InterSch.cc.length * 120 + 300}ms`,
-            animationFillMode: "forwards",
-          }}
-        >
-          <TieBreaker icon={faLink} genURL={genURL} />
-        </div>
       </div>
     </section>
   );
