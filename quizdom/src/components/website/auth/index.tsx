@@ -78,8 +78,9 @@ export default function Home() {
           setLoading(false);
         }
       })
-      .catch(() => {
+      .catch((error) => {
         toast.error("Failed to login.", { duration: 1500 });
+        console.log(error);
         setLoading(false);
       });
   }
@@ -114,7 +115,7 @@ export default function Home() {
               className="object-contain"
             />
           </div>
-          <h2 className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-center text-2xl font-bold text-transparent sm:text-3xl dark:from-purple-400 dark:to-blue-300">
+          <h2 className="bg-linear-to-r from-purple-600 to-blue-500 bg-clip-text text-center text-2xl font-bold text-transparent sm:text-3xl dark:from-purple-400 dark:to-blue-300">
             Welcome Back
           </h2>
           <p className="mt-1 text-center text-xs text-gray-500 sm:text-base dark:text-gray-400">
@@ -231,7 +232,7 @@ export default function Home() {
           <Button
             onClick={handleLogin}
             disabled={isButtonDisabled}
-            className="mt-2 cursor-pointer rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 font-medium text-white hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+            className="mt-2 cursor-pointer rounded-lg bg-linear-to-r from-blue-600 to-purple-600 font-medium text-white hover:bg-linear-to-br focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
           >
             {loading ? (
               <div className="flex items-center justify-center">

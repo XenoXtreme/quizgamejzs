@@ -69,7 +69,7 @@ export function AuthState({ children }: { children: ReactNode }) {
       method: "POST",
       mode: "cors",
       headers: {
-        "Access-Control-Allow-Origin": `${process.env.NEXT_PUBLIC_HOST_URI}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ id: _id, password: password }),
     });
