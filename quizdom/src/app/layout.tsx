@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 
+// TOP LOADER
+import NextTopLoader from "nextjs-toploader";
+
 // LAYOUT
 import Layout from "@/layout/index";
 
@@ -24,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${nunito.className} antialiased`}>
+        <NextTopLoader />
         <Layout>{children}</Layout>
       </body>
     </html>

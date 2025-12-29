@@ -4,11 +4,8 @@ import { useEffect, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import {
   Menu,
-  Moon,
-  Sun,
   ChevronDown,
   LogOut,
   User,
@@ -53,23 +50,14 @@ const NAV_LINKS = [
 export default function AppBar() {
   const path = usePathname();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
 
   const { team, isAuthenticated, getSetTeam, removeTeam }: ContextType =
     useAuthContext();
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // 2. Fix for "setState synchronously" error:
-  // We use setTimeout to defer the update slightly, satisfying strict linters.
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // 3. Simplified Local Storage Sync
+ 
+  // Local Storage Sync
   useEffect(() => {
     // Only run if we are in the browser and have no team loaded
     if (typeof window === "undefined" || team?.id) return;
@@ -123,13 +111,6 @@ export default function AppBar() {
     return team?.role === "ADMIN" ? "/quiz/buzzer?admin=true" : "/quiz/buzzer";
   }, [team?.role]);
 
-  // If not mounted yet, we can render a loading state or the navbar without the theme toggle
-  // to prevent hydration mismatch.
-  if (!mounted) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 h-16" />
-    );
-  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:border-gray-700 dark:bg-linear-to-r dark:from-indigo-900/95 dark:via-purple-900/95 dark:to-indigo-900/95">
