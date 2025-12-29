@@ -4,3 +4,5 @@ onlyBuiltDependencies:
   - aws-sdk
   - canvas
   - esbuild
+  - sharp
+  - unrs-resolver
