@@ -1,0 +1,58 @@
+{
+  "name": "quizdom",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start --turbopack",
+    "lint": "next lint",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "postinstall": "flowbite-react patch"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.1",
+    "axios": "^1.13.2",
+    "dd": "^0.26.0",
+    "flowbite": "^4.0.1",
+    "flowbite-react": "^0.12.15",
+    "next": "^16.1.1",
+    "nextjs-toploader": "^3.9.17",
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "react": "^19.2.3",
+    "react-doc-viewer": "^0.1.15",
+    "react-dom": "^19.2.3",
+    "react-icons": "^5.5.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "sonner": "^2.0.7",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "aws-sdk",
+      "canvas",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}
