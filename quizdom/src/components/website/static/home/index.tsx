@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, Card } from "flowbite-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -41,6 +42,7 @@ export default function HomePage() {
       }
     }
   }, [loggedIn]);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-linear-to-br from-yellow-50 via-white to-yellow-100 px-1 py-6 transition-colors duration-300 sm:px-2 sm:py-8 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Decorative Blobs */}
@@ -75,20 +77,18 @@ export default function HomePage() {
           </p>
           <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:gap-6">
             <Button
-              as={Link}
-              href="/about"
-              color="warning"
+              asChild
               className="rounded-xl border-0 bg-linear-to-r from-yellow-400 to-pink-400 px-6 py-2 text-base font-bold tracking-wide shadow-xl transition-all hover:scale-110 hover:shadow-2xl sm:px-8 sm:py-3 sm:text-lg dark:from-yellow-500 dark:to-pink-600"
             >
-              Learn More
+              <Link href="/about">Learn More</Link>
             </Button>
             <Button
-              as={Link}
-              href={loggedIn ? "/quiz" : "/register"}
-              color="dark"
+              asChild
               className="rounded-xl border-0 bg-linear-to-r from-gray-900 to-purple-900 px-6 py-2 text-base font-bold tracking-wide shadow-xl transition-all hover:scale-110 hover:shadow-2xl sm:px-8 sm:py-3 sm:text-lg dark:from-gray-800 dark:to-purple-800"
             >
-              {loggedIn ? "Start Quiz" : "Register Now"}
+              <Link href={loggedIn ? "/quiz" : "/register"}>
+                {loggedIn ? "Start Quiz" : "Register Now"}
+              </Link>
             </Button>
           </div>
         </div>
@@ -127,20 +127,22 @@ export default function HomePage() {
                 <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-pink-200 opacity-40 blur-xl sm:-top-4 sm:-right-4 sm:h-10 sm:w-10 dark:bg-pink-700"></div>
               </div>
             </div>
-            <h3 className="mb-2 text-center text-lg font-extrabold tracking-tight text-gray-800 transition group-hover:text-pink-600 sm:mb-3 sm:text-2xl dark:text-yellow-300 dark:group-hover:text-pink-400">
-              {feature.title}
-            </h3>
-            <p className="mb-4 text-center text-base text-gray-700 sm:mb-6 sm:text-lg dark:text-gray-200">
-              {feature.description}
-            </p>
-            <Button
-              as={Link}
-              href={feature.link}
-              color="warning"
-              className="rounded-lg border-0 bg-linear-to-r from-yellow-400 to-pink-400 px-4 py-2 text-sm font-bold shadow transition-all hover:scale-110 hover:shadow-xl sm:px-6 sm:text-base dark:from-yellow-500 dark:to-pink-600"
-            >
-              {feature.cta}
-            </Button>
+            <CardContent className="flex-1 text-center">
+              <h3 className="mb-2 text-lg font-extrabold tracking-tight text-gray-800 transition group-hover:text-pink-600 sm:mb-3 sm:text-2xl dark:text-yellow-300 dark:group-hover:text-pink-400">
+                {feature.title}
+              </h3>
+              <p className="mb-4 text-base text-gray-700 sm:mb-6 sm:text-lg dark:text-gray-200">
+                {feature.description}
+              </p>
+            </CardContent>
+            <CardFooter className="w-full pt-0">
+              <Button
+                asChild
+                className="w-full rounded-lg border-0 bg-linear-to-r from-yellow-400 to-pink-400 px-4 py-2 text-sm font-bold shadow transition-all hover:scale-110 hover:shadow-xl sm:px-6 sm:text-base dark:from-yellow-500 dark:to-pink-600"
+              >
+                <Link href={feature.link}>{feature.cta}</Link>
+              </Button>
+            </CardFooter>
           </Card>
         ))}
       </section>
@@ -157,12 +159,10 @@ export default function HomePage() {
             <br />
           </p>
           <Button
-            as={Link}
-            href="/about"
-            color="dark"
+            asChild
             className="rounded-xl border-0 bg-linear-to-r from-gray-900 to-purple-900 px-6 py-2 text-base font-bold shadow-xl transition-all hover:scale-110 hover:shadow-2xl sm:px-8 sm:py-3 sm:text-lg dark:from-gray-800 dark:to-purple-800"
           >
-            Learn More
+            <Link href="/about">Learn More</Link>
           </Button>
         </div>
       </section>

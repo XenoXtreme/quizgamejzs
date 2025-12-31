@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import "./globals.css";
 
 // TOP LOADER
 import NextTopLoader from "nextjs-toploader";
 
 // LAYOUT
 import Layout from "@/layout/index";
+
+// IMPORT CSS
+import "./globals.css";
 
 // FONT
 const nunito = Nunito({
