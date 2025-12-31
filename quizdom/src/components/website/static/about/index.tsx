@@ -91,9 +91,8 @@ const About = () => {
 
   const plugin = React.useRef(
     Autoplay({
-      delay: 9000,
-      stopOnInteraction: false,
-      stopOnMouseEnter: true,
+      delay: 4000,
+      playOnInit: true,
     })
   );
 
@@ -121,6 +120,7 @@ const About = () => {
               opts={{
                 align: "start",
                 loop: true,
+                
               }}
               plugins={[plugin.current]}
               className="relative w-full overflow-hidden rounded-3xl shadow-2xl"

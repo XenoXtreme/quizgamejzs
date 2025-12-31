@@ -255,7 +255,7 @@ const QuizRulesPage: React.FC = () => {
               <TabsTrigger
                 key={round.id}
                 value={`round-${round.id}`}
-                className="text-xs sm:text-sm"
+                className="cursor-pointer text-xs sm:text-sm"
               >
                 R{round.id}
               </TabsTrigger>
@@ -283,7 +283,7 @@ const QuizRulesPage: React.FC = () => {
                   <Accordion type="single" collapsible className="w-full">
                     {round.rules.map((rule, idx) => (
                       <AccordionItem key={idx} value={`rule-${idx}`}>
-                        <AccordionTrigger className="font-semibold text-left">
+                        <AccordionTrigger className="cursor-pointer font-semibold text-left">
                           {rule.type}
                         </AccordionTrigger>
                         <AccordionContent>

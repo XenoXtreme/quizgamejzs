@@ -4,13 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Menu,
-  ChevronDown,
-  LogOut,
-  User,
-  Clock,
-} from "lucide-react";
+import { Menu, ChevronDown, LogOut, User, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAuthContext } from "@/context/auth/state";
@@ -56,7 +50,7 @@ export default function AppBar() {
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
- 
+
   // Local Storage Sync
   useEffect(() => {
     // Only run if we are in the browser and have no team loaded
@@ -86,7 +80,7 @@ export default function AppBar() {
   const handleLogOut = () => {
     setIsLoggingOut(true);
     // Clear storage
-    localStorage.removeItem("_id");
+    localStorage.removeItem("_token");
     localStorage.removeItem("_user");
 
     toast.success("Successfully logged out.", { duration: 600 });
@@ -110,7 +104,6 @@ export default function AppBar() {
   const buzzerURL = useMemo(() => {
     return team?.role === "ADMIN" ? "/quiz/buzzer?admin=true" : "/quiz/buzzer";
   }, [team?.role]);
-
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:border-gray-700 dark:bg-linear-to-r dark:from-indigo-900/95 dark:via-purple-900/95 dark:to-indigo-900/95">
