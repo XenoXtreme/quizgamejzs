@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,7 +10,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Users, School, Hash, Sparkles } from "lucide-react";
+import { Users, School, Hash, Sparkles, Loader2 } from "lucide-react";
+
+// ALERT
+import { toast } from "sonner";
 
 // CONTEXT
 import { ContextType } from "@/context/auth/context";
@@ -18,6 +21,15 @@ import { useAuthContext } from "@/context/auth/state";
 
 export default function Logged() {
   const { team }: ContextType = useAuthContext();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (team) {
+      setIsLoading(false);
+    } else {
+      toast.error("No team data found. Please log in again.");
+    }
+  }, [team]);
 
   const hasMemberData = (
     memberKey: "member1" | "member2" | "member3" | "member4"
@@ -36,6 +48,17 @@ export default function Logged() {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 text-indigo-400 animate-spin" />
+          <p className="text-gray-400">Loading team data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-900 py-8 sm:py-12 relative overflow-hidden">
@@ -79,7 +102,7 @@ export default function Logged() {
           <CardHeader className="pt-16 pb-6">
             <div className="space-y-3">
               <CardTitle className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent animate-gradient">
-                {team?.team || "Team Dashboard"}
+                {`${team?.team}'s Dashboard` || "Team Dashboard"}
               </CardTitle>
               <CardDescription className="flex flex-wrap items-center gap-2 text-base text-gray-300">
                 <School className="h-4 w-4 text-indigo-400" />
@@ -121,7 +144,7 @@ export default function Logged() {
                 Team Members
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 cursor-pointer">
                 {["member1", "member2", "member3", "member4"].map(
                   (memberKey, index) => {
                     const member =

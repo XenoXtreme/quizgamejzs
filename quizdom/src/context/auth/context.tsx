@@ -55,7 +55,7 @@ interface ContextType {
   register: (data: RegistrationModel | null) => Promise<AuthResponse>;
   login: (_id: string | null, password: string | null) => Promise<AuthResponse>;
   fetchTeam: (_id: string) => Promise<AuthResponse>;
-  getSetTeam: (_usr: Team) => void;
+  getSetTeam: (team: Team) => void;
   removeTeam: () => void;
 }
 

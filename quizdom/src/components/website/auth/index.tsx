@@ -84,9 +84,6 @@ export default function Home() {
           toast.success("Successfully logged in.", { duration: 600 });
           setLoading(false);
           router.push("/account");
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
         } else {
           toast.error("Failed to login.", { duration: 600 });
           setLoading(false);

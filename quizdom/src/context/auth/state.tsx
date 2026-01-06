@@ -4,7 +4,7 @@
 import React, { useState, useContext, ReactNode } from "react";
 
 // CONTEXT
-import AuthContext, { Team, AuthResponse } from "./context";
+import AuthContext, { Team, AuthResponse, RegistrationModel } from "./context";
 
 // STATE
 export function AuthState({ children }: { children: ReactNode }) {
@@ -41,9 +41,10 @@ export function AuthState({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // SET USER
-  const getSetTeam = (_usr: Team) => {
-    setTeam(_usr);
+  const getSetTeam = (_team: Team) => {
+    setTeam(_team);
     setIsAuthenticated(true);
+    localStorage.setItem("_user", JSON.stringify(_team));
   };
 
   // REMOVE USER
@@ -54,7 +55,7 @@ export function AuthState({ children }: { children: ReactNode }) {
 
   // CREATE USER
   const register = async (
-    data: Record<string, unknown>
+    data: RegistrationModel | null
   ): Promise<AuthResponse> => {
     try {
       const _req = await fetch(`${host}/api/auth/create`, {
@@ -68,7 +69,13 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       if (_req.ok) {
         const _response = await _req.json();
-        console.log(typeof _response);
+        const _teamData = {
+          ..._response.data,
+          member: _response.data.members?.[0],
+        };
+        delete _teamData.members;
+        getSetTeam(_teamData);
+        setToken(_response.token);
         return {
           success: true,
           response: _response,
@@ -101,7 +108,12 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       if (_req.ok) {
         const _response = await _req.json();
-        getSetTeam(_response.data);
+        const _teamData = {
+          ..._response.data,
+          member: _response.data.members?.[0],
+        };
+        delete _teamData.members;
+        getSetTeam(_teamData);
         setToken(_response.token);
         return {
           success: true,
@@ -133,10 +145,16 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       const response = await req.json();
 
-      if (response._id) {
-        getSetTeam(response);
+      if (response.data) {
+        const _teamData = {
+          ...response.data,
+          member: response.data.members?.[0],
+        };
+        delete _teamData.members;
+        getSetTeam(_teamData);
+        setToken(response.token);
       }
-      console.log(typeof response);
+
       return {
         success: true,
         response: response,
