@@ -127,6 +127,7 @@ export default function Home() {
     await register(data)
       .then((res) => {
         if (res.response?.data?.id) {
+          localStorage.setItem("_user", JSON.stringify(res.response?.data));
           localStorage.setItem("_token", JSON.stringify(res.response?.token));
           toast.success(
             `Successfully created account. ID: ${res.response?.data?.id}`,

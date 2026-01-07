@@ -23,17 +23,17 @@ interface Team {
 }
 
 interface RegistrationModel {
-  password: string | undefined | null;
   team: string | undefined | null;
+  password: string | undefined | null;
   category: string | undefined | null;
   school: string | undefined | null;
-  role: string | null;
   members: {
     member1: Member;
     member2: Member;
     member3: Member;
     member4: Member;
   };
+  role: string | null;
 }
 
 // Response Type

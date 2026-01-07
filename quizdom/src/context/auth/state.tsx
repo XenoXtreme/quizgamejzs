@@ -69,12 +69,7 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       if (_req.ok) {
         const _response = await _req.json();
-        const _teamData = {
-          ..._response.data,
-          member: _response.data.members?.[0],
-        };
-        delete _teamData.members;
-        getSetTeam(_teamData);
+        getSetTeam(_response.data);
         setToken(_response.token);
         return {
           success: true,
@@ -108,6 +103,7 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       if (_req.ok) {
         const _response = await _req.json();
+        console.log(JSON.stringify(_response));
         const _teamData = {
           ..._response.data,
           member: _response.data.members?.[0],
@@ -146,13 +142,13 @@ export function AuthState({ children }: { children: ReactNode }) {
       const response = await req.json();
 
       if (response.data) {
+        console.log(JSON.stringify(response));
         const _teamData = {
           ...response.data,
           member: response.data.members?.[0],
         };
         delete _teamData.members;
         getSetTeam(_teamData);
-        setToken(response.token);
       }
 
       return {
