@@ -10,6 +10,7 @@ import {
   authenticateToken,
   authorizeRoles,
 } from "./middlewares/auth.middleware";
+import { decode } from "punycode";
 
 const app: Express = express();
 const server = createServer(app);
@@ -18,7 +19,7 @@ const port: string | number = process.env.PORT || 3001;
 // MongoDB setup
 let db: Db;
 let mongoClient: MongoClient;
-let authService: AuthService = null as any; // Will be initialized in connectToDatabase
+let authService: AuthService = null as any;
 
 // CORS OPTION
 const corsOption: CorsOptions = {
@@ -61,6 +62,16 @@ async function connectToDatabase() {
     db = mongoClient.db("quizdom");
     authService = new AuthService(db);
 
+    // Create index for refresh tokens
+    await db
+      .collection("RefreshTokens")
+      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+    // Cleanup expired tokens periodically (every hour)
+    setInterval(() => {
+      authService.cleanupExpiredTokens();
+    }, 60 * 60 * 1000);
+
     console.log("✅ Connected to MongoDB");
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
@@ -76,17 +87,20 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // EJS SETUP
 app.set("view engine", "ejs");
 
-// SOCKET SETUP WITH JWT AUTHENTICATION
+// SOCKET SETUP - Now with simpler session-based auth
 let mainComputerId: string = "";
 
 const io: Server = new Server(server, {
   cors: corsOption,
-  transports: ["polling", "websocket"],
+  transports: ["websocket", "polling"],
   pingTimeout: 60000,
   pingInterval: 25000,
   path: "/socket.io/",
   allowEIO3: true,
   connectTimeout: 45000,
+  allowUpgrades: true,
+  perMessageDeflate: false,
+  httpCompression: false,
 });
 
 io.engine.generateId = (req) => {
@@ -97,9 +111,8 @@ io.engine.on("connection_error", (err) => {
   console.error("Socket connection error:", err);
 });
 
-// Socket.IO JWT Middleware
-io.use((socket, next) => {
-  // Skip authentication check if authService isn't initialized yet
+// Simplified Socket.IO Authentication Middleware
+io.use(async (socket, next) => {
   if (!authService) {
     return next(new Error("Server not ready"));
   }
@@ -118,6 +131,7 @@ io.use((socket, next) => {
 
   // Attach user data to socket
   socket.data.user = decoded;
+  console.log(decoded);
   next();
 });
 
@@ -128,7 +142,6 @@ io.on("connection", (socket) => {
   );
 
   socket.on("identifyMainComputer", async () => {
-    // Only ADMIN or authorized roles can be main computer
     if (user.role !== "ADMIN" && user.role !== "ORGANIZER") {
       socket.emit("error", "Only admins can be the main computer");
       return;
@@ -165,7 +178,6 @@ io.on("connection", (socket) => {
           return;
         }
 
-        // Verify the team is pressing their own buzzer
         if (user.id !== data.teamId) {
           socket.emit("error", "You can only press your own buzzer");
           return;
@@ -184,7 +196,6 @@ io.on("connection", (socket) => {
   );
 
   socket.on("resetBuzzer", async () => {
-    // Only main computer or admins can reset
     if (socket.id !== mainComputerId && user.role !== "ADMIN") {
       socket.emit("error", "Only the main computer can reset the buzzer");
       return;
@@ -212,7 +223,7 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-// Public routes (no authentication required)
+// Public routes
 app.post("/api/auth/create", async (req: Request, res: Response) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -293,7 +304,57 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
   }
 });
 
-// Protected routes (require authentication)
+// Token refresh endpoint
+app.post("/api/auth/refresh", async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({
+        error: "Refresh token required",
+        code: "NO_REFRESH_TOKEN",
+      });
+    }
+
+    const result = await authService.refreshAccessToken(refreshToken);
+
+    if ("error" in result) {
+      return res.status(401).json(result);
+    }
+
+    res.json(result);
+  } catch (e) {
+    console.error("Error refreshing token:", e);
+    res.status(500).json({
+      error: "Internal server error",
+      message: e instanceof Error ? e.message : "Unknown error",
+    });
+  }
+});
+
+// Logout endpoint
+app.post(
+  "/api/auth/logout",
+  authenticateToken(authService),
+  async (req: Request, res: Response) => {
+    try {
+      const { refreshToken } = req.body;
+      const userId = req.user!.id;
+
+      await authService.revokeRefreshToken(userId, refreshToken);
+
+      res.json({ success: true, message: "Logged out successfully" });
+    } catch (e) {
+      console.error("Error during logout:", e);
+      res.status(500).json({
+        error: "Internal server error",
+        message: e instanceof Error ? e.message : "Unknown error",
+      });
+    }
+  }
+);
+
+// Protected routes
 app.post(
   "/api/auth/team",
   authenticateToken(authService),
@@ -312,7 +373,6 @@ app.post(
         return res.status(400).json({ error: "Missing team id" });
       }
 
-      // Users can only access their own team data unless they're an admin
       if (req.user!.id !== id && req.user!.role !== "ADMIN") {
         return res.status(403).json({ error: "Access denied" });
       }

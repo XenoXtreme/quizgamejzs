@@ -21,13 +21,20 @@ export const authenticateToken = (authService: AuthService) => {
     const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
     if (!token) {
-      return res.status(401).json({ error: "Access token required" });
+      return res.status(401).json({
+        error: "Access token required",
+        code: "NO_TOKEN",
+      });
     }
 
     const decoded = authService.verifyToken(token);
 
     if (!decoded) {
-      return res.status(403).json({ error: "Invalid or expired token" });
+      // Token is invalid or expired
+      return res.status(401).json({
+        error: "Invalid or expired token",
+        code: "TOKEN_EXPIRED", // Client should use this to trigger refresh
+      });
     }
 
     req.user = decoded;
@@ -35,10 +42,30 @@ export const authenticateToken = (authService: AuthService) => {
   };
 };
 
+// Optional middleware that doesn't fail if token is missing
+export const optionalAuthentication = (authService: AuthService) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (token) {
+      const decoded = authService.verifyToken(token);
+      if (decoded) {
+        req.user = decoded;
+      }
+    }
+
+    next();
+  };
+};
+
 export const authorizeRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ error: "Authentication required" });
+      return res.status(401).json({
+        error: "Authentication required",
+        code: "AUTH_REQUIRED",
+      });
     }
 
     if (!roles.includes(req.user.role)) {
@@ -46,6 +73,7 @@ export const authorizeRoles = (...roles: string[]) => {
         error: "Insufficient permissions",
         required: roles,
         current: req.user.role,
+        code: "INSUFFICIENT_PERMISSIONS",
       });
     }
 

@@ -70,7 +70,7 @@ export function AuthState({ children }: { children: ReactNode }) {
       if (_req.ok) {
         const _response = await _req.json();
         getSetTeam(_response.data);
-        setToken(_response.token);
+        setToken(_response.refreshToken);
         return {
           success: true,
           response: _response,
@@ -110,7 +110,7 @@ export function AuthState({ children }: { children: ReactNode }) {
         };
         delete _teamData.members;
         getSetTeam(_teamData);
-        setToken(_response.token);
+        setToken(_response.refreshToken);
         return {
           success: true,
           response: _response,
@@ -163,17 +163,55 @@ export function AuthState({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshToken = async (): Promise<string | null> => {
+    setToken(localStorage.getItem("_global_token"));
+
+    if (!token) return null;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URI}/api/auth/refresh`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Token refresh failed");
+      }
+
+      const data = await response.json();
+
+      if (data.data.token) {
+        localStorage.setItem("_global_token", data.token);
+        setToken(data.data.token);
+        return data.token;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      return null;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         team,
         isAuthenticated,
+        token,
         setTeam,
         register,
         login,
         fetchTeam,
         getSetTeam,
         removeTeam,
+        refreshToken,
       }}
     >
       {children}

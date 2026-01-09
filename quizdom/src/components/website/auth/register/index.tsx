@@ -129,6 +129,10 @@ export default function Home() {
         if (res.response?.data?.id) {
           localStorage.setItem("_user", JSON.stringify(res.response?.data));
           localStorage.setItem("_token", JSON.stringify(res.response?.token));
+          localStorage.setItem(
+            "_global_token",
+            JSON.stringify(res.response?.refreshToken)
+          );
           toast.success(
             `Successfully created account. ID: ${res.response?.data?.id}`,
             {

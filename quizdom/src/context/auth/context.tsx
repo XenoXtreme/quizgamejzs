@@ -43,6 +43,7 @@ interface AuthResponse {
     success?: boolean;
     data?: Team;
     token?: string;
+    refreshToken?: string;
   };
   message?: string;
   error?: string;
@@ -51,12 +52,14 @@ interface AuthResponse {
 interface ContextType {
   team: Team;
   isAuthenticated: boolean;
+  token: string | null;
   setTeam: React.Dispatch<React.SetStateAction<Team>>;
   register: (data: RegistrationModel | null) => Promise<AuthResponse>;
   login: (_id: string | null, password: string | null) => Promise<AuthResponse>;
   fetchTeam: (_id: string) => Promise<AuthResponse>;
   getSetTeam: (team: Team) => void;
   removeTeam: () => void;
+  refreshToken: () => Promise<string | null>;
 }
 
 // Define the shape of the context data
