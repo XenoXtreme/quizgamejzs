@@ -200,8 +200,6 @@ io.on("connection", (socket) => {
       socket.emit("error", "Only the main computer can reset the buzzer");
       return;
     }
-
-    console.log("Reset buzzer event received");
     try {
       io.emit("buzzerReset");
     } catch (error) {

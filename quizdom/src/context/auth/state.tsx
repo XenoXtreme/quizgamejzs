@@ -1,12 +1,8 @@
 "use client";
 
-// REACT ESSENTIALS
 import React, { useState, useContext, ReactNode } from "react";
-
-// CONTEXT
 import AuthContext, { Team, AuthResponse, RegistrationModel } from "./context";
 
-// STATE
 export function AuthState({ children }: { children: ReactNode }) {
   const initialState: Team = {
     id: "",
@@ -15,45 +11,35 @@ export function AuthState({ children }: { children: ReactNode }) {
     school: "",
     role: "",
     member: {
-      member1: {
-        name: "",
-        class: "",
-      },
-      member2: {
-        name: "",
-        class: "",
-      },
-      member3: {
-        name: "",
-        class: "",
-      },
-      member4: {
-        name: "",
-        class: "",
-      },
+      member1: { name: "", class: "" },
+      member2: { name: "", class: "" },
+      member3: { name: "", class: "" },
+      member4: { name: "", class: "" },
     },
   };
 
-  // VARIABLE SETTINGS
   const host = process.env.NEXT_PUBLIC_BACKEND_API_URI as string;
   const [team, setTeam] = useState<Team>(initialState);
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // SET USER
   const getSetTeam = (_team: Team) => {
     setTeam(_team);
     setIsAuthenticated(true);
     localStorage.setItem("_user", JSON.stringify(_team));
   };
 
-  // REMOVE USER
   const removeTeam = () => {
     setTeam(initialState);
     setIsAuthenticated(false);
+    setAccessToken(null);
+    setRefreshToken(null);
+    localStorage.removeItem("_user");
+    localStorage.removeItem("_global_token");
+    localStorage.removeItem("_refresh_token");
   };
 
-  // CREATE USER
   const register = async (
     data: RegistrationModel | null
   ): Promise<AuthResponse> => {
@@ -61,20 +47,20 @@ export function AuthState({ children }: { children: ReactNode }) {
       const _req = await fetch(`${host}/api/auth/create`, {
         method: "POST",
         mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (_req.ok) {
         const _response = await _req.json();
         getSetTeam(_response.data);
-        setToken(_response.refreshToken);
-        return {
-          success: true,
-          response: _response,
-        };
+
+        setAccessToken(_response.token);
+        setRefreshToken(_response.refreshToken);
+        localStorage.setItem("_global_token", _response.token);
+        localStorage.setItem("_refresh_token", _response.refreshToken);
+
+        return { success: true, response: _response };
       } else {
         throw new Error(`${_req.status} : ${_req.statusText}`);
       }
@@ -86,7 +72,6 @@ export function AuthState({ children }: { children: ReactNode }) {
     }
   };
 
-  // LOGIN USER
   const login = async (
     _id: string | null,
     password: string | null
@@ -95,26 +80,26 @@ export function AuthState({ children }: { children: ReactNode }) {
       const _req = await fetch(`${host}/api/auth/login`, {
         method: "POST",
         mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: _id, password: password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: _id, password }),
       });
 
       if (_req.ok) {
         const _response = await _req.json();
-        console.log(JSON.stringify(_response));
         const _teamData = {
           ..._response.data,
           member: _response.data.members?.[0],
         };
         delete _teamData.members;
         getSetTeam(_teamData);
-        setToken(_response.refreshToken);
-        return {
-          success: true,
-          response: _response,
-        };
+
+        setAccessToken(_response.token);
+        setRefreshToken(_response.refreshToken);
+        localStorage.setItem("_global_token", _response.token);
+        localStorage.setItem("_refresh_token", _response.refreshToken);
+
+        console.log("✅ Login successful - tokens stored");
+        return { success: true, response: _response };
       } else {
         throw new Error(`${_req.status} : ${_req.statusText}`);
       }
@@ -126,7 +111,6 @@ export function AuthState({ children }: { children: ReactNode }) {
     }
   };
 
-  // FETCH USER
   const fetchTeam = async (_id: string): Promise<AuthResponse> => {
     try {
       const req = await fetch(host + "/api/auth/team", {
@@ -134,7 +118,7 @@ export function AuthState({ children }: { children: ReactNode }) {
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
-          "Bearer-Token": token as string,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ id: _id }),
       });
@@ -142,7 +126,6 @@ export function AuthState({ children }: { children: ReactNode }) {
       const response = await req.json();
 
       if (response.data) {
-        console.log(JSON.stringify(response));
         const _teamData = {
           ...response.data,
           member: response.data.members?.[0],
@@ -151,10 +134,7 @@ export function AuthState({ children }: { children: ReactNode }) {
         getSetTeam(_teamData);
       }
 
-      return {
-        success: true,
-        response: response,
-      };
+      return { success: true, response };
     } catch (error) {
       return {
         success: false,
@@ -163,10 +143,14 @@ export function AuthState({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshToken = async (): Promise<string | null> => {
-    setToken(localStorage.getItem("_global_token"));
+  const refreshTokenHandler = async (): Promise<string | null> => {
+    const token = refreshToken || localStorage.getItem("_refresh_token");
 
-    if (!token) return null;
+    if (!token) {
+      console.error("❌ No refresh token found");
+      removeTeam();
+      return null;
+    }
 
     try {
       const response = await fetch(
@@ -177,6 +161,7 @@ export function AuthState({ children }: { children: ReactNode }) {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ refreshToken: token }),
         }
       );
 
@@ -186,15 +171,17 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       const data = await response.json();
 
-      if (data.data.token) {
+      if (data.token) {
+        setAccessToken(data.token);
         localStorage.setItem("_global_token", data.token);
-        setToken(data.data.token);
+        console.log("✅ Access token refreshed successfully");
         return data.token;
       }
 
       return null;
     } catch (error) {
-      console.error("Token refresh error:", error);
+      console.error("❌ Token refresh error:", error);
+      removeTeam();
       return null;
     }
   };
@@ -204,14 +191,14 @@ export function AuthState({ children }: { children: ReactNode }) {
       value={{
         team,
         isAuthenticated,
-        token,
+        token: accessToken,
         setTeam,
         register,
         login,
         fetchTeam,
         getSetTeam,
         removeTeam,
-        refreshToken,
+        refreshToken: refreshTokenHandler,
       }}
     >
       {children}

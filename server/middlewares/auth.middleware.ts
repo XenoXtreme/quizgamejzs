@@ -18,22 +18,23 @@ declare global {
 export const authenticateToken = (authService: AuthService) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
         error: "Access token required",
         code: "NO_TOKEN",
+        hint: "Send token in 'Authorization: Bearer <token>' header",
       });
     }
 
     const decoded = authService.verifyToken(token);
 
     if (!decoded) {
-      // Token is invalid or expired
       return res.status(401).json({
         error: "Invalid or expired token",
-        code: "TOKEN_EXPIRED", // Client should use this to trigger refresh
+        code: "TOKEN_INVALID",
+        hint: "Use /api/auth/refresh to get a new token",
       });
     }
 

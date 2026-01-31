@@ -9,8 +9,6 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
-
-// CONTEXT
 import { useAuthContext } from "../auth/state";
 import { ContextType } from "@/context/auth/context";
 
@@ -38,36 +36,40 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const socketRef = useRef<Socket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const context = useAuthContext() as ContextType;
-  const { token, refreshToken } = context;
+  const { token } = context;
 
   const getAuthToken = (): string | null => {
-    if (token && token.length > 0) return token;
-    return localStorage.getItem("_global_token");
+    if (token && token.length > 0) {
+      console.log("📌 Using access token from context");
+      return token;
+    }
+    const stored = localStorage.getItem("_global_token");
+    if (stored) {
+      console.log("📌 Using access token from localStorage");
+    }
+    return stored;
   };
 
   const connectSocket = () => {
-    // Prevent execution during Server-Side Rendering (SSR)
     if (typeof window === "undefined") return;
 
-    const token = getAuthToken();
-    console.log(token);
+    const accessToken = getAuthToken();
 
-    if (!token) {
-      console.warn("No authentication token found. Socket connection skipped.");
+    if (!accessToken) {
+      console.warn("❌ No access token found. Socket connection skipped.");
       toast.error("Please login to connect", { duration: 2000 });
       return;
     }
+
+    console.log("🔗 Attempting socket connection with valid access token");
 
     const serverUrl =
       process.env.NEXT_PUBLIC_BACKEND_API_URI ||
       "https://quizdom-553x.onrender.com";
 
-    console.log("Connecting to server at:", serverUrl);
-
-    // Initialize the socket connection with JWT token
     const socketInstance: Socket = io(serverUrl, {
       auth: {
-        token: token,
+        token: accessToken,
       },
       transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
@@ -81,7 +83,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     socketRef.current = socketInstance;
 
-    // Set socket state asynchronously to avoid React warnings
     const timer = setTimeout(() => {
       setSocket(socketInstance);
     }, 0);
@@ -96,19 +97,24 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.error("❌ Connection error:", err.message);
       setIsConnected(false);
 
-      // Handle authentication errors
       if (
         err.message.includes("Authentication") ||
         err.message.includes("token") ||
         err.message.includes("Invalid") ||
         err.message.includes("expired")
       ) {
-        toast.error("Authentication failed. Please login again.", {
+        console.log("🔄 Token may be expired, attempting refresh...");
+        toast.error("Authentication failed. Refreshing token...", {
           duration: 3000,
         });
-        // Optionally redirect to login or clear invalid token
-        refreshToken().then(() => {
-          reconnect();
+        context.refreshToken().then((newToken) => {
+          if (newToken) {
+            console.log("✅ Token refreshed, reconnecting socket");
+            reconnect();
+          } else {
+            console.error("❌ Token refresh failed");
+            toast.error("Please login again", { duration: 2000 });
+          }
         });
       } else {
         toast.error(`Connection error: ${err.message}`, { duration: 2000 });
@@ -120,19 +126,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setIsConnected(false);
 
       if (reason === "io server disconnect") {
-        // Server forcefully disconnected
         toast.error("Disconnected by server", { duration: 2000 });
       } else if (reason === "io client disconnect") {
-        // Manual disconnect
         toast.info("Disconnected", { duration: 800 });
       } else {
-        // Unexpected disconnect
         toast.error(`Disconnected: ${reason}`, { duration: 800 });
       }
     });
 
     socketInstance.on("error", (error: string) => {
-      console.error("Socket error:", error);
+      console.error("❌ Socket error:", error);
       toast.error(error, { duration: 2000 });
     });
 
@@ -163,7 +166,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setIsConnected(false);
     }
 
-    // Small delay before reconnecting
     reconnectTimeoutRef.current = setTimeout(() => {
       connectSocket();
     }, 500);
@@ -172,7 +174,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   useEffect(() => {
     const cleanup = connectSocket();
 
-    // Cleanup function
     return () => {
       if (cleanup) cleanup();
       if (socketRef.current) {
@@ -185,7 +186,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setSocket(null);
       setIsConnected(false);
     };
-  }, []);
+  }, [token]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected, reconnect }}>

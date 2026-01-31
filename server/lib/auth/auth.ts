@@ -89,14 +89,18 @@ export class AuthService {
   verifyToken(token: string): JWTPayload | null {
     try {
       const decoded = jwt.verify(token, this.jwtSecret) as JWTPayload;
+      console.log("✅ Token verified successfully:", {
+        team: decoded.team,
+        id: decoded.id,
+        iat: new Date(decoded.iat! * 1000),
+        exp: new Date(decoded.exp! * 1000),
+      });
       return decoded;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        console.log("Token expired");
+        console.log("❌ Token expired at:", error.expiredAt);
       } else if (error instanceof jwt.JsonWebTokenError) {
-        console.log(error.message);
-        console.log(error.stack);
-        // console.log("Invalid token");
+        console.log("❌ Invalid token:", error.message);
       }
       return null;
     }
