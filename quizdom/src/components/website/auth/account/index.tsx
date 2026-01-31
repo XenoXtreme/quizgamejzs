@@ -10,37 +10,69 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Users, School, Hash, Sparkles, Loader2 } from "lucide-react";
-
-// ALERT
+import { Users, School, Hash, Sparkles, Loader2, LogOut } from "lucide-react";
 import { toast } from "sonner";
-
-// CONTEXT
+import { useRouter } from "next/navigation";
 import { ContextType } from "@/context/auth/context";
 import { useAuthContext } from "@/context/auth/state";
 
+// Define member keys as constants to avoid typos
+const MEMBER_KEYS = ["member1", "member2", "member3", "member4"] as const;
+type MemberKey = (typeof MEMBER_KEYS)[number];
+
 export default function Logged() {
-  const { team }: ContextType = useAuthContext();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
+  const { team, isAuthenticated, removeTeam }: ContextType = useAuthContext();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (team) {
-      setIsLoading(false);
-    } else {
-      toast.error("No team data found. Please log in again.");
-    }
-  }, [team]);
+    // Check authentication and team data
 
-  const hasMemberData = (
-    memberKey: "member1" | "member2" | "member3" | "member4"
-  ) => {
-    return (
-      team?.member?.[memberKey]?.name && team?.member?.[memberKey]?.name !== ""
-    );
+    if (!localStorage.getItem("_user")) {
+      if (!isAuthenticated) {
+        console.warn("❌ User is not authenticated");
+        setIsLoading(false);
+        toast.error("Please log in to view this page.", { duration: 2000 });
+        setTimeout(() => router.push("/login"), 500);
+        return;
+      }
+    } else {
+      if (!isAuthenticated) {
+        console.warn("❌ User is not authenticated (localStorage)");
+        setIsLoading(false);
+        toast.error("Please log in to view this page.", { duration: 2000 });
+        setTimeout(() => router.push("/login"), 500);
+        return;
+      }
+    }
+
+    if (!team || !team.id) {
+      console.warn("❌ Team data is missing");
+      setIsLoading(false);
+      toast.error("No team data found. Please log in again.", {
+        duration: 2000,
+      });
+      setTimeout(() => router.push("/login"), 500);
+      return;
+    }
+
+    setIsLoading(false);
+  }, [team, router]);
+
+  // ✅ Helper to check if member slot has data
+  const hasMemberData = (memberKey: MemberKey): boolean => {
+    const member = team?.member?.[memberKey];
+    return !!(member && member.name && member.name.trim() !== "");
   };
 
-  const getInitials = (name: string) => {
-    if (!name) return "?";
+  // Get total assigned members count
+  const getAssignedCount = (): number => {
+    return MEMBER_KEYS.filter((key) => hasMemberData(key)).length;
+  };
+
+  // Get initials from name
+  const getInitials = (name: string): string => {
+    if (!name || name.trim() === "") return "?";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -49,6 +81,19 @@ export default function Logged() {
       .slice(0, 2);
   };
 
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      removeTeam();
+      toast.success("Logged out successfully", { duration: 1500 });
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Error logging out", { duration: 1500 });
+    }
+  };
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center">
@@ -60,6 +105,36 @@ export default function Logged() {
     );
   }
 
+  // Error state - no team data
+  if (!team || !team.id) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-red-500/20 bg-red-500/5">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <div className="text-6xl">⚠️</div>
+              <h2 className="text-xl font-bold text-red-400">
+                Authentication Error
+              </h2>
+              <p className="text-gray-400 text-sm">
+                Your session has expired or team data is unavailable. Please log
+                in again.
+              </p>
+              <button
+                onClick={() => router.push("/login")}
+                className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors duration-200"
+              >
+                Return to Login
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const assignedCount = getAssignedCount();
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-900 py-8 sm:py-12 relative overflow-hidden">
       {/* Animated background elements */}
@@ -70,7 +145,7 @@ export default function Logged() {
       </div>
 
       <div className="container max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
-        {/* Main Team Card with Glassmorphism */}
+        {/* Main Team Card */}
         <Card className="overflow-hidden border border-white/10 shadow-2xl backdrop-blur-xl bg-white/5">
           {/* Header Section */}
           <div className="relative">
@@ -84,9 +159,21 @@ export default function Logged() {
 
               {/* Sparkle effect */}
               <Sparkles className="absolute top-8 right-8 h-6 w-6 text-white/40 animate-pulse" />
+
+              {/* Logout button */}
+              <button
+                onClick={handleLogout}
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all duration-200 flex items-center gap-2"
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline text-sm font-medium">
+                  Logout
+                </span>
+              </button>
             </div>
 
-            {/* School Avatar with glow */}
+            {/* School Avatar */}
             <div className="absolute -bottom-12 left-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full blur-xl opacity-75 animate-pulse"></div>
@@ -102,7 +189,7 @@ export default function Logged() {
           <CardHeader className="pt-16 pb-6">
             <div className="space-y-3">
               <CardTitle className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent animate-gradient">
-                {`${team?.team}'s Dashboard` || "Team Dashboard"}
+                {team?.team ? `${team.team}'s Dashboard` : "Team Dashboard"}
               </CardTitle>
               <CardDescription className="flex flex-wrap items-center gap-2 text-base text-gray-300">
                 <School className="h-4 w-4 text-indigo-400" />
@@ -120,7 +207,7 @@ export default function Logged() {
                     variant="outline"
                     className="border-purple-400/30 text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-sm transition-all duration-300"
                   >
-                    {team?.role}
+                    {team.role}
                   </Badge>
                 )}
                 <Badge
@@ -141,75 +228,67 @@ export default function Logged() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-gray-400 uppercase tracking-wider">
                 <Users className="h-4 w-4" />
-                Team Members
+                Team Members ({assignedCount}/4)
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 cursor-pointer">
-                {["member1", "member2", "member3", "member4"].map(
-                  (memberKey, index) => {
-                    const member =
-                      team?.member?.[
-                        memberKey as
-                          | "member1"
-                          | "member2"
-                          | "member3"
-                          | "member4"
-                      ];
-                    const hasData = hasMemberData(
-                      memberKey as "member1" | "member2" | "member3" | "member4"
-                    );
+              <div className="grid gap-4 sm:grid-cols-2">
+                {MEMBER_KEYS.map((memberKey, index) => {
+                  const member = team.member[memberKey];
+                  const hasData = hasMemberData(memberKey);
 
-                    return (
-                      <Card
-                        key={memberKey}
-                        className={`transition-all duration-300 border border-white/10 backdrop-blur-sm ${
-                          hasData
-                            ? "bg-white/5 hover:bg-white/10 hover:border-indigo-400/40 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-1"
-                            : "opacity-50 bg-white/2"
-                        }`}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              {hasData && (
-                                <div className="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full blur-md opacity-50"></div>
-                              )}
-                              <Avatar className="h-12 w-12 relative">
-                                <AvatarFallback
-                                  className={`text-sm font-semibold ${
-                                    hasData
-                                      ? "bg-linear-to-br from-indigo-500 via-purple-600 to-fuchsia-600 text-white"
-                                      : "bg-white/5 text-gray-500"
-                                  }`}
-                                >
-                                  {hasData
-                                    ? getInitials(member?.name || "")
-                                    : index + 1}
-                                </AvatarFallback>
-                              </Avatar>
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm truncate text-white">
-                                {member?.name || "Not Assigned"}
-                              </h4>
-                              <p className="text-xs text-gray-400">
-                                Class: {member?.class || "N/A"}
-                              </p>
-                            </div>
-
-                            <Badge
-                              variant="secondary"
-                              className="text-xs shrink-0 bg-white/10 text-gray-300 border-white/20"
-                            >
-                              #{index + 1}
-                            </Badge>
+                  return (
+                    <Card
+                      key={memberKey}
+                      className={`transition-all duration-300 border border-white/10 backdrop-blur-sm ${
+                        hasData
+                          ? "bg-white/5 hover:bg-white/10 hover:border-indigo-400/40 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-1"
+                          : "opacity-50 bg-white/2"
+                      }`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          {/* Member Avatar */}
+                          <div className="relative">
+                            {hasData && (
+                              <div className="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full blur-md opacity-50"></div>
+                            )}
+                            <Avatar className="h-12 w-12 relative">
+                              <AvatarFallback
+                                className={`text-sm font-semibold ${
+                                  hasData
+                                    ? "bg-linear-to-br from-indigo-500 via-purple-600 to-fuchsia-600 text-white"
+                                    : "bg-white/5 text-gray-500"
+                                }`}
+                              >
+                                {hasData
+                                  ? getInitials(member?.name || "")
+                                  : index + 1}
+                              </AvatarFallback>
+                            </Avatar>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  }
-                )}
+
+                          {/* Member Info */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm truncate text-white">
+                              {member?.name ? member.name : "Not Assigned"}
+                            </h4>
+                            <p className="text-xs text-gray-400">
+                              Class: {member?.class ? member.class : "N/A"}
+                            </p>
+                          </div>
+
+                          {/* Member Badge */}
+                          <Badge
+                            variant="secondary"
+                            className="text-xs shrink-0 bg-white/10 text-gray-300 border-white/20"
+                          >
+                            #{index + 1}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 

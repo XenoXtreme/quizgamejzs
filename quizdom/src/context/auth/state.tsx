@@ -27,7 +27,6 @@ export function AuthState({ children }: { children: ReactNode }) {
   const getSetTeam = (_team: Team) => {
     setTeam(_team);
     setIsAuthenticated(true);
-    localStorage.setItem("_user", JSON.stringify(_team));
   };
 
   const removeTeam = () => {
@@ -86,11 +85,15 @@ export function AuthState({ children }: { children: ReactNode }) {
 
       if (_req.ok) {
         const _response = await _req.json();
-        const _teamData = {
-          ..._response.data,
-          member: _response.data.members?.[0],
+        const _teamData: Team = {
+          id: _response.data._id || _response.data.id,
+          team: _response.data.team,
+          category: _response.data.category,
+          school: _response.data.school,
+          role: _response.data.role,
+          member: _response.data.member || _response.data.members,
         };
-        delete _teamData.members;
+
         getSetTeam(_teamData);
 
         setAccessToken(_response.token);
