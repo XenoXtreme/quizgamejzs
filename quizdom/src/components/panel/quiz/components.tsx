@@ -45,6 +45,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
     case "video":
       return (
         <VideoPlayer
+          key={URI}
           src={URI}
           title={alt}
           downloadable={true}
@@ -55,6 +56,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
     case "audio":
       return (
         <AudioPlayer
+          key={URI}
           src={URI}
           title={alt}
           showVisualizer={true}
@@ -68,6 +70,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
           <ImageViewer src={URI} alt={alt} downloadable={true} />
           {vURI && (
             <AudioPlayer
+              key={vURI}
               src={vURI}
               title={alt}
               showVisualizer={true}
@@ -83,6 +86,7 @@ export default function Component({ alt, URI, vURI, type }: ComponentProps) {
           <ImageViewer src={URI} alt={alt} downloadable={true} />
           {vURI && (
             <VideoPlayer
+              key={vURI}
               src={vURI}
               title={alt}
               downloadable={true}

@@ -158,7 +158,7 @@ export default function VideoPlayer({
 
   // Skip forward 10 seconds
   const skipForward = React.useCallback(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || videoRef.current.readyState < 2) return;
     const newTime = Math.min(
       videoRef.current.currentTime + 10,
       videoRef.current.duration || 0,
@@ -168,14 +168,14 @@ export default function VideoPlayer({
 
   // Skip backward 10 seconds
   const skipBackward = React.useCallback(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || videoRef.current.readyState < 2) return;
     const newTime = Math.max(videoRef.current.currentTime - 10, 0);
     videoRef.current.currentTime = newTime;
   }, []);
 
   // Reset to beginning
   const resetVideo = React.useCallback(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || videoRef.current.readyState < 2) return;
     videoRef.current.currentTime = 0;
   }, []);
 
@@ -190,7 +190,7 @@ export default function VideoPlayer({
   // Handle seeking
   const handleSeek = React.useCallback((value: number[]) => {
     const seekTime = value[0];
-    if (videoRef.current) {
+    if (videoRef.current && videoRef.current.readyState >= 2) {
       videoRef.current.currentTime = seekTime;
       setCurrentTime(seekTime);
     }
@@ -390,11 +390,17 @@ export default function VideoPlayer({
     };
 
     const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-      setIsLoading(false);
+      if (videoRef.current) {
+        setDuration(videoRef.current.duration);
+        setIsLoading(false);
+      }
     };
 
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+    const handleTimeUpdate = () => {
+      if (videoRef.current) {
+        setCurrentTime(videoRef.current.currentTime);
+      }
+    };
 
     const handleEnded = () => {
       setIsPlaying(false);
@@ -407,8 +413,8 @@ export default function VideoPlayer({
 
     const handleError = () => {
       let message = "Failed to load video.";
-      if (video.error) {
-        switch (video.error.code) {
+      if (videoRef.current?.error) {
+        switch (videoRef.current.error.code) {
           case 1:
             message = "Video loading aborted by user.";
             break;
@@ -458,12 +464,21 @@ export default function VideoPlayer({
 
   // Reset video state when source changes
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Pause the video first
+    video.pause();
+
+    // Reset state
     setError(null);
     setCurrentTime(0);
     setDuration(0);
     setIsPlaying(false);
     setPlaybackRate(1.0);
-    // No need to call load() - the key prop forces a remount
+
+    // Load the new source
+    video.load();
   }, [src]);
 
   if (error) {
@@ -485,7 +500,6 @@ export default function VideoPlayer({
         >
           {/* Video Element */}
           <video
-            key={src}
             ref={videoRef}
             src={src}
             poster={poster}

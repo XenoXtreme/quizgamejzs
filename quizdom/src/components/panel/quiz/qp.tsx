@@ -21,6 +21,7 @@ import {
   StretchHorizontal,
   Info,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
 import Component from "./components";
@@ -260,185 +261,236 @@ export default function QuestionPanel({
   // ========== Render ==========
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Authorizing...
-          </p>
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-black dark:to-gray-950">
+        <div className="flex flex-col items-center gap-6 animate-in fade-in duration-500">
+          <div className="relative">
+            <div className="absolute inset-0 animate-ping opacity-20">
+              <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-400" />
+            </div>
+            <Loader2 className="w-12 h-12 animate-spin text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              Authorizing access
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              Verifying permissions...
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-8 px-4">
-      <Card className="overflow-hidden">
-        <div className="p-6 md:p-8 flex flex-col gap-6">
-          {/* ===== Header Section ===== */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant={showAns ? "default" : "secondary"}
-                className="px-3 py-1.5 text-xs md:text-sm"
-              >
-                {showAns ? "📋 Answer" : "❓ Question"}
-              </Badge>
-              <Badge className="px-3 py-1.5 text-xs md:text-sm bg-blue-600 hover:bg-blue-700">
-                {getRoundFullName(round)}
-              </Badge>
-              <a
-                href="/quiz/$"
-                className="text-xs md:text-sm text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 underline font-semibold transition-colors"
-              >
-                ← Back to Quiz
-              </a>
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-black dark:to-gray-950">
+      {/* Ambient background effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+      </div>
+
+      <div className="relative w-full max-w-3xl md:max-w-5xl  mx-auto py-8 md:py-16 px-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <Card className="overflow-hidden border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-2xl shadow-gray-200/50 dark:shadow-black/50">
+          <div className="p-6 md:p-10 flex flex-col gap-8">
+            {/* ===== Header Section ===== */}
+            <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-top-2 duration-500">
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge
+                  variant={showAns ? "default" : "secondary"}
+                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                    showAns
+                      ? "bg-linear-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/30 hover:shadow-green-500/50"
+                      : "bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {showAns ? (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5 inline-block" />
+                      Answer
+                    </>
+                  ) : (
+                    "Question"
+                  )}
+                </Badge>
+                <Badge className="px-4 py-2 text-sm font-medium bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300">
+                  {getRoundFullName(round)}
+                </Badge>
+                <a
+                  href="/quiz/$"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 underline underline-offset-4 font-medium transition-colors duration-200 ml-auto"
+                >
+                  ← Back
+                </a>
+              </div>
+
+              {/* Question number display */}
+              <div className="flex items-baseline gap-3">
+                <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-br from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  Question {qno}
+                </h1>
+                {limit && (
+                  <span className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-medium">
+                    of {limit}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Question number display */}
-            <div className="flex items-baseline gap-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                Question {qno}
-              </h1>
-              {limit && (
-                <span className="text-sm md:text-base text-gray-500 dark:text-gray-400">
-                  of {limit}
-                </span>
+            {/* ===== Media Content Section ===== */}
+            <div className="w-full rounded-2xl overflow-hidden bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 p-1 shadow-inner animate-in fade-in zoom-in-95 duration-500 delay-150">
+              <div className="rounded-xl overflow-hidden bg-white dark:bg-black">
+                <Component {...getComponentProps()} />
+              </div>
+            </div>
+
+            {/* ===== Navigation & Controls Section ===== */}
+            <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+              {/* Main control buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  aria-label="Go to previous question"
+                  disabled={isPrevDisabled}
+                  onClick={goToPrevious}
+                  className="flex-1 gap-2 h-12 font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="default"
+                  size="lg"
+                  aria-label={showAns ? "Show question" : "Show answer"}
+                  onClick={toggleAnswer}
+                  className="flex-1 gap-2 h-12 font-medium bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <StretchHorizontal className="w-4 h-4" />
+                  <span>{showAns ? "Show Question" : "Show Answer"}</span>
+                  <kbd className="ml-1 px-2 py-0.5 text-xs bg-white/20 rounded">
+                    A
+                  </kbd>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  aria-label="Go to next question"
+                  disabled={isNextDisabled}
+                  onClick={goToNext}
+                  className="flex-1 gap-2 h-12 font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                >
+                  <span>Next</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Processing state */}
+              {pendingToggle && (
+                <div className="flex flex-col gap-3 items-center py-6 px-4 rounded-xl bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200/50 dark:border-blue-800/50 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="relative">
+                    <div className="absolute inset-0 animate-ping opacity-30">
+                      <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                    Processing request...
+                  </span>
+                </div>
               )}
             </div>
-          </div>
 
-          {/* ===== Media Content Section ===== */}
-          <div className="w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 p-2">
-            <Component {...getComponentProps()} />
-          </div>
+            {/* ===== Confirmation Dialog ===== */}
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+              <DialogContent className="sm:max-w-md bg-white/95 dark:bg-black/95 backdrop-blur-xl border-gray-200 dark:border-gray-800">
+                <DialogHeader className="gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950/50">
+                      <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <DialogTitle className="text-xl font-semibold">
+                      Confirm Toggle
+                    </DialogTitle>
+                  </div>
+                  <DialogDescription className="text-base text-gray-600 dark:text-gray-400">
+                    {`Do you want to show the ${showAns ? "question" : "answer"}?`}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-3 mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleModalCancel}
+                    className="flex-1 h-11 font-medium border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="default"
+                    onClick={handleModalConfirm}
+                    className="flex-1 h-11 font-medium bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
+                  >
+                    Yes, Show {showAns ? "Question" : "Answer"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-          {/* ===== Navigation & Controls Section ===== */}
-          <div className="flex flex-col gap-4">
-            {/* Main control buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center sm:justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                aria-label="Go to previous question"
-                disabled={isPrevDisabled}
-                onClick={goToPrevious}
-                className="gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Previous</span>
-              </Button>
-
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                aria-label={showAns ? "Show question" : "Show answer"}
-                onClick={toggleAnswer}
-                className="gap-2"
-              >
-                <StretchHorizontal className="w-4 h-4" />
-                <span>{showAns ? "Show Question" : "Show Answer"}</span>
-                <span className="ml-1 text-xs opacity-70">A</span>
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                aria-label="Go to next question"
-                disabled={isNextDisabled}
-                onClick={goToNext}
-                className="gap-2"
-              >
-                <span className="hidden sm:inline">Next</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* Processing state */}
-            {pendingToggle && (
-              <div className="flex flex-col gap-2 items-center py-4 px-4 rounded-lg bg-blue-50 dark:bg-blue-950">
-                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-                <span className="text-xs text-blue-600 dark:text-blue-300">
-                  Processing...
-                </span>
+            {/* ===== Keyboard Shortcuts Help ===== */}
+            <div className="rounded-xl border border-gray-200/80 dark:border-gray-800/80 bg-linear-to-br from-gray-50/50 to-transparent dark:from-gray-900/50 p-5 flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-500">
+              <div className="p-2 h-fit rounded-lg bg-blue-100 dark:bg-blue-950/50">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-            )}
-          </div>
-
-          {/* ===== Confirmation Dialog ===== */}
-          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader className="gap-3">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-blue-500 shrink-0" />
-                  <DialogTitle>Confirm Toggle</DialogTitle>
+              <div className="flex flex-col gap-3 flex-1">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Keyboard Shortcuts
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <kbd className="px-2.5 py-1.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-xs font-mono font-semibold shadow-sm">
+                      ←
+                    </kbd>
+                    <span className="text-xs">Previous</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <kbd className="px-2.5 py-1.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-xs font-mono font-semibold shadow-sm">
+                      →
+                    </kbd>
+                    <span className="text-xs">Next</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <kbd className="px-2.5 py-1.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-xs font-mono font-semibold shadow-sm">
+                      A
+                    </kbd>
+                    <span className="text-xs">Toggle</span>
+                  </div>
                 </div>
-                <DialogDescription>
-                  {`Do you want to show the ${showAns ? "question" : "answer"}?`}
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleModalCancel}
-                  className="w-full sm:w-auto"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={handleModalConfirm}
-                  className="w-full sm:w-auto"
-                >
-                  Yes, Show {showAns ? "Question" : "Answer"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </div>
+            </div>
 
-          {/* ===== Keyboard Shortcuts Help ===== */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 flex gap-3">
-            <Info className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-2 text-sm">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
-                💡 Keyboard Shortcuts
-              </span>
-              <ul className="text-xs md:text-sm space-y-1 text-gray-600 dark:text-gray-400">
-                <li>
-                  <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-                    ←
-                  </kbd>{" "}
-                  Previous Question
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-                    →
-                  </kbd>{" "}
-                  Next Question
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-                    A
-                  </kbd>{" "}
-                  Toggle Q&A
-                </li>
-              </ul>
+            {/* ===== Info Footer ===== */}
+            <div className="text-xs text-gray-500 dark:text-gray-500 text-center pt-6 border-t border-gray-200/50 dark:border-gray-800/50 space-y-1 animate-in fade-in duration-500 delay-700">
+              <p className="font-medium">
+                {getCategoryFullName(quizCategory)} Quiz
+              </p>
+              <p>
+                <span className="text-gray-400 dark:text-gray-600">Round:</span>{" "}
+                {getRoundFullName(round)}{" "}
+                <span className="text-gray-400 dark:text-gray-600">•</span>{" "}
+                <span className="text-gray-400 dark:text-gray-600">
+                  Question:
+                </span>{" "}
+                {qno}
+              </p>
             </div>
           </div>
-
-          {/* ===== Info Footer ===== */}
-          <div className="text-xs text-gray-500 dark:text-gray-400 text-center border-t border-gray-200 dark:border-gray-700 pt-4">
-            <p>
-              Interschool Quiz • Round:{" "}
-              <span className="font-semibold">{getRoundFullName(round)}</span> •
-              Question <span className="font-semibold">{qno}</span>
-            </p>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

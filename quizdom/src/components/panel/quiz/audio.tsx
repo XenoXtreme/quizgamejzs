@@ -266,7 +266,7 @@ function AudioError({ message }: { message: string }) {
 export default function AudioPlayer({
   src,
   title = "Audio Track",
-  albumCover = "/assets/static/music.avif",
+  albumCover = "/assets/static/music-album-poster.jpg",
   showVisualizer = true,
   onPlayStateChange,
   className = "",
@@ -291,23 +291,25 @@ export default function AudioPlayer({
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = React.useCallback(() => {
     if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      if (currentTime >= duration && duration > 0) {
+    if (audioRef.current.paused) {
+      if (
+        audioRef.current.currentTime >= audioRef.current.duration &&
+        audioRef.current.duration > 0
+      ) {
         audioRef.current.currentTime = 0;
-        setCurrentTime(0);
       }
       audioRef.current.play().catch(() => {
         setError("Failed to play audio. Please try again.");
         setIsPlaying(false);
       });
+    } else {
+      audioRef.current.pause();
     }
-  };
+  }, []);
 
-  const skipForward = () => {
+  const skipForward = React.useCallback(() => {
     if (!audioRef.current || audioRef.current.duration <= 0) return;
     const newTime = Math.min(
       audioRef.current.currentTime + 10,
@@ -315,57 +317,85 @@ export default function AudioPlayer({
     );
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
-  };
+  }, []);
 
-  const skipBackward = () => {
+  const skipBackward = React.useCallback(() => {
     if (!audioRef.current) return;
     const newTime = Math.max(audioRef.current.currentTime - 10, 0);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
-  };
+  }, []);
 
-  const resetAudio = () => {
+  const resetAudio = React.useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = 0;
     setCurrentTime(0);
-  };
+  }, []);
 
-  const toggleMute = () => {
+  const toggleMute = React.useCallback(() => {
     if (!audioRef.current) return;
-    audioRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
+    const newMuted = !audioRef.current.muted;
+    audioRef.current.muted = newMuted;
+    setIsMuted(newMuted);
+  }, []);
 
-  const handleVolumeChange = (value: number[]) => {
+  const handleVolumeChange = React.useCallback((value: number[]) => {
     const newVolume = value[0];
     setVolume(newVolume);
     if (audioRef.current) {
       audioRef.current.volume = newVolume / 100;
-      if (isMuted && newVolume > 0) {
+      if (audioRef.current.muted && newVolume > 0) {
         audioRef.current.muted = false;
         setIsMuted(false);
       }
     }
-  };
+  }, []);
 
-  const handleSeek = (value: number[]) => {
+  const handleSeek = React.useCallback((value: number[]) => {
     const seekTime = value[0];
     if (audioRef.current) {
       audioRef.current.currentTime = seekTime;
       setCurrentTime(seekTime);
     }
-  };
+  }, []);
 
+  const handleVisualizerTap = React.useCallback(
+    (e: React.TouchEvent) => {
+      const now = Date.now();
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = e.touches[0]?.clientX ?? 0;
+      if (now - lastTap.current < 300) {
+        if (x - rect.left < rect.width / 2) {
+          skipBackward();
+        } else {
+          skipForward();
+        }
+      }
+      lastTap.current = now;
+    },
+    [skipBackward, skipForward],
+  );
+
+  // Reset audio state when source changes
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Pause the audio first
+    audio.pause();
+
+    // Reset state
     setError(null);
     setCurrentTime(0);
-    if (audioRef.current) {
-      setIsPlaying(false); 
-      setIsLoading(true);
-      audioRef.current.load();
-    }
+    setDuration(0);
+    setIsPlaying(false);
+    setIsLoading(true);
+
+    // Load the new source
+    audio.load();
   }, [src]);
 
+  // Set up audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -383,18 +413,22 @@ export default function AudioPlayer({
     };
 
     const handleLoadedMetadata = () => {
-      if (!audio.duration || isNaN(audio.duration)) {
-        setError("Audio file could not be loaded.");
-        setDuration(0);
+      if (audioRef.current) {
+        if (!audioRef.current.duration || isNaN(audioRef.current.duration)) {
+          setError("Audio file could not be loaded.");
+          setDuration(0);
+          setIsLoading(false);
+          return;
+        }
+        setDuration(audioRef.current.duration);
         setIsLoading(false);
-        return;
       }
-      setDuration(audio.duration);
-      setIsLoading(false);
     };
 
     const handleTimeUpdate = () => {
-      if (!isDragging) setCurrentTime(audio.currentTime);
+      if (!isDragging && audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime);
+      }
     };
 
     const handleEnded = () => {
@@ -404,10 +438,12 @@ export default function AudioPlayer({
 
     const handleCanPlay = () => setIsLoading(false);
 
+    const handleLoadStart = () => setIsLoading(true);
+
     const handleError = () => {
       let message = "Audio file could not be loaded.";
-      if (audio.error) {
-        switch (audio.error.code) {
+      if (audioRef.current?.error) {
+        switch (audioRef.current.error.code) {
           case 1:
             message = "Audio loading aborted by user.";
             break;
@@ -431,6 +467,7 @@ export default function AudioPlayer({
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("loadstart", handleLoadStart);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("error", handleError);
 
@@ -440,11 +477,13 @@ export default function AudioPlayer({
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("loadstart", handleLoadStart);
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("error", handleError);
     };
   }, [isDragging, onPlayStateChange, volume]);
 
+  // Keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
@@ -466,11 +505,11 @@ export default function AudioPlayer({
           break;
         case "ArrowUp":
           e.preventDefault();
-          setVolume((v) => Math.min(v + 10, 100));
+          handleVolumeChange([Math.min(volume + 10, 100)]);
           break;
         case "ArrowDown":
           e.preventDefault();
-          setVolume((v) => Math.max(v - 10, 0));
+          handleVolumeChange([Math.max(volume - 10, 0)]);
           break;
         case "KeyR":
           e.preventDefault();
@@ -482,21 +521,7 @@ export default function AudioPlayer({
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPlaying, volume, isMuted, duration, currentTime]);
-
-  const handleVisualizerTap = (e: React.TouchEvent) => {
-    const now = Date.now();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = e.touches[0]?.clientX ?? 0;
-    if (now - lastTap.current < 300) {
-      if (x - rect.left < rect.width / 2) {
-        skipBackward();
-      } else {
-        skipForward();
-      }
-    }
-    lastTap.current = now;
-  };
+  }, [togglePlayPause, toggleMute, handleVolumeChange, resetAudio, volume]);
 
   if (error) {
     return <AudioError message={error} />;
