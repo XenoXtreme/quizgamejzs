@@ -123,55 +123,145 @@ export default function VideoPlayer({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSpeedMenu]);
 
-  const changeVolume = (newVolume: number) => {
+  const changeVolume = React.useCallback((newVolume: number) => {
     setVolume(newVolume);
     if (videoRef.current) {
       videoRef.current.volume = newVolume / 100;
-      if (isMuted && newVolume > 0) {
+      if (videoRef.current.muted && newVolume > 0) {
         videoRef.current.muted = false;
         setIsMuted(false);
       }
     }
-  };
+  }, []);
 
-  const showSeekIndicator = (dir: "forward" | "backward") => {
+  const showSeekIndicator = React.useCallback((dir: "forward" | "backward") => {
     seekIndicatorKey.current += 1;
     setSeekIndicator({ dir, key: seekIndicatorKey.current });
     setTimeout(() => {
       setSeekIndicator(null);
     }, 800);
-  };
+  }, []);
 
-  const handleVideoTouch = (e: React.TouchEvent) => {
+  // Toggle play/pause
+  const togglePlayPause = React.useCallback(() => {
     if (!videoRef.current) return;
-    setShowControls(true);
 
-    const touch = e.touches[0];
-    if (!touch) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch((error) => {
+        toast.error("Failed to play video. Please try again.");
+        console.error("Video playback error:", error);
+      });
+    } else {
+      videoRef.current.pause();
+    }
+  }, []);
 
-    const rect = videoRef.current.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const width = rect.width;
-    const now = Date.now();
+  // Skip forward 10 seconds
+  const skipForward = React.useCallback(() => {
+    if (!videoRef.current) return;
+    const newTime = Math.min(
+      videoRef.current.currentTime + 10,
+      videoRef.current.duration || 0,
+    );
+    videoRef.current.currentTime = newTime;
+  }, []);
 
-    if (now - lastTap.current < 300) {
-      // Double tap
-      if (x < width * 0.3) {
-        skipBackward();
-        showSeekIndicator("backward");
-      } else if (x > width * 0.7) {
-        skipForward();
-        showSeekIndicator("forward");
-      } else {
-        togglePlayPause();
+  // Skip backward 10 seconds
+  const skipBackward = React.useCallback(() => {
+    if (!videoRef.current) return;
+    const newTime = Math.max(videoRef.current.currentTime - 10, 0);
+    videoRef.current.currentTime = newTime;
+  }, []);
+
+  // Reset to beginning
+  const resetVideo = React.useCallback(() => {
+    if (!videoRef.current) return;
+    videoRef.current.currentTime = 0;
+  }, []);
+
+  // Toggle mute
+  const toggleMute = React.useCallback(() => {
+    if (!videoRef.current) return;
+    const newMuted = !videoRef.current.muted;
+    videoRef.current.muted = newMuted;
+    setIsMuted(newMuted);
+  }, []);
+
+  // Handle seeking
+  const handleSeek = React.useCallback((value: number[]) => {
+    const seekTime = value[0];
+    if (videoRef.current) {
+      videoRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
+  }, []);
+
+  // Toggle fullscreen
+  const toggleFullscreen = React.useCallback(() => {
+    if (!containerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch((err) => {
+        toast.error(`Error: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
+
+  // Download video
+  const downloadVideo = React.useCallback(() => {
+    if (!src) return;
+
+    const link = document.createElement("a");
+    link.href = src;
+    link.download = title || "video";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [src, title]);
+
+  // Change playback rate
+  const changePlaybackRate = React.useCallback((rate: number) => {
+    if (!videoRef.current) return;
+    videoRef.current.playbackRate = rate;
+    setPlaybackRate(rate);
+    setShowSpeedMenu(false);
+  }, []);
+
+  const handleVideoTouch = React.useCallback(
+    (e: React.TouchEvent) => {
+      if (!videoRef.current) return;
+      setShowControls(true);
+
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      const rect = videoRef.current.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const width = rect.width;
+      const now = Date.now();
+
+      if (now - lastTap.current < 300) {
+        // Double tap
+        if (x < width * 0.3) {
+          skipBackward();
+          showSeekIndicator("backward");
+        } else if (x > width * 0.7) {
+          skipForward();
+          showSeekIndicator("forward");
+        } else {
+          togglePlayPause();
+        }
       }
-    }
-    lastTap.current = now;
+      lastTap.current = now;
 
-    if (isMobile) {
-      setTimeout(() => setShowControls(false), 3000);
-    }
-  };
+      if (isMobile) {
+        setTimeout(() => setShowControls(false), 3000);
+      }
+    },
+    [isMobile, skipBackward, showSeekIndicator, skipForward, togglePlayPause],
+  );
 
   // Touch zoom
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -202,93 +292,6 @@ export default function VideoPlayer({
     if (e.touches.length < 2) {
       lastTouchDistance.current = null;
     }
-  };
-
-  // Toggle play/pause
-  const togglePlayPause = () => {
-    if (!videoRef.current) return;
-
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play().catch((error) => {
-        toast.error("Failed to play video. Please try again.");
-        console.error("Video playback error:", error);
-      });
-    }
-  };
-
-  // Skip forward 10 seconds
-  const skipForward = () => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.min(
-      videoRef.current.currentTime + 10,
-      duration,
-    );
-  };
-
-  // Skip backward 10 seconds
-  const skipBackward = () => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.max(
-      videoRef.current.currentTime - 10,
-      0,
-    );
-  };
-
-  // Reset to beginning
-  const resetVideo = () => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = 0;
-  };
-
-  // Toggle mute
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
-
-  // Handle seeking
-  const handleSeek = (value: number[]) => {
-    const seekTime = value[0];
-    if (videoRef.current) {
-      videoRef.current.currentTime = seekTime;
-      setCurrentTime(seekTime);
-    }
-  };
-
-  // Toggle fullscreen
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch((err) => {
-        toast.error(`Error: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  };
-
-  // Download video
-  const downloadVideo = () => {
-    if (!src) return;
-
-    const link = document.createElement("a");
-    link.href = src;
-    link.download = title || "video";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Change playback rate
-  const changePlaybackRate = (rate: number) => {
-    if (!videoRef.current) return;
-    videoRef.current.playbackRate = rate;
-    setPlaybackRate(rate);
-    setShowSpeedMenu(false);
   };
 
   // Auto-hide controls
@@ -357,27 +360,24 @@ export default function VideoPlayer({
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPlaying, volume, isMuted, isFullscreen, duration]);
+  }, [
+    togglePlayPause,
+    toggleMute,
+    toggleFullscreen,
+    skipForward,
+    skipBackward,
+    showSeekIndicator,
+    changeVolume,
+    volume,
+  ]);
 
-  // Reset video state when source changes
-  useEffect(() => {
-    setError(null);
-    setCurrentTime(0);
-    setDuration(0);
-    setIsPlaying(false);
-    setIsLoading(false)
-    if (videoRef.current) {
-      setIsLoading(true);
-      videoRef.current.load();
-    }
-  }, [src]);
-
-  // Set up video event listeners
+  // Set up video event listeners - MUST come before src change effect
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     video.volume = volume / 100;
+    video.playbackRate = playbackRate;
 
     const handlePlay = () => {
       setIsPlaying(true);
@@ -402,6 +402,8 @@ export default function VideoPlayer({
     };
 
     const handleCanPlay = () => setIsLoading(false);
+
+    const handleLoadStart = () => setIsLoading(true);
 
     const handleError = () => {
       let message = "Failed to load video.";
@@ -435,6 +437,7 @@ export default function VideoPlayer({
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
+    video.addEventListener("loadstart", handleLoadStart);
     video.addEventListener("canplay", handleCanPlay);
     video.addEventListener("error", handleError);
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -445,12 +448,23 @@ export default function VideoPlayer({
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
       video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
+      video.removeEventListener("loadstart", handleLoadStart);
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("error", handleError);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       if (hoverTimer) clearTimeout(hoverTimer);
     };
-  }, [src, onPlayStateChange, volume, hoverTimer]);
+  }, [onPlayStateChange, volume, hoverTimer, playbackRate]);
+
+  // Reset video state when source changes
+  useEffect(() => {
+    setError(null);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsPlaying(false);
+    setPlaybackRate(1.0);
+    // No need to call load() - the key prop forces a remount
+  }, [src]);
 
   if (error) {
     return <VideoError message={error} />;
@@ -471,6 +485,7 @@ export default function VideoPlayer({
         >
           {/* Video Element */}
           <video
+            key={src}
             ref={videoRef}
             src={src}
             poster={poster}
