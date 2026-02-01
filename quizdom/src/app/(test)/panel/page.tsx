@@ -1,0 +1,21 @@
+"use client";
+import { usePathname } from "next/navigation";
+import QuizP from "@/components/panel/quiz/qp";
+
+export default function Page() {
+  const path = usePathname();
+
+  return (
+    <div>
+      <QuizP
+        qno="1"
+        round="test"
+        type="video"
+        quizCategory="interschool"
+        key={"test"}
+        limit="10"
+        path={path}
+      />
+    </div>
+  );
+}

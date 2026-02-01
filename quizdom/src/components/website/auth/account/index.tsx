@@ -26,19 +26,9 @@ export default function Logged() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication and team data
-
-    if (!localStorage.getItem("_user")) {
+    if (!localStorage.getItem("_global_token")) {
       if (!isAuthenticated) {
         console.warn("❌ User is not authenticated");
-        setIsLoading(false);
-        toast.error("Please log in to view this page.", { duration: 2000 });
-        setTimeout(() => router.push("/login"), 500);
-        return;
-      }
-    } else {
-      if (!isAuthenticated) {
-        console.warn("❌ User is not authenticated (localStorage)");
         setIsLoading(false);
         toast.error("Please log in to view this page.", { duration: 2000 });
         setTimeout(() => router.push("/login"), 500);
@@ -57,7 +47,7 @@ export default function Logged() {
     }
 
     setIsLoading(false);
-  }, [team, router]);
+  }, [team, isAuthenticated, router]);
 
   // ✅ Helper to check if member slot has data
   const hasMemberData = (memberKey: MemberKey): boolean => {
