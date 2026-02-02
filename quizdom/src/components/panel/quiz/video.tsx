@@ -53,6 +53,7 @@ function VideoError({ message }: { message: string }) {
 }
 
 const PLAYBACK_RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const CONTROLS_HIDE_DELAY = 3000; // 3 seconds like YouTube
 
 export default function VideoPlayer({
   src,
@@ -83,7 +84,7 @@ export default function VideoPlayer({
     dir: "forward" | "backward";
     key: number;
   } | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
 
   const seekIndicatorKey = useRef(0);
   const lastTap = useRef(0);
@@ -256,11 +257,21 @@ export default function VideoPlayer({
       }
       lastTap.current = now;
 
-      if (isMobile) {
-        setTimeout(() => setShowControls(false), 3000);
-      }
+      // Auto-hide controls after delay
+      if (hoverTimer) clearTimeout(hoverTimer);
+      const timer = setTimeout(() => {
+        if (isPlaying) setShowControls(false);
+      }, CONTROLS_HIDE_DELAY);
+      setHoverTimer(timer);
     },
-    [isMobile, skipBackward, showSeekIndicator, skipForward, togglePlayPause],
+    [
+      isPlaying,
+      skipBackward,
+      showSeekIndicator,
+      skipForward,
+      togglePlayPause,
+      hoverTimer,
+    ],
   );
 
   // Touch zoom
@@ -294,7 +305,7 @@ export default function VideoPlayer({
     }
   };
 
-  // Auto-hide controls
+  // Auto-hide controls on mouse move (YouTube-style)
   const handleMouseMove = () => {
     setShowControls(true);
 
@@ -302,10 +313,11 @@ export default function VideoPlayer({
       clearTimeout(hoverTimer);
     }
 
-    if (isPlaying && isFullscreen) {
+    // Only auto-hide if video is playing
+    if (isPlaying) {
       const timer = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
+      }, CONTROLS_HIDE_DELAY);
       setHoverTimer(timer);
     }
   };
@@ -382,11 +394,23 @@ export default function VideoPlayer({
     const handlePlay = () => {
       setIsPlaying(true);
       onPlayStateChange?.(true);
+      // Auto-hide controls after play starts
+      if (hoverTimer) clearTimeout(hoverTimer);
+      const timer = setTimeout(() => {
+        setShowControls(false);
+      }, CONTROLS_HIDE_DELAY);
+      setHoverTimer(timer);
     };
 
     const handlePause = () => {
       setIsPlaying(false);
       onPlayStateChange?.(false);
+      // Show controls when paused
+      setShowControls(true);
+      if (hoverTimer) {
+        clearTimeout(hoverTimer);
+        setHoverTimer(null);
+      }
     };
 
     const handleLoadedMetadata = () => {
@@ -405,6 +429,11 @@ export default function VideoPlayer({
     const handleEnded = () => {
       setIsPlaying(false);
       onPlayStateChange?.(false);
+      setShowControls(true);
+      if (hoverTimer) {
+        clearTimeout(hoverTimer);
+        setHoverTimer(null);
+      }
     };
 
     const handleCanPlay = () => setIsLoading(false);
@@ -476,6 +505,7 @@ export default function VideoPlayer({
     setDuration(0);
     setIsPlaying(false);
     setPlaybackRate(1.0);
+    setShowControls(true);
 
     // Load the new source
     video.load();
@@ -489,14 +519,20 @@ export default function VideoPlayer({
     <TooltipProvider>
       <Card
         ref={containerRef}
-        className={`w-full overflow-hidden bg-black ${className}`}
+        className={`w-full overflow-hidden bg-black ${className} ${
+          isFullscreen
+            ? "p-0! flex items-center justify-center min-h-screen"
+            : ""
+        }`}
         onMouseMove={handleMouseMove}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className={`relative bg-black group ${isFullscreen ? "aspect-video m-6 mx-auto max-w-[90vw]" : "aspect-video"}`}
+          className={`relative bg-black group ${
+            isFullscreen ? "w-[85vw] h-[85vh]" : "aspect-video"
+          }`}
         >
           {/* Video Element */}
           <video
@@ -505,12 +541,12 @@ export default function VideoPlayer({
             poster={poster}
             onClick={togglePlayPause}
             onTouchStart={handleVideoTouch}
-            className="w-full h-full cursor-pointer"
+            className={`w-full h-full cursor-pointer ${isFullscreen ? "object-contain" : ""}`}
           />
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="w-10 h-10 animate-spin text-white" />
                 <p className="text-sm text-white">Loading video...</p>
@@ -522,7 +558,7 @@ export default function VideoPlayer({
           {seekIndicator && (
             <div
               key={seekIndicator.key}
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
             >
               <div className="bg-black/70 rounded-lg px-6 py-3 animate-pulse">
                 <p className="text-white font-semibold text-lg">
@@ -535,7 +571,7 @@ export default function VideoPlayer({
           {/* Play Button Overlay (when paused) */}
           {!isPlaying && !isLoading && (
             <div
-              className="cursor-pointer absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20"
+              className="cursor-pointer absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 z-10"
               onClick={togglePlayPause}
             >
               <Play className="w-20 h-20 text-white fill-white" />
@@ -543,232 +579,234 @@ export default function VideoPlayer({
           )}
 
           {/* Title Bar */}
-          {title && (showControls || !isFullscreen) && (
-            <div className="absolute top-0 left-0 right-0 bg-linear-to-b from-black/60 to-transparent p-4">
+          {title && showControls && (
+            <div
+              className={`absolute top-0 left-0 right-0 bg-linear-to-b from-black/60 to-transparent p-4 z-30 transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"}`}
+            >
               <h3 className="text-white font-semibold">{title}</h3>
             </div>
           )}
 
           {/* Controls Bar */}
-          {(showControls || !isFullscreen || !isPlaying) && (
-            <div
-              className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4 space-y-3"
-              onMouseEnter={() => hoverTimer && clearTimeout(hoverTimer)}
-            >
-              {/* Progress Bar */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-white w-10">
-                  {formatTime(currentTime)}
-                </span>
-                <Slider
-                  value={[currentTime]}
-                  onValueChange={handleSeek}
-                  max={duration || 100}
-                  step={0.1}
-                  className="flex-1 cursor-pointer"
-                />
-                <span className="text-xs text-white w-10 text-right">
-                  {formatTime(duration)}
-                </span>
+          <div
+            className={`absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4 space-y-3 z-30 transition-opacity duration-300 ${
+              showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            onMouseEnter={() => hoverTimer && clearTimeout(hoverTimer)}
+          >
+            {/* Progress Bar */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white w-10">
+                {formatTime(currentTime)}
+              </span>
+              <Slider
+                value={[currentTime]}
+                onValueChange={handleSeek}
+                max={duration || 100}
+                step={0.1}
+                className="flex-1 cursor-pointer"
+              />
+              <span className="text-xs text-white w-10 text-right">
+                {formatTime(duration)}
+              </span>
+            </div>
+
+            {/* Control Buttons */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1">
+                {/* Play/Pause */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={togglePlayPause}
+                      className="text-white hover:bg-white/20"
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-5 h-5" />
+                      ) : (
+                        <Play className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isPlaying ? "Pause (K)" : "Play (K)"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Skip Backward */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={skipBackward}
+                      className="text-white hover:bg-white/20"
+                    >
+                      <Rewind className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Rewind 10s (←)</TooltipContent>
+                </Tooltip>
+
+                {/* Skip Forward */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={skipForward}
+                      className="text-white hover:bg-white/20"
+                    >
+                      <FastForward className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Forward 10s (→)</TooltipContent>
+                </Tooltip>
+
+                {/* Volume */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={toggleMute}
+                      className="text-white hover:bg-white/20"
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5" />
+                      ) : (
+                        <Volume2 className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isMuted ? "Unmute (M)" : "Mute (M)"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Volume Slider */}
+                <div className="w-20">
+                  <Slider
+                    value={[volume]}
+                    onValueChange={(v) => changeVolume(v[0])}
+                    max={100}
+                    step={1}
+                    className="w-full cursor-pointer"
+                  />
+                </div>
               </div>
 
-              {/* Control Buttons */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1">
-                  {/* Play/Pause */}
+              <div className="flex items-center gap-1">
+                {/* Reset */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={resetVideo}
+                      className="text-white hover:bg-white/20"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Reset</TooltipContent>
+                </Tooltip>
+
+                {/* Playback Speed Menu */}
+                <div ref={speedMenuRef} className="relative">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        size="icon"
+                        size="sm"
                         variant="ghost"
-                        onClick={togglePlayPause}
-                        className="text-white hover:bg-white/20"
+                        className="text-white hover:bg-white/20 text-xs w-12"
+                        onClick={() => setShowSpeedMenu((prev) => !prev)}
                       >
-                        {isPlaying ? (
-                          <Pause className="w-5 h-5" />
-                        ) : (
-                          <Play className="w-5 h-5" />
-                        )}
+                        {playbackRate}x
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      {isPlaying ? "Pause (K)" : "Play (K)"}
-                    </TooltipContent>
+                    <TooltipContent>Playback speed</TooltipContent>
                   </Tooltip>
 
-                  {/* Skip Backward */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={skipBackward}
-                        className="text-white hover:bg-white/20"
-                      >
-                        <Rewind className="w-5 h-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Rewind 10s (←)</TooltipContent>
-                  </Tooltip>
-
-                  {/* Skip Forward */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={skipForward}
-                        className="text-white hover:bg-white/20"
-                      >
-                        <FastForward className="w-5 h-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Forward 10s (→)</TooltipContent>
-                  </Tooltip>
-
-                  {/* Volume */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={toggleMute}
-                        className="text-white hover:bg-white/20"
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-5 h-5" />
-                        ) : (
-                          <Volume2 className="w-5 h-5" />
-                        )}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {isMuted ? "Unmute (M)" : "Mute (M)"}
-                    </TooltipContent>
-                  </Tooltip>
-
-                  {/* Volume Slider */}
-                  <div className="w-20">
-                    <Slider
-                      value={[volume]}
-                      onValueChange={(v) => changeVolume(v[0])}
-                      max={100}
-                      step={1}
-                      className="w-full cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  {/* Reset */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={resetVideo}
-                        className="text-white hover:bg-white/20"
-                      >
-                        <RotateCcw className="w-5 h-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Reset</TooltipContent>
-                  </Tooltip>
-
-                  {/* Playback Speed Menu */}
-                  <div ref={speedMenuRef} className="relative">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-white hover:bg-white/20 text-xs w-12"
-                          onClick={() => setShowSpeedMenu((prev) => !prev)}
-                        >
-                          {playbackRate}x
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Playback speed</TooltipContent>
-                    </Tooltip>
-
-                    {/* Speed Dropdown */}
-                    {showSpeedMenu && (
-                      <div className="absolute bottom-full right-0 mb-2 w-36 bg-black/90 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10">
-                          <Gauge className="w-3.5 h-3.5 text-white/60" />
-                          <span className="text-xs font-medium text-white/60 uppercase tracking-wider">
-                            Speed
-                          </span>
-                        </div>
-
-                        {/* Rate Options */}
-                        <div className="py-1">
-                          {PLAYBACK_RATES.map((rate) => (
-                            <button
-                              key={rate}
-                              onClick={() => changePlaybackRate(rate)}
-                              className={`
-                                w-full text-left px-3 py-1.5 text-sm transition-colors flex items-center justify-between
-                                ${
-                                  playbackRate === rate
-                                    ? "text-white bg-white/10"
-                                    : "text-white/70 hover:text-white hover:bg-white/10"
-                                }
-                              `}
-                            >
-                              <span>{rate}x</span>
-                              {playbackRate === rate && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                              )}
-                            </button>
-                          ))}
-                        </div>
+                  {/* Speed Dropdown */}
+                  {showSpeedMenu && (
+                    <div className="absolute bottom-full right-0 mb-2 w-36 bg-black/90 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg overflow-hidden">
+                      {/* Header */}
+                      <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10">
+                        <Gauge className="w-3.5 h-3.5 text-white/60" />
+                        <span className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                          Speed
+                        </span>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Download */}
-                  {downloadable && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={downloadVideo}
-                          className="text-white hover:bg-white/20"
-                        >
-                          <Download className="w-5 h-5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Download</TooltipContent>
-                    </Tooltip>
+                      {/* Rate Options */}
+                      <div className="py-1">
+                        {PLAYBACK_RATES.map((rate) => (
+                          <button
+                            key={rate}
+                            onClick={() => changePlaybackRate(rate)}
+                            className={`
+                              w-full cursor-pointer text-left px-3 py-1.5 text-sm transition-colors flex items-center justify-between
+                              ${
+                                playbackRate === rate
+                                  ? "text-white bg-white/10"
+                                  : "text-white/70 hover:text-white hover:bg-white/10"
+                              }
+                            `}
+                          >
+                            <span>{rate}x</span>
+                            {playbackRate === rate && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
+                </div>
 
-                  {/* Fullscreen */}
+                {/* Download */}
+                {downloadable && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={toggleFullscreen}
+                        onClick={downloadVideo}
                         className="text-white hover:bg-white/20"
                       >
-                        {isFullscreen ? (
-                          <Minimize className="w-5 h-5" />
-                        ) : (
-                          <Maximize className="w-5 h-5" />
-                        )}
+                        <Download className="w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      {isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
-                    </TooltipContent>
+                    <TooltipContent>Download</TooltipContent>
                   </Tooltip>
-                </div>
+                )}
+
+                {/* Fullscreen */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={toggleFullscreen}
+                      className="text-white hover:bg-white/20"
+                    >
+                      {isFullscreen ? (
+                        <Minimize className="w-5 h-5" />
+                      ) : (
+                        <Maximize className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen (F)"}
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </Card>
     </TooltipProvider>

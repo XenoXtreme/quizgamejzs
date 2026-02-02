@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Users, School, Hash, Sparkles, Loader2, LogOut } from "lucide-react";
+import { Users, School, Hash, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ContextType } from "@/context/auth/context";
@@ -22,7 +22,7 @@ type MemberKey = (typeof MEMBER_KEYS)[number];
 
 export default function Logged() {
   const router = useRouter();
-  const { team, isAuthenticated, removeTeam }: ContextType = useAuthContext();
+  const { team, isAuthenticated }: ContextType = useAuthContext();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -69,18 +69,6 @@ export default function Logged() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
-  };
-
-  // Logout handler
-  const handleLogout = async () => {
-    try {
-      removeTeam();
-      toast.success("Logged out successfully", { duration: 1500 });
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Error logging out", { duration: 1500 });
-    }
   };
 
   // Loading state
@@ -149,18 +137,6 @@ export default function Logged() {
 
               {/* Sparkle effect */}
               <Sparkles className="absolute top-8 right-8 h-6 w-6 text-white/40 animate-pulse" />
-
-              {/* Logout button */}
-              <button
-                onClick={handleLogout}
-                className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all duration-200 flex items-center gap-2"
-                title="Logout"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm font-medium">
-                  Logout
-                </span>
-              </button>
             </div>
 
             {/* School Avatar */}
@@ -229,7 +205,7 @@ export default function Logged() {
                   return (
                     <Card
                       key={memberKey}
-                      className={`transition-all duration-300 border border-white/10 backdrop-blur-sm ${
+                      className={`transition-all duration-300 border border-white/10 backdrop-blur-sm cursor-pointer ${
                         hasData
                           ? "bg-white/5 hover:bg-white/10 hover:border-indigo-400/40 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-1"
                           : "opacity-50 bg-white/2"

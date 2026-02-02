@@ -21,7 +21,7 @@ import {
   Rewind,
 } from "lucide-react";
 
-// Custom AudioVisualizer
+// Custom AudioVisualizer with enhanced styling
 function AudioVisualizer({
   isPlaying,
   currentTime,
@@ -29,10 +29,10 @@ function AudioVisualizer({
   volume,
   width = 480,
   height = 140,
-  barColor = "#2563eb", // Base color for the bars
-  peakColor = "#facc15", // Color for the peak indicator
-  gradientEndColor = "#60a5fa", // End color for the bar gradient
-  mirrorEffect = true, // Enable/disable mirror effect
+  barColor = "#000000",
+  peakColor = "#666666",
+  gradientEndColor = "#333333",
+  mirrorEffect = false,
 }: {
   isPlaying: boolean;
   currentTime: number;
@@ -47,7 +47,7 @@ function AudioVisualizer({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastBarHeights = useRef<number[]>([]);
-  const peakHeights = useRef<number[]>([]); // To store peak heights for decay
+  const peakHeights = useRef<number[]>([]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -57,9 +57,9 @@ function AudioVisualizer({
     if (!ctx) return;
 
     let animationId: number;
-    const barCount = 20;
-    const barSpacing = 0.3; // Percentage of barWidth for spacing
-    const barCornerRadius = 2; // For rounded corners
+    const barCount = 32;
+    const barSpacing = 0.4;
+    const barCornerRadius = 3;
 
     if (!lastBarHeights.current.length) {
       lastBarHeights.current = Array(barCount).fill(0);
@@ -80,11 +80,6 @@ function AudioVisualizer({
       const beat = Math.abs(Math.sin(Math.PI * t * 2));
       const envelope = 0.7 + 0.3 * Math.sin((t / d) * Math.PI * 2);
 
-      // Draw background glow (subtle pulse)
-      const glowAlpha = 0.1 + 0.1 * Math.sin(t * Math.PI); // Pulsing alpha
-      ctx.fillStyle = `rgba(37, 99, 235, ${glowAlpha})`; // Blue glow
-      ctx.fillRect(0, 0, width, height);
-
       for (let i = 0; i < barCount; i++) {
         const freq = 0.5 + 0.5 * Math.sin(t * 0.7 + i * 0.15);
         const base = Math.abs(Math.sin(t * freq + i * 0.25));
@@ -95,16 +90,14 @@ function AudioVisualizer({
           (base * beat * envelope * pulse * v + noise) * height * 0.7 +
           height * 0.1;
 
-        // Smooth the animation by interpolating previous and target heights
         const prev = lastBarHeights.current[i] || 0;
         const smoothHeight = prev + (targetHeight - prev) * 0.18;
         lastBarHeights.current[i] = smoothHeight;
 
-        // Update peak height
         peakHeights.current[i] = Math.max(
           peakHeights.current[i] * 0.98,
           smoothHeight,
-        ); // Decay and update
+        );
 
         const x = i * (actualBarWidth + gap);
         const barHeight = smoothHeight;
@@ -151,7 +144,7 @@ function AudioVisualizer({
 
         // Draw peak indicator
         ctx.fillStyle = peakColor;
-        const peakLineHeight = 2; // Height of the peak line
+        const peakLineHeight = 2;
         ctx.fillRect(
           x,
           height - peakHeights.current[i] - peakLineHeight,
@@ -162,7 +155,7 @@ function AudioVisualizer({
         // Mirror effect
         if (mirrorEffect) {
           const mirrorY = height - barHeight;
-          const mirrorHeight = barHeight * 0.5; // Half the height for mirror
+          const mirrorHeight = barHeight * 0.4;
           const mirrorGradient = ctx.createLinearGradient(
             x,
             mirrorY + mirrorHeight,
@@ -171,12 +164,12 @@ function AudioVisualizer({
           );
           mirrorGradient.addColorStop(
             0,
-            `rgba(${parseInt(barColor.slice(1, 3), 16)}, ${parseInt(barColor.slice(3, 5), 16)}, ${parseInt(barColor.slice(5, 7), 16)}, 0.2)`,
-          ); // Faded start
+            `rgba(${parseInt(barColor.slice(1, 3), 16)}, ${parseInt(barColor.slice(3, 5), 16)}, ${parseInt(barColor.slice(5, 7), 16)}, 0.15)`,
+          );
           mirrorGradient.addColorStop(
             1,
             `rgba(${parseInt(gradientEndColor.slice(1, 3), 16)}, ${parseInt(gradientEndColor.slice(3, 5), 16)}, ${parseInt(gradientEndColor.slice(5, 7), 16)}, 0)`,
-          ); // Transparent end
+          );
           ctx.fillStyle = mirrorGradient;
 
           ctx.beginPath();
@@ -233,7 +226,7 @@ function AudioVisualizer({
       ref={canvasRef}
       width={width}
       height={height}
-      className="h-full w-full rounded-lg bg-gray-100 dark:bg-gray-900"
+      className="h-full w-full"
     />
   );
 }
@@ -273,14 +266,15 @@ export default function AudioPlayer({
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(80);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(80);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isDragging] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
 
   const lastTap = useRef(0);
 
@@ -359,6 +353,10 @@ export default function AudioPlayer({
     }
   }, []);
 
+  const handleVisualizerClick = React.useCallback(() => {
+    togglePlayPause();
+  }, [togglePlayPause]);
+
   const handleVisualizerTap = React.useCallback(
     (e: React.TouchEvent) => {
       const now = Date.now();
@@ -381,17 +379,12 @@ export default function AudioPlayer({
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Pause the audio first
     audio.pause();
-
-    // Reset state
     setError(null);
     setCurrentTime(0);
     setDuration(0);
     setIsPlaying(false);
     setIsLoading(true);
-
-    // Load the new source
     audio.load();
   }, [src]);
 
@@ -511,6 +504,14 @@ export default function AudioPlayer({
           e.preventDefault();
           handleVolumeChange([Math.max(volume - 10, 0)]);
           break;
+        case "ArrowRight":
+          e.preventDefault();
+          skipForward();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          skipBackward();
+          break;
         case "KeyR":
           e.preventDefault();
           resetAudio();
@@ -521,7 +522,15 @@ export default function AudioPlayer({
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [togglePlayPause, toggleMute, handleVolumeChange, resetAudio, volume]);
+  }, [
+    togglePlayPause,
+    toggleMute,
+    handleVolumeChange,
+    resetAudio,
+    volume,
+    skipForward,
+    skipBackward,
+  ]);
 
   if (error) {
     return <AudioError message={error} />;
@@ -530,14 +539,19 @@ export default function AudioPlayer({
   return (
     <TooltipProvider>
       <Card
-        className={`w-full bg-white dark:bg-black border border-gray-200 dark:border-gray-800 ${className}`}
+        className={`w-full bg-white dark:bg-black border border-gray-200 dark:border-gray-800 overflow-hidden transition-shadow duration-300 ${
+          isHovering ? "shadow-md" : ""
+        } ${className}`}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         <audio ref={audioRef} src={src} crossOrigin="anonymous" />
         <CardContent className="p-0">
           {/* Visualizer or Album Cover */}
           {showVisualizer && (
             <div
-              className="relative w-full overflow-hidden bg-gray-50 dark:bg-gray-950 cursor-pointer"
+              className="relative w-full overflow-hidden bg-gray-50 dark:bg-gray-950 cursor-pointer group"
+              onClick={handleVisualizerClick}
               onTouchStart={handleVisualizerTap}
             >
               {!isPlaying ? (
@@ -546,41 +560,77 @@ export default function AudioPlayer({
                     alt="album cover"
                     src={albumCover}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     quality={100}
                     priority
                   />
+                  {/* Play overlay on hover */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110">
+                      <div className="bg-white dark:bg-gray-900 rounded-full p-4 shadow-lg">
+                        <Play className="w-8 h-8 text-gray-900 dark:text-white fill-current" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className="w-full aspect-video flex items-center justify-center">
+                <div className="w-full aspect-video flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-black">
                   <AudioVisualizer
                     isPlaying={isPlaying}
                     currentTime={currentTime}
                     duration={duration}
                     volume={volume}
-                    width={320}
-                    height={90}
-                    barColor="#2563eb" // Base blue
-                    gradientEndColor="#60a5fa" // Lighter blue for gradient
-                    peakColor="#facc15" // Yellow for peaks
-                    mirrorEffect={true} // Enable mirror effect
+                    width={500}
+                    height={150}
+                    barColor="#000000"
+                    gradientEndColor="#404040"
+                    peakColor="#666666"
+                    mirrorEffect={false}
                   />
                 </div>
               )}
 
               {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80">
-                  <Loader2
-                    className="w-5 h-5 animate-spin text-gray-400"
-                    strokeWidth={1.5}
-                  />
+                <div className="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-sm">
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2
+                      className="w-5 h-5 animate-spin text-gray-400"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-xs text-gray-500">Loading...</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Playing indicator */}
+              {isPlaying && (
+                <div className="absolute top-3 right-3">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 dark:bg-black/90 backdrop-blur-sm rounded-full border border-gray-200 dark:border-gray-800">
+                    <div className="flex gap-0.5">
+                      <div
+                        className="w-0.5 h-3 bg-gray-900 dark:bg-white rounded-full animate-pulse"
+                        style={{ animationDelay: "0ms" }}
+                      />
+                      <div
+                        className="w-0.5 h-3 bg-gray-900 dark:bg-white rounded-full animate-pulse"
+                        style={{ animationDelay: "150ms" }}
+                      />
+                      <div
+                        className="w-0.5 h-3 bg-gray-900 dark:bg-white rounded-full animate-pulse"
+                        style={{ animationDelay: "300ms" }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-medium text-gray-900 dark:text-white">
+                      Playing
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
           )}
 
           {/* Controls Section */}
-          <div className="p-4 space-y-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="p-5 space-y-4">
             {/* Title */}
             <div>
               <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -591,17 +641,19 @@ export default function AudioPlayer({
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono text-gray-600 dark:text-gray-400 w-12">
+                <span className="text-[11px] font-mono text-gray-500 dark:text-gray-500 w-10 tabular-nums">
                   {formatTime(currentTime)}
                 </span>
-                <Slider
-                  value={[currentTime]}
-                  onValueChange={handleSeek}
-                  max={duration || 100}
-                  step={0.1}
-                  className="flex-1 cursor-pointer"
-                />
-                <span className="text-xs font-mono text-gray-600 dark:text-gray-400 w-12 text-right">
+                <div className="flex-1">
+                  <Slider
+                    value={[currentTime]}
+                    onValueChange={handleSeek}
+                    max={duration || 100}
+                    step={0.1}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <span className="text-[11px] font-mono text-gray-500 dark:text-gray-500 w-10 text-right tabular-nums">
                   {formatTime(duration)}
                 </span>
               </div>
@@ -616,13 +668,13 @@ export default function AudioPlayer({
                       size="icon"
                       variant="ghost"
                       onClick={skipBackward}
-                      className="h-8 w-8 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                      className="h-9 w-9 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors rounded-full"
                     >
                       <Rewind className="w-4 h-4" strokeWidth={1.5} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    Rewind 10s
+                    Rewind 10s (←)
                   </TooltipContent>
                 </Tooltip>
 
@@ -632,17 +684,17 @@ export default function AudioPlayer({
                       size="icon"
                       variant="ghost"
                       onClick={togglePlayPause}
-                      className="h-8 w-8 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                      className="h-10 w-10 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-900 transition-all rounded-full"
                     >
                       {isPlaying ? (
-                        <Pause className="w-4 h-4" strokeWidth={1.5} />
+                        <Pause className="w-5 h-5" strokeWidth={1.5} />
                       ) : (
-                        <Play className="w-4 h-4" strokeWidth={1.5} />
+                        <Play className="w-5 h-5 ml-0.5" strokeWidth={1.5} />
                       )}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    {isPlaying ? "Pause" : "Play"}
+                    {isPlaying ? "Pause (K)" : "Play (K)"}
                   </TooltipContent>
                 </Tooltip>
 
@@ -652,13 +704,13 @@ export default function AudioPlayer({
                       size="icon"
                       variant="ghost"
                       onClick={skipForward}
-                      className="h-8 w-8 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                      className="h-9 w-9 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors rounded-full"
                     >
                       <FastForward className="w-4 h-4" strokeWidth={1.5} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    Forward 10s
+                    Forward 10s (→)
                   </TooltipContent>
                 </Tooltip>
 
@@ -668,26 +720,26 @@ export default function AudioPlayer({
                       size="icon"
                       variant="ghost"
                       onClick={resetAudio}
-                      className="h-8 w-8 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                      className="h-9 w-9 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors rounded-full"
                     >
                       <RotateCw className="w-4 h-4" strokeWidth={1.5} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    Reset
+                    Reset (R)
                   </TooltipContent>
                 </Tooltip>
               </div>
 
               {/* Volume Controls */}
-              <div className="flex items-center gap-2 flex-1 max-w-[140px]">
+              <div className="flex items-center gap-2 flex-1 max-w-35">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       size="icon"
                       variant="ghost"
                       onClick={toggleMute}
-                      className="h-8 w-8 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                      className="h-9 w-9 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors rounded-full"
                     >
                       {isMuted ? (
                         <VolumeX className="w-4 h-4" strokeWidth={1.5} />
@@ -697,7 +749,7 @@ export default function AudioPlayer({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    {isMuted ? "Unmute" : "Mute"}
+                    {isMuted ? "Unmute (M)" : "Mute (M)"}
                   </TooltipContent>
                 </Tooltip>
 

@@ -12,8 +12,8 @@ export default function QuizLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      if (!localStorage.getItem("_user")) {
-        toast.info("Please login to your team.", {duration: 2000});
+      if (!localStorage.getItem("_global_token")) {
+        toast.info("Please login to your team.", { duration: 2000 });
         redirect("/login");
       }
     }
