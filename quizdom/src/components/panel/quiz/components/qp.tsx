@@ -25,7 +25,7 @@ interface QNSProps {
   round: string;
   type: string;
   path: string;
-  limit?: number;
+  limit?: string | number;
 }
 
 /**
@@ -39,10 +39,27 @@ function getRoundFullName(round: string): string {
     cc: "Connections",
     oyf: "On Your Fingertips",
     pnb: "Pounce Bounce",
-    "tie-breaker": "Tie Breaker",
+    tiebreaker: "Tie Breaker",
     test: "Test Quiz",
+    audience: "Audience",
   };
   return roundMap[round] || `Unknown Round (${round})`;
+}
+
+/**
+ * Helper: Convert round code to full display name
+ */
+function getRoundURLFormat(round: string): string {
+  const roundMap: Record<string, string> = {
+    mm: "movie-mania",
+    oyo: "on-your-own",
+    pbk: "point-blank",
+    cc: "connections",
+    oyf: "on-your-fingertips",
+    pnb: "pounce-bounce",
+    tiebreaker: "tie-breaker",
+  };
+  return roundMap[round] || "unknown-round";
 }
 
 /**
@@ -55,6 +72,17 @@ function getCategoryFullName(category: string): string {
     test: "Test Quiz",
   };
   return categoryMap[category] || `Unknown Category (${category})`;
+}
+
+/**
+ * Helper: Convert qno into meaningful text
+ */
+function getQnoText(qno: string | number) {
+  if (typeof qno === "string") {
+    return qno.charAt(0).toUpperCase() + qno.slice(1);
+  }
+
+  return qno;
 }
 
 /**
@@ -262,21 +290,28 @@ export default function QuestionPanel({
           {/* Breadcrumb & Meta */}
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500">
             <a
-              href="/quiz/$"
+              href={`/quiz/${quizCategory}`}
               className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               Quiz
             </a>
             <span>/</span>
-            <span className="text-gray-900 dark:text-gray-100">
+            <a
+              href={
+                quizCategory === "audience"
+                  ? `/quiz/audience`
+                  : `/quiz/${quizCategory}/round/${getRoundURLFormat(round)}`
+              }
+              className="cursor-pointer text-gray-900 dark:text-gray-100"
+            >
               {getRoundFullName(round)}
-            </span>
+            </a>
           </div>
 
           {/* Question Title */}
           <div className="flex items-baseline gap-3">
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-              {qno}
+              {getQnoText(qno)}
             </h1>
             {limit && (
               <span className="text-lg text-gray-400 dark:text-gray-600">

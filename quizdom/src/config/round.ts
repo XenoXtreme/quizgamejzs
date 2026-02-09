@@ -1,14 +1,3 @@
-import {
-  Brain,
-  Zap,
-  Link as LinkIcon,
-  Film,
-  Target,
-  Hand,
-  Trophy,
-  LucideIcon,
-} from "lucide-react";
-
 /**
  * Round configuration type
  */
@@ -21,8 +10,8 @@ export interface RoundConfig {
   description: string;
   /** Data key in InterSch object */
   dataKey: "oyo" | "pnb" | "cc" | "mm" | "pbk" | "oyf" | "tiebreaker";
-  /** Lucide icon component */
-  icon: LucideIcon;
+  /** Icon name (Lucide icon) */
+  iconName: string;
   /** Accent color (Tailwind class) */
   accentColor: string;
   /** Question limit (total number of questions) */
@@ -38,52 +27,52 @@ export const ROUNDS_CONFIG: Record<string, RoundConfig> = {
     title: "On Your Own",
     description: "Test your individual knowledge across various topics",
     dataKey: "oyo",
-    icon: Brain,
+    iconName: "Brain",
     accentColor: "blue",
-    limit: 10, // Adjust based on your actual question count
+    limit: 10,
   },
   "pounce-bounce": {
     slug: "pounce-bounce",
     title: "Pounce Bounce",
     description: "Quick thinking and rapid response questions",
     dataKey: "pnb",
-    icon: Zap,
+    iconName: "Zap",
     accentColor: "yellow",
-    limit: 8, // Adjust based on your actual question count
+    limit: 8,
   },
   connections: {
     slug: "connections",
     title: "Connections",
     description: "Find the links between seemingly unrelated items",
     dataKey: "cc",
-    icon: LinkIcon,
+    iconName: "Link2",
     accentColor: "purple",
-    limit: 6, // Adjust based on your actual question count
+    limit: 6,
   },
   "movie-mania": {
     slug: "movie-mania",
     title: "Movie Mania",
     description: "Cinema, entertainment, and pop culture",
     dataKey: "mm",
-    icon: Film,
+    iconName: "Film",
     accentColor: "red",
-    limit: 8, // Adjust based on your actual question count
+    limit: 8,
   },
   "point-blank": {
     slug: "point-blank",
     title: "Point Blank",
     description: "Straight to the point, no hints given",
     dataKey: "pbk",
-    icon: Target,
+    iconName: "Target",
     accentColor: "green",
-    limit: 5, // Adjust based on your actual question count
+    limit: 5,
   },
   "on-your-fingertips": {
     slug: "on-your-fingertips",
     title: "On Your Fingertips",
     description: "Information at your fingertips",
     dataKey: "oyf",
-    icon: Hand,
+    iconName: "Hand",
     accentColor: "orange",
     // No limit - uses special keys (literature, mystery, etc.)
   },
@@ -92,9 +81,9 @@ export const ROUNDS_CONFIG: Record<string, RoundConfig> = {
     title: "Tie Breaker",
     description: "The final round to determine the winner",
     dataKey: "tiebreaker",
-    icon: Trophy,
+    iconName: "Trophy",
     accentColor: "amber",
-    limit: 3, // Adjust based on your actual question count
+    limit: 3,
   },
 };
 
