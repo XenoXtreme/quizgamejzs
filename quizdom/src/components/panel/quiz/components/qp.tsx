@@ -25,7 +25,7 @@ interface QNSProps {
   round: string;
   type: string;
   path: string;
-  limit?: string;
+  limit?: number;
 }
 
 /**
