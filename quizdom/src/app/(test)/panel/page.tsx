@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
-import QuizP from "@/components/panel/quiz/qp";
+import QuizP from "@/components/panel/quiz/components/qp";
 
 export default function Page() {
   const path = usePathname();
