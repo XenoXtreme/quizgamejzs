@@ -117,8 +117,8 @@ export default function QuestionPanel({
   const { team }: ContextType = context;
 
   // ========== URIs ==========
-  const questionURI = `${CDN_URI}/assets/quiz/${quizCategory}/${round}/${type}/${qno}.${extension}`;
-  const answerURI = `${CDN_URI}/assets/quiz/${quizCategory}/${round}/${type}/ans/${qno}.${extension}`;
+  const questionURI = `/assets/quiz/${quizCategory}/${round}/${type}/${qno}.${extension}`;
+  const answerURI = `/assets/quiz/${quizCategory}/${round}/${type}/ans/${qno}.${extension}`;
 
   // ========== Navigation Helpers ==========
   const getOYFKeys = () => InterSch.oyf.map((q) => q.q_no);
