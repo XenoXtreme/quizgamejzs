@@ -59,23 +59,6 @@ export default function Panel() {
               </div>
             </div>
           </Link>
-
-          {/* Placeholder for future categories */}
-          <div className="pointer-events-none col-span-1 hidden opacity-40 sm:col-span-2 sm:mx-auto sm:block sm:max-w-md">
-            <div className="flex items-center gap-4 rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900/50">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-neutral-200 dark:bg-neutral-800">
-                <Layers className="h-8 w-8 text-neutral-400 dark:text-neutral-600" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-neutral-500 dark:text-neutral-600">
-                  More Categories
-                </h2>
-                <p className="text-sm text-neutral-400 dark:text-neutral-700">
-                  Coming soon
-                </p>
-              </div>
-            </div>
-          </div>
         </section>
       </div>
     </div>

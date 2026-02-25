@@ -69,6 +69,7 @@ function getCategoryFullName(category: string): string {
   const categoryMap: Record<string, string> = {
     interschool: "Interschool",
     intraschool: "Intraschool",
+    audience: "Audience",
     test: "Test Quiz",
   };
   return categoryMap[category] || `Unknown Category (${category})`;
@@ -290,7 +291,7 @@ export default function QuestionPanel({
           {/* Breadcrumb & Meta */}
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500">
             <a
-              href={`/quiz/${quizCategory}`}
+              href="/quiz"
               className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               Quiz
@@ -300,12 +301,23 @@ export default function QuestionPanel({
               href={
                 quizCategory === "audience"
                   ? `/quiz/audience`
-                  : `/quiz/${quizCategory}/round/${getRoundURLFormat(round)}`
+                  : `/quiz/${quizCategory}`
               }
               className="cursor-pointer text-gray-900 dark:text-gray-100"
             >
-              {getRoundFullName(round)}
+              {getCategoryFullName(quizCategory)}
             </a>
+            {quizCategory !== "audience" && (
+              <span className="flex items-center gap-1">
+                <span>/</span>
+                <a
+                  href={`/quiz/${quizCategory}/round/${getRoundURLFormat(round)}`}
+                  className="cursor-pointer text-gray-900 dark:text-gray-100"
+                >
+                  {getRoundFullName(round)}
+                </a>
+              </span>
+            )}
           </div>
 
           {/* Question Title */}

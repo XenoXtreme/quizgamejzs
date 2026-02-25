@@ -35,7 +35,7 @@ const corsOption: CorsOptions = {
     }
     callback(new Error("Not allowed by CORS"));
   },
-  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  methods: ["GET", "HEAD", "POST", "PUT"],
   credentials: true,
   optionsSuccessStatus: 200,
   allowedHeaders: [
@@ -68,9 +68,12 @@ async function connectToDatabase() {
       .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
     // Cleanup expired tokens periodically (every hour)
-    setInterval(() => {
-      authService.cleanupExpiredTokens();
-    }, 60 * 60 * 1000);
+    setInterval(
+      () => {
+        authService.cleanupExpiredTokens();
+      },
+      14 * 24 * 60 * 60 * 1000,
+    );
 
     console.log("✅ Connected to MongoDB");
   } catch (error) {
@@ -138,7 +141,7 @@ io.use(async (socket, next) => {
 io.on("connection", (socket) => {
   const user = socket.data.user;
   console.log(
-    `✅ New client connected. Socket ID: ${socket.id}, Team: ${user.team}`
+    `✅ New client connected. Socket ID: ${socket.id}, Team: ${user.team}`,
   );
 
   socket.on("identifyMainComputer", async () => {
@@ -150,7 +153,7 @@ io.on("connection", (socket) => {
     if (mainComputerId && mainComputerId !== socket.id) {
       socket.emit(
         "mainComputerAlreadyExists",
-        "A main computer is already connected."
+        "A main computer is already connected.",
       );
       return;
     }
@@ -192,7 +195,7 @@ io.on("connection", (socket) => {
         console.error("Error handling buzzer press:", error);
         socket.emit("error", "Failed to process buzzer press");
       }
-    }
+    },
   );
 
   socket.on("resetBuzzer", async () => {
@@ -252,7 +255,7 @@ app.post("/api/auth/create", async (req: Request, res: Response) => {
       password,
       school,
       members,
-      role
+      role,
     );
 
     if ("error" in result) {
@@ -349,7 +352,7 @@ app.post(
         message: e instanceof Error ? e.message : "Unknown error",
       });
     }
-  }
+  },
 );
 
 // Protected routes
@@ -389,7 +392,7 @@ app.post(
         message: e instanceof Error ? e.message : "Unknown error",
       });
     }
-  }
+  },
 );
 
 // Admin only route
@@ -410,7 +413,7 @@ app.get(
       console.error("Error fetching teams:", e);
       res.status(500).json({ error: "Internal server error" });
     }
-  }
+  },
 );
 
 // Verify token endpoint
@@ -422,7 +425,7 @@ app.get(
       success: true,
       user: req.user,
     });
-  }
+  },
 );
 
 // 404 handler
