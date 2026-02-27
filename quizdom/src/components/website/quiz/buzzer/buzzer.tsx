@@ -1,27 +1,14 @@
-"use client";
-
-// REACT
 import * as React from "react";
-
-// NUNITO
 import { Nunito } from "next/font/google";
-
-// SOCKET
 import { useSocket } from "@/context/socket/context";
-
-// CONTEXT
 import { useAuthContext } from "@/context/auth/state";
-
-// TOAST
 import { toast } from "sonner";
-
-// AUTH CONTEXT
 import { ContextType } from "@/context/auth/context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { RotateCcw, Loader2 } from "lucide-react";
 
-// FLOWBITE
-import { Button, Card, Badge } from "flowbite-react";
-
-// INTERFACE
 interface BuzzerProps {
   isAdmin?: boolean;
 }
@@ -42,6 +29,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
 
   React.useEffect(() => {
     if (!socket) return;
+
     const handleBuzzerReset = () => {
       setBuzzerPressed(false);
     };
@@ -50,20 +38,6 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
       setError(message);
       setTimeout(() => setError(null), 3000);
     };
-
-    // Socket event listeners
-    if (!socket) {
-      toast.error("Not connected to server!", { duration: 500 });
-      return;
-    }
-
-    socket.on("connect", () => {
-      toast.success("Connected to server!", { duration: 500 });
-    });
-
-    socket.on("disconnect", () => {
-      toast.error("Disconnected from server!", { duration: 500 });
-    });
 
     socket.on("buzzerReset", handleBuzzerReset);
     socket.on("error", handleError);
@@ -84,11 +58,9 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
       toast.warning("Buzzer is already pressed!");
       return;
     }
+
     try {
-      socket.emit("pressBuzzer", {
-        teamId,
-        teamName,
-      });
+      socket.emit("pressBuzzer", { teamId, teamName });
       setBuzzerPressed(true);
       toast.info("Pressed buzzer", { duration: 600 });
     } catch (error) {
@@ -102,6 +74,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
       toast.error("Not connected to server!");
       return;
     }
+
     try {
       socket.emit("resetBuzzer", {});
       toast.info("Resetting buzzer...", { duration: 700 });
@@ -114,7 +87,7 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
   if (!team) {
     return (
       <div className="flex h-32 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-indigo-500 dark:border-indigo-300"></div>
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -123,28 +96,27 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
     <div className={nunito.className}>
       <div className="flex flex-col items-center gap-6">
         {!isAdmin && (
-          <Card className="w-full transition-colors duration-300">
-            <div className="flex flex-col items-center p-4">
-              <h2 className="mb-6 text-xl font-bold text-indigo-700 dark:text-indigo-200">
-                <u>Team:</u> {team.team}
+          <Card className="w-full border-2 transition-all duration-300 hover:shadow-xl">
+            <CardContent className="flex flex-col items-center p-8">
+              <h2 className="mb-6 text-2xl font-bold text-primary">
+                Team: <span className="text-foreground">{team.team}</span>
               </h2>
 
               <Badge
-                color={buzzerPressed ? "failure" : "success"}
-                size="xl"
-                className="mb-6 rounded-full px-4 py-2 dark:bg-opacity-80"
+                variant={buzzerPressed ? "destructive" : "default"}
+                className="mb-6 rounded-full px-6 py-2 text-base font-semibold"
               >
                 {buzzerPressed ? "Buzzer Pressed" : "Buzzer Ready"}
               </Badge>
 
               <div
-                className={`mb-6 flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-lg transition-all duration-500 ${
+                className={`mb-6 flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-2xl transition-all duration-500 ${
                   buzzerPressed
-                    ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600 dark:from-red-700 dark:to-red-900"
-                    : "bg-gradient-to-br from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 dark:from-green-700 dark:to-green-900"
+                    ? "animate-pulse bg-linear-to-br from-red-500 via-red-600 to-red-700"
+                    : "bg-linear-to-br from-green-500 via-green-600 to-green-700 hover:scale-105 hover:shadow-green-500/50"
                 }`}
               >
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold drop-shadow-lg">
                   {buzzerPressed ? "Pressed" : "Ready"}
                 </p>
               </div>
@@ -152,17 +124,16 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
               <Button
                 onClick={handleBuzzerPress}
                 disabled={buzzerPressed}
-                className={`h-16 w-48 transform cursor-pointer rounded-full text-lg font-bold transition-all duration-300 ${
+                size="lg"
+                className={`h-16 w-48 rounded-full text-lg font-bold transition-all duration-300 ${
                   buzzerPressed
                     ? "cursor-not-allowed"
                     : "hover:scale-105 active:scale-95"
-                } dark:text-white`}
-                color={buzzerPressed ? "gray" : "blue"}
-                size="xl"
+                }`}
               >
                 {buzzerPressed ? "Waiting..." : "Press Buzzer"}
               </Button>
-            </div>
+            </CardContent>
           </Card>
         )}
 
@@ -170,32 +141,21 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
           <div className="mt-4 flex w-full justify-center">
             <Button
               onClick={handleReset}
-              className="h-12 w-48 transform cursor-pointer rounded-full text-lg font-bold transition-all duration-300 hover:scale-105 active:scale-95 dark:text-white"
-              color="warning"
+              variant="outline"
               size="lg"
+              className="h-12 w-48 rounded-full text-lg font-bold transition-all duration-300 hover:scale-105 active:scale-95 border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-950"
             >
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
+              <RotateCcw className="mr-2 h-5 w-5" />
               Reset Buzzer
             </Button>
           </div>
         )}
 
         {error && (
-          <div className="mt-4 w-full rounded-md border-l-4 border-red-500 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 text-red-700 dark:border-red-400 shadow-md transition-colors duration-300">
-            <div className="flex items-center">
+          <div className="mt-4 w-full rounded-lg border-l-4 border-destructive bg-destructive/10 p-4 shadow-md transition-all duration-300">
+            <div className="flex items-center gap-3 text-destructive">
               <svg
-                className="mr-2 h-6 w-6"
+                className="h-6 w-6 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -204,30 +164,13 @@ export default function Buzzer({ isAdmin = false }: BuzzerProps) {
                   fillRule="evenodd"
                   d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                   clipRule="evenodd"
-                ></path>
+                />
               </svg>
-              <p>{error}</p>
+              <p className="font-medium">{error}</p>
             </div>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes pulse-animation {
-          0% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-          }
-          70% {
-            box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-          }
-        }
-        .pulse-animation {
-          animation: pulse-animation 2s infinite;
-        }
-      `}</style>
     </div>
   );
 }

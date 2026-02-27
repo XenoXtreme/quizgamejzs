@@ -3,8 +3,8 @@ import Panel from "@/components/website/quiz/panel/audience";
 
 // METADATA
 export const metadata: Metadata = {
-  title: "Interschool - Quizdom",
-  description: "Annual quiz competition of Jalpaiguri Zilla School",
+  title: "Audience Engagement - Quizdom",
+  description: "Interactive audience engagement quiz for Quizdom",
 };
 
 export default function Page() {

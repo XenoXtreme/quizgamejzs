@@ -7,153 +7,132 @@ import { Nunito } from "next/font/google";
 // NEXT JS
 import Link from "next/link";
 
+// SHADCN COMPONENTS
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+// LUCIDE ICONS
+import { ArrowRight, Users, School, Mic } from "lucide-react";
+
 // FONT
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
 });
 
+const quizCategories = [
+  {
+    id: "prelims",
+    title: "Prelims",
+    description: "Questions for Prelims.",
+    icon: School,
+    href: "/quiz/prelims",
+    gradient: "from-blue-500 to-cyan-500",
+    badge: "Getting Started",
+  },
+  {
+    id: "interschool",
+    title: "Inter School Quiz Competition",
+    description:
+      "Access the questions meant for students of class IX-XII. Explore the world, gain knowledge and do much more!",
+    icon: Users,
+    href: "/quiz/interschool",
+    gradient: "from-purple-500 to-pink-500",
+    badge: "Main",
+  },
+  {
+    id: "audience",
+    title: "Open Quiz for Audience",
+    description:
+      "Questions for audience to engage with the quiz and test their knowledge.",
+    icon: Mic,
+    href: "/quiz/audience",
+    gradient: "from-orange-500 to-red-500",
+    badge: "Interactive",
+  },
+];
+
 export default function Panel() {
   return (
     <div className={nunito.className}>
-      <div
-        className={`relative flex min-h-screen w-full flex-col items-center justify-center bg-[url('/assets/static/banner.jpg')] bg-cover text-center dark:bg-none`}
-      >
-        {/* Dark mode overlay for glass/blur effect */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 hidden dark:block"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(20,20,30,0.85) 0%, rgba(30,30,40,0.95) 100%)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            boxShadow: "0 0 120px 30px rgba(0,0,0,0.8) inset",
-          }}
-        />
-        <section className="relative z-10 mt-1 flex w-full flex-col items-center justify-center sm:mt-8">
-          {/* Prelims */}
-          <section
-            className={`my-2 flex h-auto w-[95vw] max-w-4xl cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-blue-200/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-blue-100/80 px-2 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.035] hover:bg-blue-50/90 sm:my-6 sm:px-6 lg:h-[25vh] lg:w-[70vw] lg:flex-row dark:border-blue-900/60 dark:bg-gradient-to-br dark:from-gray-900/70 dark:via-gray-800/80 dark:to-blue-900/60 dark:shadow-[0_12px_40px_0_rgba(0,0,0,0.8)] dark:backdrop-blur-2xl dark:hover:bg-gray-800/90`}
-            style={{
-              boxShadow:
-                "0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 1.5px 6px 0 rgba(0, 80, 255, 0.08)",
-            }}
-          >
-            <div className="mr-0 mb-2 flex h-4/5 w-full items-center justify-center lg:mr-2 lg:mb-0 lg:w-1/5 sm:lg:mr-[13%]">
-              <img
-                src="/assets/static/jzs.png"
-                loading="lazy"
-                alt="Logo"
-                className="xs:w-20 xs:h-20 h-16 w-16 rounded-2xl shadow-lg ring-2 ring-blue-200/60 sm:h-24 sm:w-24 lg:h-28 lg:w-28 dark:ring-blue-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
-                }}
-              />
-            </div>
-            <div className="mb-2 flex h-4/5 w-full flex-col items-center justify-center lg:mb-0 lg:w-3/5">
-              <h1 className="mb-1 rounded-lg bg-white/70 bg-gradient-to-tr from-blue-800 via-blue-600 to-blue-400 bg-clip-text px-2 py-1 text-lg font-extrabold text-transparent shadow sm:mb-2 sm:px-4 sm:py-2 sm:text-2xl dark:bg-gray-900/70 dark:text-blue-100">
-                Prelims
-              </h1>
-              <p className="w-4/5 rounded-lg px-1 py-1 text-xs font-medium text-gray-700 sm:px-3 sm:text-base dark:text-gray-200">
-                Questions for Prelims.
-              </p>
-            </div>
-            <div className="flex w-full items-center justify-center lg:w-1/5">
-              <Link
-                href="/quiz/prelims"
-                className="flex w-4/5 justify-center sm:w-3/5"
-              >
-                <button
-                  className={`w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 px-2 py-1 text-xs font-semibold text-white shadow-lg ring-1 ring-blue-200/60 transition hover:scale-105 hover:from-blue-800 hover:to-blue-600 sm:px-4 sm:py-2 sm:text-base dark:ring-blue-900/60`}
-                >
-                  View
-                </button>
-              </Link>
-            </div>
-          </section>
+      <div className="relative min-h-screen w-full bg-linear-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-black dark:via-gray-950 dark:to-gray-900">
+        {/* Vercel-style grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
 
-          {/* Inter School */}
-          <section
-            className={`my-4 flex h-auto w-[95vw] max-w-4xl cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-blue-200/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-blue-100/80 px-2 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.035] hover:bg-blue-50/90 sm:my-6 sm:px-6 lg:h-[25vh] lg:w-[70vw] lg:flex-row dark:border-blue-900/60 dark:bg-gradient-to-br dark:from-gray-900/70 dark:via-gray-800/80 dark:to-blue-900/60 dark:shadow-[0_12px_40px_0_rgba(0,0,0,0.8)] dark:backdrop-blur-2xl dark:hover:bg-gray-800/90`}
-            style={{
-              boxShadow:
-                "0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 1.5px 6px 0 rgba(0, 80, 255, 0.08)",
-            }}
-          >
-            <div className="mr-2 flex h-4/5 w-1/5 items-center justify-center sm:mr-[13%]">
-              <img
-                src="/assets/static/jzs.png"
-                loading="lazy"
-                alt="Logo"
-                className="xs:w-20 xs:h-20 h-16 w-16 rounded-2xl shadow-lg ring-2 ring-blue-200/60 sm:h-24 sm:w-24 lg:h-28 lg:w-28 dark:ring-blue-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
-                }}
-              />
-            </div>
-            <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-1 rounded-lg bg-white/70 bg-gradient-to-tr from-blue-800 via-blue-600 to-blue-400 bg-clip-text px-2 py-1 text-lg font-extrabold text-transparent shadow sm:mb-2 sm:px-4 sm:py-2 sm:text-2xl dark:bg-gray-900/70 dark:text-blue-100">
-                Inter School Quiz Competition
-              </h1>
-              <p className="w-4/5 rounded-lg px-1 py-1 text-xs font-medium text-gray-700 sm:px-3 sm:text-base dark:text-gray-200">
-                Access the questions meant for students of class IX-XII. Explore
-                the world gain knowlgde and do much more!
-              </p>
-            </div>
-            <div className="flex w-1/5 items-center justify-center">
-              <Link
-                href="/quiz/interschool"
-                className="flex w-4/5 justify-center sm:w-3/5"
-              >
-                <button
-                  className={`w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 px-2 py-1 text-xs font-semibold text-white shadow-lg ring-1 ring-blue-200/60 transition hover:scale-105 hover:from-blue-800 hover:to-blue-600 sm:px-4 sm:py-2 sm:text-base dark:ring-blue-900/60`}
+        {/* Gradient orbs */}
+        <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl dark:bg-blue-500/10" />
+        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl dark:bg-purple-500/10" />
+
+        <section className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-12 text-center">
+            <h1 className="mb-4 bg-linear-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl lg:text-6xl dark:from-gray-100 dark:via-gray-300 dark:to-gray-500">
+              Quiz Categories
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Select a category to begin your journey
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid w-full max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {quizCategories.map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <Card
+                  key={category.id}
+                  className="group relative overflow-hidden border border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-gray-300 hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/80 dark:hover:border-gray-700"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                  }}
                 >
-                  View
-                </button>
-              </Link>
-            </div>
-          </section>
-          {/* Audience */}
-          <section
-            className={`my-4 flex h-auto w-[95vw] max-w-4xl cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-blue-200/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-blue-100/80 px-2 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.035] hover:bg-blue-50/90 sm:my-6 sm:px-6 lg:h-[25vh] lg:w-[70vw] lg:flex-row dark:border-blue-900/60 dark:bg-gradient-to-br dark:from-gray-900/70 dark:via-gray-800/80 dark:to-blue-900/60 dark:shadow-[0_12px_40px_0_rgba(0,0,0,0.8)] dark:backdrop-blur-2xl dark:hover:bg-gray-800/90`}
-            style={{
-              boxShadow:
-                "0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 1.5px 6px 0 rgba(0, 80, 255, 0.08)",
-            }}
-          >
-            <div className="mr-2 flex h-4/5 w-1/5 items-center justify-center sm:mr-[13%]">
-              <img
-                src="/assets/static/jzs.png"
-                loading="lazy"
-                alt="Logo"
-                className="xs:w-20 xs:h-20 h-16 w-16 rounded-2xl shadow-lg ring-2 ring-blue-200/60 sm:h-24 sm:w-24 lg:h-28 lg:w-28 dark:ring-blue-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
-                }}
-              />
-            </div>
-            <div className="flex h-4/5 w-3/5 flex-col items-center justify-center">
-              <h1 className="mb-1 rounded-lg bg-white/70 bg-gradient-to-tr from-blue-800 via-blue-600 to-blue-400 bg-clip-text px-2 py-1 text-lg font-extrabold text-transparent shadow sm:mb-2 sm:px-4 sm:py-2 sm:text-2xl dark:bg-gray-900/70 dark:text-blue-100">
-                Open Quiz for Audience
-              </h1>
-              <p className="w-4/5 rounded-lg px-1 py-1 text-xs font-medium text-gray-700 sm:px-3 sm:text-base dark:text-gray-200">
-                Questions for audience to engage with the quiz and test their
-                knowledge.
-              </p>
-            </div>
-            <div className="flex w-1/5 items-center justify-center">
-              <Link
-                href="/quiz/audience"
-                className="flex w-4/5 justify-center sm:w-3/5"
-              >
-                <button
-                  className={`w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 px-2 py-1 text-xs font-semibold text-white shadow-lg ring-1 ring-blue-200/60 transition hover:scale-105 hover:from-blue-800 hover:to-blue-600 sm:px-4 sm:py-2 sm:text-base dark:ring-blue-900/60`}
-                >
-                  View
-                </button>
-              </Link>
-            </div>
-          </section>
+                  {/* Gradient overlay on hover */}
+                  <div
+                    className={`absolute inset-0 bg-linear-to-br ${category.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-5`}
+                  />
+
+                  <CardHeader className="relative">
+                    <div className="mb-4 flex items-start justify-between">
+                      <div
+                        className={`rounded-xl bg-linear-to-br ${category.gradient} p-3 shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                      >
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {category.badge}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-2xl font-bold tracking-tight">
+                      {category.title}
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="relative space-y-4">
+                    <CardDescription className="text-base leading-relaxed text-gray-600 dark:text-gray-400">
+                      {category.description}
+                    </CardDescription>
+
+                    <Link href={category.href} className="block">
+                      <Button
+                        className="group/button w-full bg-gray-900 font-semibold text-white transition-all duration-300 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200"
+                        size="lg"
+                      >
+                        View Questions
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </section>
       </div>
     </div>

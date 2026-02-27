@@ -5,46 +5,35 @@ import * as React from "react";
 // NEXTJS
 import { redirect } from "next/navigation";
 
-// FLOWBITE
+// SHADCN UI
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Button,
-  ClipboardWithIcon,
-  Label,
-  TextInput,
   Select,
-} from "flowbite-react";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// ICONS
+import { Copy, Loader2 } from "lucide-react";
 
 // CONTEXT
 import { useAuthContext } from "@/context/auth/state";
+import { type RegistrationModel } from "@/context/auth/context";
 
 // UUID
 import { v4 } from "uuid";
 
 // TOAST
 import { toast } from "sonner";
-import { styleText } from "util";
 
 export default function Home() {
   // TYPES
-  interface Member {
-    name: string | undefined | null;
-    class: string | undefined;
-  }
 
-  interface Team {
-    password: string | undefined | null;
-    team: string | undefined | null;
-    category: string | undefined | null;
-    school: string | undefined | null;
-    role: string | null;
-    members: {
-      member1: Member;
-      member2: Member;
-      member3: Member;
-      member4: Member;
-    };
-  }
-  const InitialState: Team = {
+  const InitialState: RegistrationModel = {
     team: "",
     password: v4(),
     category: "Interschool (Senior)",
@@ -59,8 +48,8 @@ export default function Home() {
   };
 
   // USESTATE DEFINITION
-  const [data, setData] = React.useState<Team>(InitialState);
-  const [loading, setLoading] = React.useState<Boolean>(false);
+  const [data, setData] = React.useState<RegistrationModel>(InitialState);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   // INPUT AND SELECT CHANGE HANDLER
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -84,8 +73,8 @@ export default function Home() {
       }));
     }
   }
-  function handleSelect(e: React.ChangeEvent<HTMLSelectElement>) {
-    const { id, name, value } = e.currentTarget;
+
+  function handleSelectChange(name: string, value: string) {
     const [memberKey, field] = name.split(".");
     if (memberKey.includes("member") && memberKey && field) {
       setData((prevState) => ({
@@ -101,10 +90,16 @@ export default function Home() {
     } else {
       setData((prevState) => ({
         ...prevState,
-        [id]: value,
+        [name]: value,
       }));
     }
   }
+
+  // COPY TO CLIPBOARD
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
+  };
 
   // BUTTON VALIDATION
   function valiDateButton(): boolean {
@@ -114,7 +109,7 @@ export default function Home() {
       return (
         Object.values(data.members).every(
           (member) =>
-            (member?.name?.length ?? 0) < 6 && (member?.class?.length ?? 0) < 1,
+            (member?.name?.length ?? 0) < 6 && (member?.class?.length ?? 0) < 1
         ) || [data.school].some((field) => (field?.length ?? 0) < 6)
       );
     }
@@ -122,7 +117,7 @@ export default function Home() {
 
   const verified = valiDateButton();
 
-  // CONTEXT AND AUH
+  // CONTEXT AND AUTH
   const { register } = useAuthContext();
 
   async function handleRegister(e: React.SyntheticEvent<HTMLButtonElement>) {
@@ -131,11 +126,19 @@ export default function Home() {
 
     await register(data)
       .then((res) => {
-        if (res.id) {
-          navigator.clipboard.writeText(res.id);
-          toast.success(`Successfully created account. ID: ${res.id}`, {
-            duration: 3000,
-          });
+        if (res.response?.data?.id) {
+          localStorage.setItem("_user", JSON.stringify(res.response?.data));
+          localStorage.setItem("_token", JSON.stringify(res.response?.token));
+          localStorage.setItem(
+            "_global_token",
+            JSON.stringify(res.response?.refreshToken)
+          );
+          toast.success(
+            `Successfully created account. ID: ${res.response?.data?.id}`,
+            {
+              duration: 3000,
+            }
+          );
           setLoading(false);
           setTimeout(() => {
             toast.info("Log in to your account.", { duration: 900 });
@@ -162,8 +165,8 @@ export default function Home() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-2 sm:p-4 dark:from-gray-900 dark:to-gray-800">
-      <form className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-xl transition-all duration-300 hover:shadow-2xl sm:max-w-2xl sm:p-8 md:p-12 dark:bg-gray-800">
+    <div className="min-h-screen w-full p-4 sm:p-6 md:p-8 lg:p-12">
+      <div className="mx-auto w-full">
         <h1 className="mb-6 text-center text-2xl font-bold text-blue-600 sm:mb-8 sm:text-4xl dark:text-blue-400">
           Team Registration
           <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-blue-400 sm:w-20 dark:bg-blue-600" />
@@ -178,17 +181,22 @@ export default function Home() {
             Team Password
           </Label>
           <div className="flex gap-2">
-            <TextInput
+            <Input
               id="password"
               type="text"
               value={data?.password as string}
-              className="w-full py-2.5 font-mono text-base sm:text-lg"
+              className="w-full font-mono text-base sm:text-lg"
               disabled
             />
-            <ClipboardWithIcon
-              className="cursor-pointer rounded-lg bg-blue-600 text-white transition-colors hover:bg-blue-700"
-              valueToCopy={data?.password as string}
-            />
+            <Button
+              type="button"
+              size="icon"
+              variant="default"
+              className="shrink-0 cursor-pointer"
+              onClick={() => copyToClipboard(data?.password as string)}
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
           </div>
           <p className="mt-1 text-xs text-gray-500 sm:text-sm dark:text-gray-400">
             Save this password for future login
@@ -196,7 +204,7 @@ export default function Home() {
         </div>
 
         {/* Team Members Section */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:mb-8 sm:grid-cols-2 sm:gap-6">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:mb-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {[1, 2, 3, 4].map((num) => (
             <div key={num} className="space-y-3 sm:space-y-4">
               <h3 className="text-lg font-semibold text-gray-700 sm:text-xl dark:text-gray-300">
@@ -209,7 +217,7 @@ export default function Home() {
                 >
                   Full Name
                 </Label>
-                <TextInput
+                <Input
                   id={`_M${num}N`}
                   name={`member${num}.name`}
                   type="text"
@@ -219,7 +227,6 @@ export default function Home() {
                       .name as string
                   }
                   onChange={handleChange}
-                  className="focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -231,21 +238,28 @@ export default function Home() {
                   Class
                 </Label>
                 <Select
-                  id={`_M${num}C`}
-                  name={`member${num}.class`}
                   value={
                     data?.members[`member${num}` as keyof typeof data.members]
                       .class
                   }
-                  onChange={handleSelect}
-                  className="w-full focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                  required
+                  onValueChange={(value) =>
+                    handleSelectChange(`member${num}.class`, value)
+                  }
                 >
-                  {["IX", "X", "XI", "XII"].map((cls) => (
-                    <option key={cls} value={cls}>
-                      Class {cls}
-                    </option>
-                  ))}
+                  <SelectTrigger id={`_M${num}C`} className="cursor-pointer">
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["IX", "X", "XI", "XII"].map((cls) => (
+                      <SelectItem
+                        className="cursor-pointer"
+                        key={cls}
+                        value={cls}
+                      >
+                        Class {cls}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
@@ -253,7 +267,7 @@ export default function Home() {
         </div>
 
         {/* Team Details Section */}
-        <div className="mb-6 space-y-4 sm:mb-8 sm:space-y-6">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:mb-8 sm:gap-6 md:grid-cols-3">
           <div>
             <Label
               htmlFor="category"
@@ -262,17 +276,19 @@ export default function Home() {
               Competition Category
             </Label>
             <Select
-              id="category"
               value={data?.category as string}
-              onChange={handleSelect}
-              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
-              required
+              onValueChange={(value) => handleSelectChange("category", value)}
             >
-              {["Interschool (Senior)"].map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
+              <SelectTrigger id="category" className="w-full cursor-pointer">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Interschool (Senior)"].map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 
@@ -283,12 +299,12 @@ export default function Home() {
             >
               Team Name
             </Label>
-            <TextInput
+            <Input
               id="team"
               placeholder="Enter your team name"
               value={data?.team as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
+              className="w-full text-base sm:text-lg"
               required
             />
           </div>
@@ -300,38 +316,34 @@ export default function Home() {
             >
               School Name
             </Label>
-            <TextInput
+            <Input
               id="school"
               type="text"
               placeholder="Your school's name"
               value={data?.school as string}
               onChange={handleChange}
-              className="w-full py-2.5 text-base focus:ring-2 focus:ring-blue-500 sm:text-lg"
+              className="w-full text-base sm:text-lg"
               required
             />
           </div>
         </div>
 
         <Button
-          className="w-full cursor-pointer rounded-lg py-3 text-base font-semibold transition-transform hover:scale-105 sm:text-lg"
+          className="w-full text-base font-semibold sm:text-lg cursor-pointer"
           onClick={handleRegister}
           disabled={verified}
+          size="lg"
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <svg
-                className="mr-3 h-5 w-5 animate-spin ..."
-                viewBox="0 0 24 24"
-              >
-                {/* Loading spinner SVG */}
-              </svg>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Registering...
             </span>
           ) : (
             "Complete Registration"
           )}
         </Button>
-      </form>
+      </div>
     </div>
   );
 }

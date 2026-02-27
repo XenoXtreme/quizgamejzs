@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   keywords: ["quiz", "game", "trivia", "knowledge", "fun"],
 };
 
-
 export default function Page() {
   return (
-    <div><HomePage/></div>
-
+    <div>
+      <HomePage />
+    </div>
   );
 }

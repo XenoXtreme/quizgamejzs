@@ -22,22 +22,50 @@ interface Team {
   };
 }
 
+interface RegistrationModel {
+  team: string | undefined | null;
+  password: string | undefined | null;
+  category: string | undefined | null;
+  school: string | undefined | null;
+  members: {
+    member1: Member;
+    member2: Member;
+    member3: Member;
+    member4: Member;
+  };
+  role: string | null;
+}
+
+// Response Type
+interface AuthResponse {
+  success: boolean;
+  response?: {
+    success?: boolean;
+    data?: Team;
+    token?: string;
+    refreshToken?: string;
+  };
+  message?: string;
+  error?: string;
+}
+
 interface ContextType {
   team: Team;
   isAuthenticated: boolean;
+  token: string | null;
   setTeam: React.Dispatch<React.SetStateAction<Team>>;
-  register: (data: any | null) => Promise<any>;
-  login: (_id: string | null, password: string | null) => Promise<any>;
-  fetchTeam: (_id: string) => Promise<any>;
-  getSetTeam: (_usr: Team) => void;
+  register: (data: RegistrationModel | null) => Promise<AuthResponse>;
+  login: (_id: string | null, password: string | null) => Promise<AuthResponse>;
+  fetchTeam: (_id: string) => Promise<AuthResponse>;
+  getSetTeam: (team: Team) => void;
   removeTeam: () => void;
+  refreshToken: () => Promise<string | null>;
 }
 
 // Define the shape of the context data
-
 const AuthContext: Context<ContextType> = createContext<ContextType>(
-  {} as ContextType,
+  {} as ContextType
 );
 
-export type { Team, ContextType };
+export type { Team, ContextType, AuthResponse, Member, RegistrationModel };
 export default AuthContext;

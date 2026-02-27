@@ -1,591 +1,834 @@
 "use client";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Settings,
+  Save,
+  Plus,
+  Trash2,
+  Clock,
+  Timer,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Card, Badge, TextInput, Label, Toast, ToastToggle } from "flowbite-react";
-import { HiClock, HiPause, HiPlay, HiStop, HiRefresh, HiAdjustments, HiSave, HiVolumeOff } from "react-icons/hi";
-import Stopwatch from "./stopwatch";
+// COMPONENTS
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export default function QuizTimer() {
-    // Default timer set to 30 seconds
-    const DEFAULT_TIMER_SECONDS = 30;
+type AlertType = "success" | "error" | "warning" | "info";
 
-    // Time states
-    const [seconds, setSeconds] = useState<number>(DEFAULT_TIMER_SECONDS);
-    const [minutes, setMinutes] = useState<number>(0);
-    const [hours, setHours] = useState<number>(0);
-    const [totalTimeInSeconds, setTotalTimeInSeconds] = useState<number>(DEFAULT_TIMER_SECONDS);
-    const [remainingTimeInSeconds, setRemainingTimeInSeconds] = useState<number>(DEFAULT_TIMER_SECONDS);
+interface SavedTimer {
+  id: number;
+  name: string;
+  timeInSeconds: number;
+}
 
-    // Timer control states
-    const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [isPaused, setIsPaused] = useState<boolean>(false);
-    const [showSettings, setShowSettings] = useState<boolean>(false);
-    const [direction, setDirection] = useState<"countdown" | "stopwatch">("countdown");
-    const [savedTimers, setSavedTimers] = useState<Array<{ name: string, timeInSeconds: number }>>([]);
-    const [timerName, setTimerName] = useState<string>("");
-    const [showToast, setShowToast] = useState<boolean>(false);
-    const [toastMessage, setToastMessage] = useState<string>("");
-    const [toastType, setToastType] = useState<"success" | "error" | "warning" | "info">("info");
-    const [progressPercentage, setProgressPercentage] = useState<number>(100);
+export default function EnhancedQuizTimer() {
+  const DEFAULT_TIMER_SECONDS = 30;
 
-    // Audio refs
-    const alarmSoundRef = useRef<HTMLAudioElement | null>(null);
-    const tickSoundRef = useRef<HTMLAudioElement | null>(null);
-    const [playTickSound, setPlayTickSound] = useState<boolean>(true);
-    const [playAlarmSound, setPlayAlarmSound] = useState<boolean>(true);
-    const [isAlarmPlaying, setIsAlarmPlaying] = useState<boolean>(false);
+  // Timer mode
+  const [mode, setMode] = useState<"countdown" | "stopwatch">("countdown");
 
-    // Timer ref
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Time states
+  const [hours, setHours] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(DEFAULT_TIMER_SECONDS);
+  const [totalSeconds, setTotalSeconds] = useState<number>(
+    DEFAULT_TIMER_SECONDS
+  );
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(
+    DEFAULT_TIMER_SECONDS
+  );
+  const [milliseconds, setMilliseconds] = useState<number>(0);
 
-    // Load saved timers from localStorage on component mount
-    useEffect(() => {
-        const savedTimersFromStorage = localStorage.getItem("quizTimers");
-        if (savedTimersFromStorage) {
-            setSavedTimers(JSON.parse(savedTimersFromStorage));
-        }
+  // Control states
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
 
-        // Initialize audio elements
-        alarmSoundRef.current = new Audio("/alarm.wav");
-        tickSoundRef.current = new Audio("/tick.mp3");
+  // Stopwatch laps
+  const [laps, setLaps] = useState<number[]>([]);
 
-        // Set default volume
-        if (alarmSoundRef.current) alarmSoundRef.current.volume = 0.7;
-        if (tickSoundRef.current) tickSoundRef.current.volume = 0.4;
+  // Saved timers
+  const [savedTimers, setSavedTimers] = useState<SavedTimer[]>([]);
+  const [timerName, setTimerName] = useState<string>("");
 
-        return () => {
-            // Cleanup timer on unmount
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-            }
+  // Sound settings
+  const [playTickSound, setPlayTickSound] = useState<boolean>(true);
+  const [playAlarmSound, setPlayAlarmSound] = useState<boolean>(true);
+  const [isAlarmPlaying, setIsAlarmPlaying] = useState<boolean>(false);
+  const [isTickSoundPlaying, setIsTickSoundPlaying] = useState<boolean>(false);
 
-            // Stop any playing sounds
-            if (alarmSoundRef.current) {
-                alarmSoundRef.current.pause();
-                alarmSoundRef.current.currentTime = 0;
-            }
+  // Toast/Alert
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    message: string;
+    type: AlertType;
+  }>({
+    show: false,
+    message: "",
+    type: "info",
+  });
 
-            if (tickSoundRef.current) {
-                tickSoundRef.current.pause();
-                tickSoundRef.current.currentTime = 0;
-            }
-        };
-    }, []);
+  // Refs
+  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const alarmSoundRef = useRef<HTMLAudioElement | null>(null);
+  const tickSoundRef = useRef<HTMLAudioElement | null>(null);
 
-    // Calculate total time whenever hours/minutes/seconds input changes
-    useEffect(() => {
-        const total = hours * 3600 + minutes * 60 + seconds;
-        setTotalTimeInSeconds(total);
-        if (!isRunning && !isPaused) {
-            setRemainingTimeInSeconds(total);
-        }
-    }, [hours, minutes, seconds, isRunning, isPaused]);
-
-    // Update progress percentage
-    useEffect(() => {
-        if (direction === "countdown" && totalTimeInSeconds > 0) {
-            setProgressPercentage((remainingTimeInSeconds / totalTimeInSeconds) * 100);
-        } else if (direction === "stopwatch") {
-            setProgressPercentage((remainingTimeInSeconds / (totalTimeInSeconds || 1)) * 100);
-        }
-    }, [remainingTimeInSeconds, totalTimeInSeconds, direction]);
-
-    // Timer logic
-    useEffect(() => {
-        if (isRunning) {
-            timerRef.current = setInterval(() => {
-                setRemainingTimeInSeconds(prev => {
-                    // For countdown timer
-                    if (direction === "countdown") {
-                        if (prev <= 0) {
-                            clearInterval(timerRef.current!);
-                            setIsRunning(false);
-                            setIsPaused(false);
-
-                            // Play alarm when timer reaches zero
-                            if (playAlarmSound && alarmSoundRef.current && !isAlarmPlaying) {
-                                alarmSoundRef.current.loop = true;
-                                alarmSoundRef.current.play()
-                                    .then(() => setIsAlarmPlaying(true))
-                                    .catch(err => console.error("Error playing alarm sound:", err));
-                            }
-                            if (tickSoundRef.current) {
-                                tickSoundRef.current.pause();
-                                tickSoundRef.current.currentTime = 0;
-                            }
-
-                            displayToast("Time's up!", "warning");
-                            return 0;
-                        }
-
-                        // Play tick sound every second for last 6 seconds
-                        if (playTickSound && tickSoundRef.current && prev <= 6 && prev > 0) {
-                            tickSoundRef.current.currentTime = 0;
-                            tickSoundRef.current.play()
-                                .catch(err => console.error("Error playing tick sound:", err));
-                        }
-
-                        return prev - 1;
-                    }
-                    // For stopwatch
-                    else {
-                        return prev + 1;
-                    }
-                });
-            }, 1000);
-        } else if (timerRef.current) {
-            clearInterval(timerRef.current);
-        }
-
-        return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-            }
-        };
-    }, [isRunning, direction, playTickSound, playAlarmSound, isAlarmPlaying]);
-
-    // Update display time
-    useEffect(() => {
-        if (!isRunning && !isPaused) return;
-
-        const h = Math.floor(remainingTimeInSeconds / 3600);
-        const m = Math.floor((remainingTimeInSeconds % 3600) / 60);
-        const s = remainingTimeInSeconds % 60;
-
-        setHours(h);
-        setMinutes(m);
-        setSeconds(s);
-    }, [remainingTimeInSeconds, isRunning, isPaused]);
-
-    // Handle timer start
-    const handleStart = () => {
-        if (isPaused) {
-            setIsPaused(false);
-        } else if (direction === "countdown" && totalTimeInSeconds === 0) {
-            displayToast("Please set a time greater than zero", "error");
-            return;
-        }
-
-        // Stop any playing alarm
-        stopAlarm();
-
-        setIsRunning(true);
-    };
-
-    // Handle timer pause
-    const handlePause = () => {
-        setIsRunning(false);
-        setIsPaused(true);
-    };
-
-    // Handle timer stop
-    const handleStop = () => {
-        setIsRunning(false);
-        setIsPaused(false);
-
-        // Reset to initial time for countdown
-        if (direction === "countdown") {
-            setRemainingTimeInSeconds(totalTimeInSeconds);
-        } else {
-            // Reset to zero for stopwatch
-            setRemainingTimeInSeconds(0);
-        }
-
-        // Stop any playing alarm
-        stopAlarm();
-    };
-
-    // Handle timer reset - Reset to 30 seconds as requested
-    const handleReset = () => {
-        setIsRunning(false);
-        setIsPaused(false);
-
-        // Reset always sets timer to 30 seconds
-        setHours(0);
-        setMinutes(0);
-        setSeconds(DEFAULT_TIMER_SECONDS);
-        setRemainingTimeInSeconds(DEFAULT_TIMER_SECONDS);
-        setTotalTimeInSeconds(DEFAULT_TIMER_SECONDS);
-
-        // Stop any playing alarm
-        stopAlarm();
-    };
-
-    // Stop alarm sound
-    const stopAlarm = () => {
-        if (isAlarmPlaying && alarmSoundRef.current) {
-            alarmSoundRef.current.pause();
-            alarmSoundRef.current.currentTime = 0;
-            setIsAlarmPlaying(false);
-        }
-    };
-
-    // Save current timer
-    const handleSaveTimer = () => {
-        if (!timerName.trim()) {
-            displayToast("Please enter a timer name", "error");
-            return;
-        }
-
-        const newTimer = {
-            name: timerName,
-            timeInSeconds: totalTimeInSeconds
-        };
-
-        const updatedTimers = [...savedTimers, newTimer];
-        setSavedTimers(updatedTimers);
-        localStorage.setItem("quizTimers", JSON.stringify(updatedTimers));
-        setTimerName("");
-        displayToast("Timer saved successfully", "success");
-    };
-
-    // Load a saved timer
-    const handleLoadTimer = (timeInSeconds: number) => {
-        setIsRunning(false);
-        setIsPaused(false);
-
-        const h = Math.floor(timeInSeconds / 3600);
-        const m = Math.floor((timeInSeconds % 3600) / 60);
-        const s = timeInSeconds % 60;
-
-        setHours(h);
-        setMinutes(m);
-        setSeconds(s);
-        setRemainingTimeInSeconds(timeInSeconds);
-
-        // Stop any playing alarm
-        stopAlarm();
-
-        displayToast("Timer loaded", "info");
-    };
-
-    // Delete a saved timer
-    const handleDeleteTimer = (index: number) => {
-        const updatedTimers = [...savedTimers];
-        updatedTimers.splice(index, 1);
-        setSavedTimers(updatedTimers);
-        localStorage.setItem("quizTimers", JSON.stringify(updatedTimers));
-        displayToast("Timer deleted", "info");
-    };
-
-    // Display toast notification
-    const displayToast = (message: string, type: "success" | "error" | "warning" | "info") => {
-        setToastMessage(message);
-        setToastType(type);
-        setShowToast(true);
-
-        setTimeout(() => {
-            setShowToast(false);
-        }, 3000);
-    };
-
-    // Format time for display
-    const formatTime = (hours: number, minutes: number, seconds: number) => {
-        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    };
-
-    return (
-        <div className="mt-6 px-1 sm:px-6 rounded-xl min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-2 text-indigo-900 dark:text-indigo-100 drop-shadow">Quiz Timer</h1>
-                <p className="text-center text-gray-600 dark:text-gray-300 mb-8 text-sm sm:text-base">Set, save, and manage timers for your quiz rounds</p>
-
-                {/* Timer Direction Toggle */}
-                <div className="flex gap-2 sm:gap-4 mb-6 justify-center flex-wrap">
-                    <Badge
-                        color={direction === "countdown" ? "info" : "gray"}
-                        size="xl"
-                        className={`px-3 sm:px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "countdown" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
-                        onClick={() => setDirection("countdown")}
-                    >
-                        Countdown
-                    </Badge>
-                    <Badge
-                        color={direction === "stopwatch" ? "info" : "gray"}
-                        size="xl"
-                        className={`px-3 sm:px-4 py-2 cursor-pointer transition-all duration-200 ${direction === "stopwatch" ? "ring-2 ring-indigo-400" : "hover:ring-2 hover:ring-indigo-200"}`}
-                        onClick={() => setDirection("stopwatch")}
-                    >
-                        Stopwatch
-                    </Badge>
-                </div>
-
-                {/* Main Timer Card or Stopwatch */}
-                {direction === "countdown" ? (
-                    <Card className="mb-8 shadow-2xl border-2 border-indigo-100 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-2xl">
-                        <div className="flex flex-col items-center">
-                            {/* Timer Display */}
-                            <div className="relative w-44 h-44 sm:w-72 sm:h-72 mb-6">
-                                {/* Circular Progress Background */}
-                                <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-800 shadow-inner"></div>
-                                {/* Circular Progress Indicator */}
-                                <div
-                                    className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-pink-300 dark:from-indigo-700 dark:to-pink-800 transition-all duration-700"
-                                    style={{
-                                        clipPath: `circle(${progressPercentage}% at center)`,
-                                        opacity: 0.25
-                                    }}
-                                ></div>
-                                {/* Timer Value Display */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div className="text-2xl sm:text-4xl font-extrabold text-indigo-700 dark:text-indigo-200 drop-shadow-lg tracking-widest select-none">
-                                        {formatTime(hours, minutes, seconds)}
-                                    </div>
-                                    <div className="mt-2 text-indigo-500 dark:text-indigo-300 font-medium text-sm sm:text-base">
-                                        Remaining
-                                    </div>
-                                    {remainingTimeInSeconds === 0 && !isRunning && (
-                                        <div className="flex flex-col items-center mt-4 gap-2">
-                                            <Badge color="warning" size="xl" className="animate-bounce">
-                                                Time's Up!
-                                            </Badge>
-                                            {isAlarmPlaying && (
-                                                <Button
-                                                    className="cursor-pointer bg-pink-600 text-white"
-                                                    color="failure"
-                                                    size="sm"
-                                                    onClick={stopAlarm}
-                                                >
-                                                    <HiVolumeOff className="mr-2 h-4 w-4" />
-                                                    Stop Alarm
-                                                </Button>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            {/* Timer Controls */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6 w-full max-w-xs sm:max-w-md">
-                                <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-pink-700 transition text-xs sm:text-base"
-                                    color={isRunning ? "gray" : "success"}
-                                    disabled={isRunning}
-                                    onClick={handleStart}
-                                    size="lg"
-                                >
-                                    <span className="flex items-center">
-                                        <HiPlay className="mr-2 h-5 w-5" />
-                                        {isPaused ? "Resume" : "Start"}
-                                    </span>
-                                </Button>
-                                <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-yellow-500 transition text-xs sm:text-base"
-                                    color="warning"
-                                    disabled={!isRunning}
-                                    onClick={handlePause}
-                                    size="lg"
-                                >
-                                    <HiPause className="mr-2 h-5 w-5" />
-                                    Pause
-                                </Button>
-                                <Button
-                                    className="cursor-pointer bg-pink-600 text-white hover:bg-red-700 transition text-xs sm:text-base"
-                                    color="failure"
-                                    disabled={!isRunning && !isPaused}
-                                    onClick={handleStop}
-                                    size="lg"
-                                >
-                                    <HiStop className="mr-2 h-5 w-5" />
-                                    Stop
-                                </Button>
-                                <Button
-                                    className="cursor-pointer hover:bg-purple-700 transition text-xs sm:text-base"
-                                    color="purple"
-                                    onClick={handleReset}
-                                    size="lg"
-                                >
-                                    <HiRefresh className="mr-2 h-5 w-5" />
-                                    Reset
-                                </Button>
-                            </div>
-                            {/* Timer Settings Toggle */}
-                            <Button
-                                color="light"
-                                onClick={() => setShowSettings(!showSettings)}
-                                className="cursor-pointer mb-4 hover:ring-2 hover:ring-indigo-200 dark:hover:ring-indigo-700 transition"
-                            >
-                                <HiAdjustments className="mr-2 h-5 w-5" />
-                                {showSettings ? "Hide Settings" : "Show Settings"}
-                            </Button>
-                            {/* Timer Settings */}
-                            {showSettings && (
-                                <div className="w-full space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-                                    <h3 className="text-lg font-semibold text-center text-indigo-700 dark:text-indigo-200">Timer Settings</h3>
-                                    {/* Input Fields for Timer */}
-                                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                                        <div>
-                                            <Label htmlFor="hours">Hours</Label>
-                                            <TextInput
-                                                id="hours"
-                                                type="number"
-                                                min={0}
-                                                max={23}
-                                                value={hours}
-                                                onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                                                disabled={isRunning || isPaused}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="minutes">Minutes</Label>
-                                            <TextInput
-                                                id="minutes"
-                                                type="number"
-                                                min={0}
-                                                max={59}
-                                                value={minutes}
-                                                onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                                                disabled={isRunning || isPaused}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="seconds">Seconds</Label>
-                                            <TextInput
-                                                id="seconds"
-                                                type="number"
-                                                min={0}
-                                                max={59}
-                                                value={seconds}
-                                                onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
-                                                disabled={isRunning || isPaused}
-                                            />
-                                        </div>
-                                    </div>
-                                    {/* Sound Settings */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                                        <div className="flex items-center">
-                                            <input
-                                                id="tickSound"
-                                                type="checkbox"
-                                                checked={playTickSound}
-                                                onChange={() => setPlayTickSound(!playTickSound)}
-                                                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <Label htmlFor="tickSound" className="ml-2">
-                                                Play tick sound (last 5 seconds)
-                                            </Label>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <input
-                                                id="alarmSound"
-                                                type="checkbox"
-                                                checked={playAlarmSound}
-                                                onChange={() => setPlayAlarmSound(!playAlarmSound)}
-                                                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <Label htmlFor="alarmSound" className="ml-2">
-                                                Play alarm when timer ends
-                                            </Label>
-                                        </div>
-                                    </div>
-                                    {/* Quick Time Presets */}
-                                    <div>
-                                        <Label className="mb-2 block">Quick Presets</Label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {[15, 30, 60, 120, 300].map((timeInSeconds) => (
-                                                <Badge
-                                                    key={timeInSeconds}
-                                                    color="info"
-                                                    className="cursor-pointer hover:ring-2 hover:ring-indigo-300 transition"
-                                                    onClick={() => handleLoadTimer(timeInSeconds)}
-                                                >
-                                                    {timeInSeconds < 60 ? `${timeInSeconds}s` :
-                                                        timeInSeconds < 3600 ? `${Math.floor(timeInSeconds / 60)}m` :
-                                                            `${Math.floor(timeInSeconds / 3600)}h ${Math.floor((timeInSeconds % 3600) / 60)}m`}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {/* Save Timer */}
-                                    <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                                        <Label htmlFor="timerName" className="mb-2 block">Save Current Timer</Label>
-                                        <div className="flex flex-col sm:flex-row gap-2">
-                                            <TextInput
-                                                id="timerName"
-                                                placeholder="Enter timer name..."
-                                                value={timerName}
-                                                onChange={(e) => setTimerName(e.target.value)}
-                                                className="flex-grow"
-                                            />
-                                            <Button
-                                                color="success"
-                                                onClick={handleSaveTimer}
-                                                className="cursor-pointer dark:text-white hover:bg-green-700 transition"
-                                            >
-                                                <HiSave className="mr-2 h-5 w-5" />
-                                                Save
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </Card>
-                ) : (
-                    <Stopwatch />
-                )}
-
-                {/* Saved Timers Card */}
-                {savedTimers.length > 0 && (
-                    <Card className="shadow-lg bg-white dark:bg-gray-900">
-                        <div>
-                            <h3 className="text-lg sm:text-xl font-semibold mb-4 text-indigo-700 dark:text-indigo-200">Saved Timers</h3>
-                            <div className="space-y-3">
-                                {savedTimers.map((timer, index) => {
-                                    const h = Math.floor(timer.timeInSeconds / 3600);
-                                    const m = Math.floor((timer.timeInSeconds % 3600) / 60);
-                                    const s = timer.timeInSeconds % 60;
-                                    return (
-                                        <div key={index} className="flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg gap-2">
-                                            <div>
-                                                <p className="font-medium text-indigo-800 dark:text-indigo-100">{timer.name}</p>
-                                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{formatTime(h, m, s)}</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    size="xs"
-                                                    color="info"
-                                                    className="cursor-pointer hover:bg-indigo-600 transition dark:text-white"
-                                                    onClick={() => handleLoadTimer(timer.timeInSeconds)}
-                                                >
-                                                    Load
-                                                </Button>
-                                                <Button
-                                                    size="xs"
-                                                    color="failure"
-                                                    className="cursor-pointer hover:bg-red-700 transition dark:text-white"
-                                                    onClick={() => handleDeleteTimer(index)}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </Card>
-                )}
-            </div>
-            {/* Toast Notification */}
-            {showToast && (
-                <div className="fixed bottom-4 right-2 sm:right-4 z-50">
-                    <Toast>
-                        <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                            toastType === "success" ? "bg-green-100 dark:bg-green-900 text-green-500" :
-                            toastType === "error" ? "bg-red-100 dark:bg-red-900 text-red-500" :
-                            toastType === "warning" ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-500" :
-                            "bg-blue-100 dark:bg-blue-900 text-blue-500"
-                        }`}>
-                            {toastType === "success" && <HiSave className="h-5 w-5" />}
-                            {toastType === "error" && <span>❌</span>}
-                            {toastType === "warning" && <HiClock className="h-5 w-5" />}
-                            {toastType === "info" && <span>ℹ️</span>}
-                        </div>
-                        <div className="ml-3 text-xs sm:text-sm font-normal dark:text-gray-100">{toastMessage}</div>
-                        <ToastToggle className="cursor-pointer" onClick={() => setShowToast(false)} />
-                    </Toast>
-                </div>
-            )}
-        </div>
+  // Helper function for showing alerts
+  const showAlertMessage = useCallback((message: string, type: AlertType) => {
+    setAlert({ show: true, message, type });
+    setTimeout(
+      () => setAlert({ show: false, message: "", type: "info" }),
+      3000
     );
+  }, []);
+
+  // Load saved timers from memory on mount
+  useEffect(() => {
+    // Initialize audio (would need actual audio files)
+    alarmSoundRef.current = new Audio("/alarm.wav");
+    tickSoundRef.current = new Audio("/tick.mp3");
+
+    if (alarmSoundRef.current) alarmSoundRef.current.volume = 1.0;
+    if (tickSoundRef.current) {
+      tickSoundRef.current.volume = 1;
+      tickSoundRef.current.loop = false; // Don't loop the tick sound
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  // SOUND MANAGEMENT
+  const stopAlarm = useCallback(() => {
+    if (alarmSoundRef.current) {
+      alarmSoundRef.current.pause();
+      alarmSoundRef.current.currentTime = 0;
+    }
+    setIsAlarmPlaying(false);
+  }, []);
+
+  const stopTickSound = useCallback(() => {
+    if (tickSoundRef.current) {
+      tickSoundRef.current.pause();
+      tickSoundRef.current.currentTime = 0;
+    }
+    setIsTickSoundPlaying(false);
+  }, []);
+
+  const startTickSound = useCallback(() => {
+    if (tickSoundRef.current && playTickSound && !isTickSoundPlaying) {
+      tickSoundRef.current.currentTime = 0;
+      tickSoundRef.current
+        .play()
+        .catch((e) => console.log("Tick sound error:", e));
+      setIsTickSoundPlaying(true);
+    }
+  }, [playTickSound, isTickSoundPlaying]);
+
+  // Update total seconds when time inputs change
+  useEffect(() => {
+    const total = hours * 3600 + minutes * 60 + seconds;
+    if (total !== totalSeconds) {
+      setTotalSeconds(total);
+      if (!isRunning && !isPaused) {
+        setRemainingSeconds(total);
+      }
+    }
+  }, [hours, minutes, seconds, isRunning, isPaused, totalSeconds]);
+
+  // Timer logic
+  useEffect(() => {
+    if (isRunning) {
+      if (mode === "countdown") {
+        timerRef.current = setInterval(() => {
+          setRemainingSeconds((prev) => {
+            if (prev <= 0) {
+              if (timerRef.current) clearInterval(timerRef.current);
+              setIsRunning(false);
+              setIsPaused(false);
+              stopTickSound();
+
+              if (playAlarmSound && !isAlarmPlaying) {
+                setIsAlarmPlaying(true);
+                alarmSoundRef.current
+                  ?.play()
+                  .catch((e) => console.log("Alarm error:", e));
+              }
+
+              showAlertMessage("Time's up!", "warning");
+              return 0;
+            }
+
+            // Play tick sound once when entering last 10 seconds
+            if (prev === 10 && playTickSound && !isTickSoundPlaying) {
+              startTickSound();
+            }
+
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        // Stopwatch mode with milliseconds
+        timerRef.current = setInterval(() => {
+          setMilliseconds((ms) => {
+            if (ms >= 99) {
+              setRemainingSeconds((prev) => prev + 1);
+              return 0;
+            }
+            return ms + 1;
+          });
+        }, 10);
+      }
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [
+    isRunning,
+    mode,
+    playAlarmSound,
+    isAlarmPlaying,
+    playTickSound,
+    isTickSoundPlaying,
+    startTickSound,
+    stopTickSound,
+    showAlertMessage,
+  ]);
+
+  // Handle pause/resume for tick sound
+  useEffect(() => {
+    if (!isRunning && isTickSoundPlaying) {
+      stopTickSound();
+    }
+  }, [isRunning, isTickSoundPlaying, stopTickSound]);
+
+  const handleStart = () => {
+    if (mode === "countdown" && totalSeconds === 0 && !isPaused) {
+      showAlertMessage("Please set a time greater than zero", "error");
+      return;
+    }
+
+    stopAlarm();
+    setIsRunning(true);
+    setIsPaused(false);
+
+    // Resume tick sound if we're in the last 10 seconds
+    if (
+      mode === "countdown" &&
+      remainingSeconds <= 10 &&
+      remainingSeconds > 0 &&
+      playTickSound
+    ) {
+      startTickSound();
+    }
+  };
+
+  const handlePause = () => {
+    setIsRunning(false);
+    setIsPaused(true);
+    stopTickSound();
+  };
+
+  const handleReset = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setHours(0);
+    setMinutes(0);
+    setSeconds(DEFAULT_TIMER_SECONDS);
+    setRemainingSeconds(DEFAULT_TIMER_SECONDS);
+    setTotalSeconds(DEFAULT_TIMER_SECONDS);
+    setMilliseconds(0);
+    setLaps([]);
+    stopAlarm();
+    stopTickSound();
+  };
+
+  const handleLap = () => {
+    if (isRunning && mode === "stopwatch") {
+      const lapTime = remainingSeconds * 100 + milliseconds;
+      setLaps((prev) => [lapTime, ...prev]);
+    }
+  };
+
+  const handleSaveTimer = () => {
+    if (!timerName.trim()) {
+      showAlertMessage("Please enter a timer name", "error");
+      return;
+    }
+
+    const newTimer: SavedTimer = {
+      id: Date.now(),
+      name: timerName,
+      timeInSeconds: totalSeconds,
+    };
+
+    setSavedTimers((prev) => [...prev, newTimer]);
+    setTimerName("");
+    showAlertMessage("Timer saved successfully", "success");
+  };
+
+  const handleLoadTimer = (timeInSeconds: number) => {
+    setIsRunning(false);
+    setIsPaused(false);
+
+    const h = Math.floor(timeInSeconds / 3600);
+    const m = Math.floor((timeInSeconds % 3600) / 60);
+    const s = timeInSeconds % 60;
+
+    setHours(h);
+    setMinutes(m);
+    setSeconds(s);
+    setRemainingSeconds(timeInSeconds);
+
+    stopAlarm();
+    showAlertMessage("Timer loaded", "info");
+  };
+
+  const handleDeleteTimer = (id: number) => {
+    setSavedTimers((prev) => prev.filter((t) => t.id !== id));
+    showAlertMessage("Timer deleted", "info");
+  };
+
+  const formatTime = (h: number, m: number, s: number): string => {
+    return `${h.toString().padStart(2, "0")}:${m
+      .toString()
+      .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const formatTimeWithMs = (totalSec: number, ms: number): string => {
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    return `${h.toString().padStart(2, "0")}:${m
+      .toString()
+      .padStart(2, "0")}:${s.toString().padStart(2, "0")}.${ms
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const progressPercentage =
+    mode === "countdown" && totalSeconds > 0
+      ? (remainingSeconds / totalSeconds) * 100
+      : 100;
+
+  // Calculate display values from remainingSeconds
+  const displayHours = Math.floor(remainingSeconds / 3600);
+  const displayMinutes = Math.floor((remainingSeconds % 3600) / 60);
+  const displaySeconds = remainingSeconds % 60;
+
+  const displayTime =
+    mode === "countdown"
+      ? formatTime(displayHours, displayMinutes, displaySeconds)
+      : formatTimeWithMs(remainingSeconds, milliseconds);
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 sm:p-8">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl sm:text-5xl font-bold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Quiz Timer
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Professional timer for quizzes, presentations, and time management
+          </p>
+        </div>
+
+        {/* Mode Toggle */}
+        <Tabs
+          value={mode}
+          onValueChange={(value) => setMode(value as "countdown" | "stopwatch")}
+          className="w-full"
+        >
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger
+              value="countdown"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Clock className="h-4 w-4" />
+              Countdown
+            </TabsTrigger>
+            <TabsTrigger
+              value="stopwatch"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Timer className="h-4 w-4" />
+              Stopwatch
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="countdown" className="space-y-6 mt-6">
+            {/* Main Timer Card */}
+            <Card className="border-2 shadow-2xl">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Circular Progress Timer Display */}
+                  <div className="relative w-64 h-64 sm:w-80 sm:h-80">
+                    {/* Animated circular progress */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="relative w-full h-full">
+                        {/* Background circle */}
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                          <circle
+                            cx="50%"
+                            cy="50%"
+                            r="40%"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="12"
+                            className="text-gray-200 dark:text-gray-800"
+                          />
+                        </svg>
+
+                        {/* Animated progress circle */}
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                          <circle
+                            cx="50%"
+                            cy="50%"
+                            r="40%"
+                            fill="none"
+                            stroke="url(#gradient)"
+                            strokeWidth="12"
+                            strokeLinecap="round"
+                            strokeDasharray={`${
+                              2 * Math.PI * (mode === "countdown" ? 128 : 256)
+                            }`}
+                            strokeDashoffset={`${
+                              2 *
+                              Math.PI *
+                              (mode === "countdown" ? 128 : 256) *
+                              (1 - progressPercentage / 100)
+                            }`}
+                            className="transition-all duration-300 ease-linear"
+                            style={{
+                              filter:
+                                remainingSeconds <= 10 &&
+                                remainingSeconds > 0 &&
+                                isRunning
+                                  ? "drop-shadow(0 0 8px rgba(236, 72, 153, 0.6))"
+                                  : "none",
+                              transition: isRunning
+                                ? "stroke-dashoffset 1s linear"
+                                : "stroke-dashoffset 0.3s ease",
+                            }}
+                          />
+                          <defs>
+                            <linearGradient
+                              id="gradient"
+                              x1="0%"
+                              y1="0%"
+                              x2="100%"
+                              y2="100%"
+                            >
+                              <stop offset="0%" stopColor="#6366f1" />
+                              <stop offset="50%" stopColor="#a855f7" />
+                              <stop offset="100%" stopColor="#ec4899" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+
+                        {/* Pulsing effect when time is low */}
+                        {remainingSeconds <= 10 &&
+                          remainingSeconds > 0 &&
+                          isRunning && (
+                            <svg className="absolute inset-0 w-full h-full transform -rotate-90 animate-pulse">
+                              <circle
+                                cx="50%"
+                                cy="50%"
+                                r="40%"
+                                fill="none"
+                                stroke="#ec4899"
+                                strokeWidth="2"
+                                opacity="0.3"
+                              />
+                            </svg>
+                          )}
+                      </div>
+                    </div>
+
+                    {/* Time display */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div
+                        className={`text-4xl sm:text-5xl font-bold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent transition-all duration-300 ${
+                          remainingSeconds <= 10 &&
+                          remainingSeconds > 0 &&
+                          isRunning
+                            ? "scale-110"
+                            : ""
+                        }`}
+                      >
+                        {displayTime}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        {isRunning ? "Running" : isPaused ? "Paused" : "Ready"}
+                      </div>
+                      {remainingSeconds === 0 && !isRunning && (
+                        <div className="mt-4 space-y-2 flex flex-col items-center">
+                          <Badge
+                            variant="destructive"
+                            className="animate-pulse"
+                          >
+                            Time&apos;s Up!
+                          </Badge>
+                          {isAlarmPlaying && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={stopAlarm}
+                              className="mt-2"
+                            >
+                              <VolumeX className="h-4 w-4 mr-2" />
+                              Stop Alarm
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Control Buttons */}
+                  <div className="grid grid-cols-3 gap-3 w-full max-w-lg">
+                    <Button
+                      onClick={handleStart}
+                      disabled={isRunning}
+                      className="bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      {isPaused ? "Resume" : "Start"}
+                    </Button>
+                    <Button
+                      onClick={handlePause}
+                      disabled={!isRunning}
+                      variant="outline"
+                    >
+                      <Pause className="h-4 w-4 mr-2" />
+                      Pause
+                    </Button>
+                    <Button onClick={handleReset} variant="outline">
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Reset
+                    </Button>
+                  </div>
+
+                  {/* Settings Toggle */}
+                  <Button
+                    onClick={() => setShowSettings(!showSettings)}
+                    variant="ghost"
+                    className="w-full max-w-lg"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    {showSettings ? "Hide Settings" : "Show Settings"}
+                  </Button>
+
+                  {/* Settings Panel */}
+                  {showSettings && (
+                    <div className="w-full max-w-lg space-y-6 pt-6 border-t">
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg">
+                          Timer Settings
+                        </h3>
+
+                        {/* Time Inputs */}
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="hours">Hours</Label>
+                            <Input
+                              id="hours"
+                              type="number"
+                              min={0}
+                              max={23}
+                              value={hours}
+                              onChange={(e) =>
+                                setHours(parseInt(e.target.value) || 0)
+                              }
+                              disabled={isRunning || isPaused}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="minutes">Minutes</Label>
+                            <Input
+                              id="minutes"
+                              type="number"
+                              min={0}
+                              max={59}
+                              value={minutes}
+                              onChange={(e) =>
+                                setMinutes(parseInt(e.target.value) || 0)
+                              }
+                              disabled={isRunning || isPaused}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="seconds">Seconds</Label>
+                            <Input
+                              id="seconds"
+                              type="number"
+                              min={0}
+                              max={59}
+                              value={seconds}
+                              onChange={(e) =>
+                                setSeconds(parseInt(e.target.value) || 0)
+                              }
+                              disabled={isRunning || isPaused}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Sound Settings */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label
+                              htmlFor="tick-sound"
+                              className="flex items-center gap-2"
+                            >
+                              <Volume2 className="h-4 w-4" />
+                              Tick sound (last 10 sec)
+                            </Label>
+                            <Switch
+                              id="tick-sound"
+                              className="cursor-pointer"
+                              checked={playTickSound}
+                              onCheckedChange={setPlayTickSound}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label
+                              htmlFor="alarm-sound"
+                              className="flex items-center gap-2"
+                            >
+                              <Volume2 className="h-4 w-4" />
+                              Alarm when timer ends
+                            </Label>
+                            <Switch
+                              id="alarm-sound"
+                              className="cursor-pointer"
+                              checked={playAlarmSound}
+                              onCheckedChange={setPlayAlarmSound}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Quick Presets */}
+                        <div className="space-y-2">
+                          <Label>Quick Presets</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {[15, 30, 60, 120, 300, 600].map((time) => (
+                              <Badge
+                                key={time}
+                                variant="secondary"
+                                className="cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors"
+                                onClick={() => handleLoadTimer(time)}
+                              >
+                                <Zap className="h-3 w-3 mr-1" />
+                                {time < 60
+                                  ? `${time}s`
+                                  : `${Math.floor(time / 60)}m`}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Save Timer */}
+                        <div className="space-y-2 pt-4 border-t">
+                          <Label htmlFor="timer-name">Save Current Timer</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="timer-name"
+                              placeholder="Timer name..."
+                              value={timerName}
+                              onChange={(e) => setTimerName(e.target.value)}
+                            />
+                            <Button onClick={handleSaveTimer}>
+                              <Save className="h-4 w-4 mr-2" />
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="stopwatch" className="space-y-6 mt-6">
+            {/* Stopwatch Card */}
+            <Card className="border-2 shadow-2xl">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Stopwatch Display */}
+                  <div className="relative w-64 h-64 sm:w-80 sm:h-80">
+                    <div className="absolute inset-0 rounded-full bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-indigo-950 dark:via-purple-950 dark:to-pink-950" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-4xl sm:text-5xl font-bold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        {displayTime}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        {isRunning ? "Running" : isPaused ? "Paused" : "Ready"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Control Buttons */}
+                  <div className="grid grid-cols-3 gap-3 w-full max-w-lg">
+                    <Button
+                      onClick={handleStart}
+                      disabled={isRunning}
+                      className="bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      {isPaused ? "Resume" : "Start"}
+                    </Button>
+                    <Button
+                      onClick={handlePause}
+                      disabled={!isRunning}
+                      variant="outline"
+                    >
+                      <Pause className="h-4 w-4 mr-2" />
+                      Pause
+                    </Button>
+                    <Button onClick={handleReset} variant="outline">
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Reset
+                    </Button>
+                  </div>
+
+                  {/* Lap Button */}
+                  <Button
+                    onClick={handleLap}
+                    disabled={!isRunning}
+                    className="w-full max-w-lg"
+                    variant="secondary"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Record Lap
+                  </Button>
+
+                  {/* Laps Display */}
+                  {laps.length > 0 && (
+                    <div className="w-full max-w-lg space-y-2">
+                      <h3 className="font-semibold text-lg">
+                        Laps ({laps.length})
+                      </h3>
+                      <div className="space-y-1 max-h-64 overflow-y-auto">
+                        {laps.map((lap, idx) => {
+                          const totalSec = Math.floor(lap / 100);
+                          const ms = lap % 100;
+                          return (
+                            <div
+                              key={idx}
+                              className="flex justify-between items-center p-3 rounded-lg bg-linear-to-r from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
+                            >
+                              <span className="font-medium">
+                                Lap {laps.length - idx}
+                              </span>
+                              <span className="font-mono text-lg">
+                                {formatTimeWithMs(totalSec, ms)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Saved Timers */}
+        {savedTimers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Saved Timers</CardTitle>
+              <CardDescription>
+                Quick access to your saved timer presets
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {savedTimers.map((timer) => {
+                  const h = Math.floor(timer.timeInSeconds / 3600);
+                  const m = Math.floor((timer.timeInSeconds % 3600) / 60);
+                  const s = timer.timeInSeconds % 60;
+                  return (
+                    <div
+                      key={timer.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-linear-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+                    >
+                      <div>
+                        <p className="font-medium">{timer.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {formatTime(h, m, s)}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleLoadTimer(timer.timeInSeconds)}
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteTimer(timer.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Alert */}
+        {alert.show && (
+          <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right">
+            <Alert
+              className={
+                alert.type === "success"
+                  ? "border-green-500 bg-green-50 dark:bg-green-950"
+                  : alert.type === "error"
+                  ? "border-red-500 bg-red-50 dark:bg-red-950"
+                  : alert.type === "warning"
+                  ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+                  : "border-blue-500 bg-blue-50 dark:bg-blue-950"
+              }
+            >
+              <AlertDescription>{alert.message}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

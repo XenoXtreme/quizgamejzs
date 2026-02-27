@@ -1,38 +1,26 @@
-"use client";
-
-// REACT
-import React, { useState, useEffect } from "react";
-
-// SOCKET
+import { useState, useEffect } from "react";
 import { useSocket } from "@/context/socket/context";
-
-// TOAST
 import { toast } from "sonner";
-
-// FLOWBITE
-import { Button, Card, Badge } from "flowbite-react";
-
-// BUZZER
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Buzzer from "./buzzer";
 import ConnectionDebug from "./debug";
-import Timer from "@/components/website/quiz/timer";
+
+interface BuzzerPress {
+  teamId: string;
+  teamName: string;
+  pressedAt: string;
+}
 
 export default function AdminPanel() {
-  // INTERFACE
-  interface BuzzerPress {
-    teamId: string;
-    teamName: string;
-    pressedAt: string;
-  }
-
-  // VARIABLES AND CONSTANTS
   const { socket } = useSocket();
   const [firstPressInfo, setFirstPressInfo] = useState<BuzzerPress | null>(
-    null,
+    null
   );
 
   useEffect(() => {
     if (!socket) return;
+
     const handleBuzzerPressed = (data: BuzzerPress) => {
       if (!firstPressInfo) {
         setFirstPressInfo(data);
@@ -46,18 +34,13 @@ export default function AdminPanel() {
       setFirstPressInfo(null);
     };
 
-    // Emit identifyMainComputer to let the server know this is the admin client
     socket.emit("identifyMainComputer");
 
-    // Listen for mainComLoginComp event from the server indicating a successful admin login/identification
-    socket.on("mainComLoginComp", (data: string) => {
+    socket.on("mainComLoginComp", () => {
       toast.success("Main computer (admin) identified successfully!");
     });
 
-    socket.on("buzzerPressed", (data: BuzzerPress) => {
-      handleBuzzerPressed(data);
-    });
-
+    socket.on("buzzerPressed", handleBuzzerPressed);
     socket.on("buzzerReset", handleBuzzerReset);
     socket.on("mainComputerAlreadyExists", () => {
       toast.warning("Already logged in as an admin");
@@ -72,94 +55,57 @@ export default function AdminPanel() {
   }, [socket, firstPressInfo]);
 
   return (
-    <div className="mx-auto min-h-screen max-w-[1200px] p-8 transition-colors duration-300">
+    <div className="mx-auto min-h-screen max-w-300 p-8 transition-colors duration-300">
       <div className="mb-8">
-        <h1 className="mb-2 text-center text-3xl font-bold text-indigo-800 dark:text-indigo-200">
+        <h1 className="mb-2 text-center text-4xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
           Quiz Buzzer Admin Panel
         </h1>
-        <p className="mb-8 text-center text-gray-600 dark:text-gray-300">
+        <p className="text-center text-muted-foreground">
           Control the timer and monitor buzzer presses
         </p>
       </div>
 
-      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg transition-colors duration-300 dark:from-indigo-900 dark:to-purple-900">
-        <div className="flex flex-col items-center">
-          <h2 className="mb-6 text-xl font-semibold text-indigo-700 dark:text-indigo-200">
-            Buzzer Status
-          </h2>
-
-          <div className="mb-6">
-            <Badge
-              color={firstPressInfo ? "failure" : "success"}
-              size="xl"
-              className="dark:bg-opacity-80 rounded-full px-4 py-2"
-            >
-              {firstPressInfo ? "Buzzer Pressed" : "Buzzer Ready"}
-            </Badge>
-          </div>
+      <Card className="mb-8 border-2 bg-linear-to-br from-indigo-50/50 to-purple-50/50 shadow-xl dark:from-indigo-950/30 dark:to-purple-950/30">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Buzzer Status</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center space-y-6">
+          <Badge
+            variant={firstPressInfo ? "destructive" : "default"}
+            className="rounded-full px-6 py-2 text-base font-semibold"
+          >
+            {firstPressInfo ? "Buzzer Pressed" : "Buzzer Ready"}
+          </Badge>
 
           <div
-            className={`flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-lg transition-all duration-500 ${
+            className={`flex h-48 w-48 items-center justify-center rounded-full text-center text-white shadow-2xl transition-all duration-500 ${
               firstPressInfo
-                ? "pulse-animation bg-gradient-to-br from-red-500 to-red-600 dark:from-red-700 dark:to-red-900"
-                : "bg-gradient-to-br from-green-500 to-green-600 dark:from-green-700 dark:to-green-900"
+                ? "animate-pulse bg-linear-to-br from-red-500 via-red-600 to-red-700"
+                : "bg-linear-to-br from-green-500 via-green-600 to-green-700"
             }`}
           >
             {firstPressInfo ? (
-              <div className="flex flex-col items-center gap-2 p-2">
-                <p className="text-lg font-bold">{firstPressInfo.teamName}</p>
-                <p className="text-sm opacity-90">{firstPressInfo.pressedAt}</p>
+              <div className="flex flex-col items-center gap-2 p-4">
+                <p className="text-xl font-bold drop-shadow-lg">
+                  {firstPressInfo.teamName}
+                </p>
+                <p className="text-sm opacity-90 drop-shadow">
+                  {new Date(firstPressInfo.pressedAt).toLocaleTimeString()}
+                </p>
               </div>
             ) : (
-              <p className="text-xl font-bold">Waiting for teams</p>
+              <p className="text-xl font-bold drop-shadow-lg">
+                Waiting for teams
+              </p>
             )}
           </div>
 
-          <div className="mt-8 w-full">
+          <div className="w-full">
             <Buzzer isAdmin={true} />
           </div>
-        </div>
-
-        <ConnectionDebug />
+        </CardContent>
       </Card>
-      {/* Timer component */}
-      <Card className="mb-8 mt-5 bg-white shadow-lg transition-colors duration-300 dark:bg-gray-900">
-        <div className="flex flex-col items-center">
-          <h2 className="mb-2 text-xl font-semibold text-indigo-700 dark:text-indigo-200">
-            Timer Control
-          </h2>
-          <div className="flex w-full justify-center">
-            <div className="w-full">
-              <Timer />
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <style jsx>{`
-        @keyframes pulse-animation {
-          0% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-          }
-          70% {
-            box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-          }
-        }
-        .pulse-animation {
-          animation: pulse-animation 2s infinite;
-        }
-        @keyframes spin {
-          from {
-            transform: rotate(-90deg);
-          }
-          to {
-            transform: rotate(270deg);
-          }
-        }
-      `}</style>
+      <ConnectionDebug />
     </div>
   );
 }

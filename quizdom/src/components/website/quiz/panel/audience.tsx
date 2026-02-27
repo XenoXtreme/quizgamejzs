@@ -1,21 +1,33 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faQuestionCircle,
-  faUsers,
-  faRocket,
-} from "@fortawesome/free-solid-svg-icons";
+
+// SHADCN COMPONENTS
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+// LUCIDE ICONS
+import { Users, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 
 // 20 audience engagement questions
-const audienceQuestions = Array.from({ length: 8 }).map((_, i) => ({
+const audienceQuestions = Array.from({ length: 20 }).map((_, i) => ({
   q_no: `${i + 1}`,
   display_text: `Audience Engagement Question ${i + 1}`,
 }));
 
+// Mounting Animation Hook
+const emptySubscribe = () => () => {};
+
+export function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
+
 /**
- * A stylish, modular component for a single question item with enhanced animations.
+ * A stylish, modular component for a single question item.
  */
 function QuestionListItem({
   question,
@@ -26,118 +38,119 @@ function QuestionListItem({
 }) {
   const { q_no, display_text } = question;
   const url = `/quiz/audience/${q_no}`;
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div
-      className="group animate-in fade-in slide-in-from-left-4 flex items-center justify-between rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm transition-all duration-500 ease-out hover:scale-[1.02] hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/10 dark:border-gray-800 dark:from-gray-800 dark:to-gray-900 dark:hover:border-pink-500/60 dark:hover:shadow-pink-500/10"
-      style={{
-        animationDelay: `${index * 50}ms`,
-        animationFillMode: "both",
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex items-center gap-4">
-        {/* Animated Icon Background */}
-        <div
-          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 transition-all duration-300 ease-out ${isHovered ? "scale-110 rotate-3 bg-blue-200/80" : ""} dark:bg-gray-700 dark:group-hover:bg-gray-600`}
-        >
-          <FontAwesomeIcon
-            icon={faQuestionCircle}
-            className={`text-xl text-blue-600 transition-all duration-300 ease-out dark:text-pink-400 ${isHovered ? "scale-110 rotate-12" : ""} `}
-          />
-        </div>
+    <Link href={url}>
+      <Card
+        className="group relative overflow-hidden border border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:border-gray-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900/80 dark:hover:border-gray-700"
+        style={{
+          animation: `fadeInUp 0.5s ease-out ${index * 50}ms both`,
+        }}
+      >
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-linear-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        {/* Animated Text */}
-        <span
-          className={`font-semibold text-gray-800 transition-all duration-300 ease-out dark:text-gray-100 ${isHovered ? "translate-x-1 text-blue-700 dark:text-pink-300" : ""} `}
-        >
-          {display_text}
-        </span>
-      </div>
+        <CardContent className="relative flex items-center justify-between p-4 sm:p-5">
+          <div className="flex items-center gap-4">
+            {/* Question Number Badge */}
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 font-bold text-gray-900 transition-all duration-300 group-hover:bg-gray-900 group-hover:text-white dark:bg-gray-800 dark:text-gray-100 dark:group-hover:bg-gray-100 dark:group-hover:text-gray-900">
+              {q_no}
+            </div>
 
-      {/* Enhanced Button with Ripple Effect */}
-      <Link href={url} className="ml-4 flex-shrink-0">
-        <button className="relative transform-gpu cursor-pointer overflow-hidden rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-300 ease-out before:absolute before:inset-0 before:bg-white/20 before:opacity-0 before:transition-opacity before:duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-700 hover:shadow-xl hover:before:opacity-100 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:from-pink-500 dark:to-fuchsia-500 dark:hover:from-pink-600 dark:hover:to-fuchsia-600 dark:focus:ring-pink-400/50">
-          <span className="relative z-10 flex items-center gap-2">
-            Engage
-            <FontAwesomeIcon
-              icon={faRocket}
-              className={`text-xs transition-all duration-300 ease-out ${isHovered ? "translate-x-1 rotate-12" : ""} `}
-            />
-          </span>
-        </button>
-      </Link>
-    </div>
+            {/* Question Text */}
+            <span className="font-semibold text-gray-900 transition-colors duration-300 group-hover:text-gray-600 dark:text-gray-100 dark:group-hover:text-gray-300">
+              {display_text}
+            </span>
+          </div>
+
+          {/* Arrow Icon */}
+          <ArrowRight className="h-5 w-5 shrink-0 text-gray-400 transition-all duration-300 group-hover:translate-x-1 group-hover:text-gray-900 dark:group-hover:text-gray-100" />
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
 /**
- * The main panel component with enhanced animations and effects.
+ * The main panel component.
  */
 export default function AudienceEngagePanel() {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const mounted = useIsMounted();
 
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+      </div>
+    );
+  }
 
   return (
-    <section className="relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-gray-100/50 py-16 dark:bg-gray-950">
-      {/* Animated Header */}
-      <header
-        className={`mb-12 flex items-center gap-4 text-center transition-all duration-700 ease-out ${isLoaded ? "animate-in fade-in slide-in-from-top-4" : "translate-y-4 opacity-0"} `}
-      >
-        <div className="relative">
-          <FontAwesomeIcon
-            icon={faUsers}
-            className="animate-pulse text-4xl text-blue-600 drop-shadow-sm transition-all duration-300 hover:animate-bounce dark:text-pink-400"
-          />
-          {/* Animated Ring */}
-          <div className="absolute inset-0 animate-ping rounded-full border-2 border-blue-300/30 dark:border-pink-300/30" />
+    <section className="relative min-h-screen w-full bg-linear-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-black dark:via-gray-950 dark:to-gray-900">
+      {/* Vercel-style grid background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
+
+      {/* Gradient orbs */}
+      <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl dark:bg-blue-500/10" />
+      <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl dark:bg-purple-500/10" />
+
+      <div className="relative z-10 flex min-h-screen flex-col items-center px-4 py-16 sm:px-6 lg:px-8">
+        {/* Header */}
+        <header
+          className="mb-12 text-center"
+          style={{
+            animation: mounted ? "fadeInDown 0.6s ease-out" : "none",
+          }}
+        >
+          <Badge variant="secondary" className="mb-4 text-sm font-medium">
+            <Sparkles className="mr-1 h-3 w-3" />
+            Interactive Quiz
+          </Badge>
+
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <div className="rounded-xl bg-linear-to-br from-blue-500 to-purple-500 p-3 shadow-lg dark:from-blue-600 dark:to-purple-600">
+              <Users className="h-8 w-8 text-white" />
+            </div>
+          </div>
+
+          <h1 className="mb-4 bg-linear-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl lg:text-6xl dark:from-gray-100 dark:via-gray-300 dark:to-gray-500">
+            Audience Engagement
+          </h1>
+
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Test your knowledge and engage with the quiz
+          </p>
+        </header>
+
+        {/* Question List */}
+        <div className="w-full flex max-w-3xl flex-col space-y-4">
+          {audienceQuestions.map((question, index) => (
+            <QuestionListItem
+              key={question.q_no}
+              question={question}
+              index={index}
+            />
+          ))}
         </div>
 
-        <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold tracking-tight text-gray-900 transition-transform duration-300 hover:scale-105 dark:from-pink-400 dark:to-fuchsia-400 dark:text-white">
-          Audience Engagement
-        </h1>
-      </header>
-
-      {/* Animated Question List */}
-      <div
-        className={`w-full max-w-3xl space-y-4 px-4 transition-all duration-500 ease-out ${isLoaded ? "animate-in fade-in slide-in-from-bottom-8" : "translate-y-8 opacity-0"} `}
-      >
-        {audienceQuestions.map((question, index) => (
-          <QuestionListItem
-            key={question.q_no}
-            question={question}
-            index={index}
-          />
-        ))}
+        {/* CTA Section */}
+        <div
+          className="mt-16 text-center"
+          style={{
+            animation: mounted ? "fadeInUp 0.6s ease-out 0.4s both" : "none",
+          }}
+        >
+          <p className="text-sm text-gray-500 dark:text-gray-600">
+            Ready to participate? Select a question above to begin
+          </p>
+        </div>
       </div>
 
-      {/* Animated Bottom Gradient */}
-      <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-32 animate-pulse bg-gradient-to-t from-blue-500/5 to-transparent dark:from-pink-500/5" />
-
       <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          50% {
-            transform: translateY(-20px) rotate(180deg);
-          }
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes animate-in {
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -145,61 +158,10 @@ export default function AudienceEngagePanel() {
           }
         }
 
-        .animate-in {
-          animation: animate-in 0.6s ease-out forwards;
-        }
-
-        .fade-in {
-          animation: fadeIn 0.6s ease-out forwards;
-        }
-
-        .slide-in-from-left-4 {
-          animation: slideInFromLeft 0.6s ease-out forwards;
-        }
-
-        .slide-in-from-top-4 {
-          animation: slideInFromTop 0.6s ease-out forwards;
-        }
-
-        .slide-in-from-bottom-8 {
-          animation: slideInFromBottom 0.6s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
+        @keyframes fadeInDown {
           from {
             opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slideInFromLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-16px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes slideInFromTop {
-          from {
-            opacity: 0;
-            transform: translateY(-16px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slideInFromBottom {
-          from {
-            opacity: 0;
-            transform: translateY(32px);
+            transform: translateY(-20px);
           }
           to {
             opacity: 1;

@@ -1,340 +1,372 @@
-import { useEffect, useState } from "react";
-// NEXTJS
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-// CONTEXT
-import { useAuthContext } from "@/context/auth/state";
-import { Team, ContextType } from "@/context/auth/context";
-// TOAST
+import { Menu, ChevronDown, LogOut, User, Clock } from "lucide-react";
 import { toast } from "sonner";
-// FLOWBITE
+
+import { useAuthContext } from "@/context/auth/state";
+import { ContextType } from "@/context/auth/context";
+import { cn } from "@/lib/utils";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Navbar,
-  NavbarBrand,
-  NavbarCollapse,
-  NavbarLink,
-  NavbarToggle,
-  DarkThemeToggle,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownHeader,
-  DropdownDivider,
-  HR,
-} from "flowbite-react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import ThemeToggle from "./themeToggle";
+
+// 1. Static data moved outside component to prevent re-creation on re-renders
+const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/history", label: "History" },
+  { href: "/rules", label: "Rules" },
+  { href: "/quiz", label: "QNA" },
+];
 
 export default function AppBar() {
   const path = usePathname();
   const router = useRouter();
+
   const { team, isAuthenticated, getSetTeam, removeTeam }: ContextType =
     useAuthContext();
-  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Local Storage Sync
+  useEffect(() => {
+    // Only run if we are in the browser and have no team loaded
+    if (typeof window === "undefined" || team?.id) return;
+
+    const userJSON = localStorage.getItem("_user");
+    if (!userJSON) return;
+
+    try {
+      const userData = JSON.parse(userJSON);
+      if (userData) {
+        getSetTeam({
+          id: userData.id,
+          team: userData.team,
+          category: userData.category,
+          member: userData.members?.[0] || {},
+          role: userData.role,
+          school: userData.school,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to restore session:", error);
+      localStorage.removeItem("_user");
+    }
+  }, [team?.id, getSetTeam]);
 
   const handleLogOut = () => {
     setIsLoggingOut(true);
-
-    // Clear local storage
-    localStorage.removeItem("_id");
+    // Clear storage
+    localStorage.removeItem("_token");
     localStorage.removeItem("_user");
 
     toast.success("Successfully logged out.", { duration: 600 });
 
+    // Use a small delay to allow the toast to appear before navigation
     setTimeout(() => {
-      router.refresh();
-      setIsLoggingOut(false);
       removeTeam();
+      router.refresh();
       router.push("/login");
+      setIsLoggingOut(false);
     }, 500);
   };
 
-  useEffect(() => {
-    // Load user data from localStorage if not already in context
-    if (typeof window !== "undefined" && !team?.id) {
-      const userJSON = localStorage.getItem("_user");
-
-      if (userJSON) {
-        try {
-          const userData = JSON.parse(userJSON);
-
-          if (userData) {
-            const userTeam: Team = {
-              id: userData.id,
-              team: userData.team,
-              category: userData.category,
-              member: userData.members?.[0] || {},
-              role: userData.role,
-              school: userData.school,
-            };
-
-            getSetTeam(userTeam);
-          }
-        } catch (error) {
-          console.error("Error parsing user data from localStorage:", error);
-          // Clear potentially corrupted data
-          localStorage.removeItem("_user");
-        }
-      }
-    }
-  }, [team?.id, getSetTeam]);
-
-  // Fixed isActive function to properly check exact routes
-  const isActive = (route: string): boolean => {
-    if (route === "/") {
-      return path === "/";
-    }
-
-    // For other routes, check if path exactly matches or starts with route/
+  // 4. Memoized Helper for Active Links
+  const isActive = (route: string) => {
+    if (route === "/") return path === "/";
     return path === route || path?.startsWith(`${route}/`);
   };
 
-  // Get Buzzer URL
-  function getBuzzerURL() {
-    let buzzerURL: string;
-    buzzerURL = "/quiz/buzzer";
-    if (team.role === "ADMIN") {
-      buzzerURL = `/quiz/buzzer?admin=true`;
-    }
-    return buzzerURL;
-  }
+  // Helper for Buzzer URL
+  const buzzerURL = useMemo(() => {
+    return team?.role === "ADMIN" ? "/quiz/buzzer?admin=true" : "/quiz/buzzer";
+  }, [team?.role]);
 
   return (
-    <Navbar
-      className="sticky top-0 z-50 border-b border-gray-200 bg-white px-4 py-2.5 shadow-md lg:px-6 dark:border-gray-700 dark:bg-gradient-to-r dark:from-indigo-900 dark:via-purple-900 dark:to-indigo-900"
-      fluid
-    >
-      <NavbarBrand as={Link} href="/" className="flex items-center">
-        <div className="relative mr-3 h-10 w-10 overflow-hidden rounded-lg shadow-lg">
-          <Image
-            src="/icon.png"
-            className="transform object-contain transition-transform duration-300 hover:scale-110"
-            width={40}
-            height={40}
-            alt="Quizdom Logo"
-          />
-        </div>
-        <span className="self-center bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-2xl font-bold text-transparent dark:from-purple-400 dark:to-blue-300">
-          Quizdom
-        </span>
-      </NavbarBrand>
-
-      <div className="flex items-center gap-2 md:order-2">
-        <DarkThemeToggle className="cursor-pointer rounded-lg p-2.5 text-gray-600 hover:text-gray-800 focus:ring-4 focus:ring-gray-200 dark:text-gray-300 dark:hover:text-white dark:focus:ring-gray-700" />
-
-        {/* Desktop user info */}
-        {isAuthenticated && (
-          <div className="mr-2 hidden md:flex md:flex-col md:items-end">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {team?.team || "Team Member"}
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {team?.school || "Quizdom"}
-            </span>
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:border-gray-700 dark:bg-linear-to-r dark:from-indigo-900/95 dark:via-purple-900/95 dark:to-indigo-900/95">
+      <div className="container flex h-16 items-center justify-between px-4 lg:px-6">
+        {/* Brand */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 transition-opacity hover:opacity-80"
+        >
+          <div className="relative h-10 w-10 overflow-hidden rounded-lg shadow-lg ring-2 ring-purple-500/20 transition-transform hover:scale-105">
+            <Image
+              src="/icon.png"
+              className="object-contain"
+              width={40}
+              height={40}
+              alt="Quizdom Logo"
+              priority
+            />
           </div>
-        )}
+          <span className="bg-linear-to-r from-purple-600 to-blue-500 bg-clip-text text-2xl font-bold text-transparent dark:from-purple-400 dark:to-blue-300">
+            Quizdom
+          </span>
+        </Link>
 
-        {/* Desktop Dropdown */}
-        {isAuthenticated ? (
-          <div className="hidden md:block">
-            <Dropdown
-              arrowIcon={true}
-              label={"Controls"}
-              className="cursor-pointer"
-            >
-              <DropdownHeader>
-                <span className="block text-sm font-semibold dark:text-white">
-                  {team?.team || "User"}
-                </span>
-                <span className="block truncate text-sm font-medium dark:text-gray-300">
-                  <b>
-                    <u>ROLE:</u>
-                  </b>{" "}
-                  {team?.role || "Member"}
-                </span>
-              </DropdownHeader>
-              <DropdownItem
-                as={Link}
-                href="/account"
-                className="dark:text-gray-200"
-              >
-                Profile
-              </DropdownItem>
-              <DropdownItem
-                as={Link}
-                href={getBuzzerURL()}
-                className="dark:text-gray-200"
-              >
-                Buzzer
-              </DropdownItem>
-              {team?.role === "ADMIN" && (
-                <DropdownItem
-                  as={Link}
-                  href="/quiz/timer"
-                  className="dark:text-gray-200"
-                >
-                  Timer
-                </DropdownItem>
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+                isActive(link.href)
+                  ? "bg-blue-100 text-blue-800 shadow-md dark:bg-blue-900/50 dark:text-yellow-300"
+                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
               )}
-              <DropdownDivider />
-              <DropdownItem
-                onClick={handleLogOut}
-                disabled={isLoggingOut}
-                className="dark:text-gray-200"
-              >
-                {isLoggingOut ? "Logging out..." : "Sign out"}
-              </DropdownItem>
-            </Dropdown>
-          </div>
-        ) : null}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-        <NavbarToggle className="ml-1 focus:ring-2 focus:ring-blue-300 dark:text-white dark:focus:ring-blue-600" />
-      </div>
+        {/* Right Controls */}
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
-      <NavbarCollapse className="md:flex md:items-center">
-        <div className="flex w-full flex-col md:w-auto md:flex-row md:gap-4 lg:gap-6">
-          <NavbarLink
-            href="/"
-            active={isActive("/")}
-            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/")
-                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-            } `}
-          >
-            Home
-          </NavbarLink>
-          <NavbarLink
-            href="/about"
-            active={isActive("/about")}
-            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/about")
-                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-            } `}
-          >
-            About
-          </NavbarLink>
-          <NavbarLink
-            href="/history"
-            active={isActive("/history")}
-            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/history")
-                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-            } `}
-          >
-            History
-          </NavbarLink>
-          <NavbarLink
-            href="/rules"
-            active={isActive("/rules")}
-            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/rules")
-                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-            } `}
-          >
-            Rules
-          </NavbarLink>
-          <NavbarLink
-            href="/quiz"
-            active={isActive("/quiz")}
-            className={`rounded-lg py-2 pr-4 pl-3 text-sm font-medium transition-colors duration-200 md:px-3 md:py-2 ${
-              isActive("/quiz")
-                ? "bg-blue-100 font-bold text-blue-800 shadow dark:bg-blue-800 dark:text-yellow-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-            } `}
-          >
-            QNA
-          </NavbarLink>
-          {/* Mobile Dropdown */}
-          <HR />
+          {/* Authenticated State */}
           {isAuthenticated && (
-            <div className="mb-2 block w-full md:hidden">
-              <div className="mb-2 flex flex-col items-start px-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="hidden items-center gap-3 md:flex">
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
                   {team?.team || "Team Member"}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {team?.school || "Quizdom"}
                 </span>
               </div>
-              <Dropdown
-                arrowIcon={true}
-                label={"Controls"}
-                className="w-full cursor-pointer dark:bg-gray-900"
-                style={{ width: "100%" }}
-              >
-                <DropdownHeader>
-                  <span className="block text-sm font-semibold dark:text-white">
-                    {team?.team || "User"}
-                  </span>
-                  <span className="block truncate text-sm font-medium dark:text-gray-300">
-                    <b>
-                      <u>ROLE:</u>
-                    </b>{" "}
-                    {team?.role || "Member"}
-                  </span>
-                </DropdownHeader>
-                <DropdownItem
-                  as={Link}
-                  href="/account"
-                  className="dark:text-gray-200"
-                >
-                  Profile
-                </DropdownItem>
-                <DropdownItem
-                  as={Link}
-                  href={getBuzzerURL()}
-                  className="dark:text-gray-200"
-                >
-                  Buzzer
-                </DropdownItem>
-                {team?.role === "ADMIN" && (
-                  <DropdownItem
-                    as={Link}
-                    href="/quiz/timer"
-                    className="dark:text-gray-200"
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1">
+                    Controls
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-semibold leading-none">
+                        {team?.team}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        <span className="font-semibold">Role:</span>{" "}
+                        {team?.role}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/account" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" /> Profile
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href={buzzerURL} className="cursor-pointer">
+                      <div className="flex items-center">
+                        <span className="mr-2 h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                        Buzzer
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {team?.role === "ADMIN" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/quiz/timer" className="cursor-pointer">
+                        <Clock className="mr-2 h-4 w-4" /> Timer
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleLogOut}
+                    disabled={isLoggingOut}
+                    className="cursor-pointer text-red-600 focus:text-red-600 dark:text-red-400"
                   >
-                    Timer
-                  </DropdownItem>
-                )}
-              </Dropdown>
-              <HR />
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {isLoggingOut ? "Logging out..." : "Sign out"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
-          {isAuthenticated ? (
-            <div className="mt-2 md:hidden">
-              <Button
-                onClick={handleLogOut}
-                disabled={isLoggingOut}
-                color="red"
-                className="w-full rounded-lg px-5 py-2.5 text-sm font-medium"
-              >
-                {isLoggingOut ? "Logging out..." : "Sign out"}
-              </Button>
-            </div>
-          ) : (
-            <div className="mt-2 flex flex-col gap-2 md:mt-0 md:ml-auto md:flex-row">
-              <Button
-                as={Link}
-                href="/login"
-                color="light"
-                className="w-full cursor-pointer rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 md:w-auto dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-              >
-                Login
+
+          {/* Guest State (Desktop) */}
+          {!isAuthenticated && (
+            <div className="hidden items-center gap-2 md:flex">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">Login</Link>
               </Button>
               <Button
-                as={Link}
-                href="/register"
-                className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 md:w-auto dark:focus:ring-blue-800"
+                size="sm"
+                asChild
+                className="bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
-                Register
+                <Link href="/register">Register</Link>
               </Button>
             </div>
           )}
+
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-75 sm:w-87.5">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10">
+                <div className="flex flex-col gap-4">
+                  <nav className="flex flex-col gap-1">
+                    {NAV_LINKS.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                          isActive(link.href)
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-yellow-300"
+                            : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+
+                  <Separator />
+
+                  {isAuthenticated ? (
+                    <>
+                      <div className="rounded-lg bg-muted p-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-semibold">
+                            {team?.team}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {team?.school}
+                          </span>
+                          <span className="mt-1 text-xs">
+                            <span className="font-semibold">Role:</span>{" "}
+                            {team?.role}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          asChild
+                        >
+                          <Link
+                            href="/account"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <User className="mr-2 h-4 w-4" /> Profile
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          asChild
+                        >
+                          <Link
+                            href={buzzerURL}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            Buzzer
+                          </Link>
+                        </Button>
+                        {team?.role === "ADMIN" && (
+                          <Button
+                            variant="outline"
+                            className="justify-start"
+                            asChild
+                          >
+                            <Link
+                              href="/quiz/timer"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <Clock className="mr-2 h-4 w-4" /> Timer
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+
+                      <Separator />
+
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          handleLogOut();
+                          setIsOpen(false);
+                        }}
+                        disabled={isLoggingOut}
+                        className="w-full"
+                      >
+                        {isLoggingOut ? "Logging out..." : "Sign out"}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <Button variant="outline" asChild>
+                        <Link href="/login" onClick={() => setIsOpen(false)}>
+                          Login
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        className="bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                      >
+                        <Link href="/register" onClick={() => setIsOpen(false)}>
+                          Register
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
         </div>
-      </NavbarCollapse>
-    </Navbar>
+      </div>
+    </header>
   );
 }

@@ -6,10 +6,24 @@ import { Nunito } from "next/font/google";
 
 // NEXT JS
 import Link from "next/link";
+import Image from "next/image";
 
-// FONTAWESOME
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
+// SHADCN COMPONENTS
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+// LUCIDE ICONS
+import {
+  User,
+  Zap,
+  Link as LinkIcon,
+  Film,
+  Target,
+  Hand,
+  Trophy,
+  ArrowRight,
+} from "lucide-react";
 
 // FONT
 const nunito = Nunito({
@@ -17,132 +31,170 @@ const nunito = Nunito({
   variable: "--font-nunito",
 });
 
+const rounds = [
+  {
+    id: "on-your-own",
+    title: "On Your Own",
+    icon: User,
+    gradient: "from-blue-500 to-cyan-500",
+    image: "/assets/static/person.jpg",
+    href: "/quiz/interschool/round/on-your-own",
+  },
+  {
+    id: "pounce-bounce",
+    title: "Pounce - Bounce",
+    icon: Zap,
+    gradient: "from-pink-500 to-rose-500",
+    image: "/assets/static/bounce.jpg",
+    href: "/quiz/interschool/round/pounce-bounce",
+  },
+  {
+    id: "connections",
+    title: "Connections",
+    icon: LinkIcon,
+    gradient: "from-green-500 to-emerald-500",
+    image: "/assets/static/connection.jpg",
+    href: "/quiz/interschool/round/connections",
+  },
+  {
+    id: "movie-mania",
+    title: "Movie Mania",
+    icon: Film,
+    gradient: "from-yellow-500 to-amber-500",
+    image: "/assets/static/movie.jpg",
+    href: "/quiz/interschool/round/movie-mania",
+  },
+  {
+    id: "point-blank",
+    title: "Point Blank",
+    icon: Target,
+    gradient: "from-orange-500 to-red-500",
+    image: "/assets/static/pointblank.jpg",
+    href: "/quiz/interschool/round/point-blank",
+  },
+  {
+    id: "on-your-fingertips",
+    title: "On Your Fingertips",
+    icon: Hand,
+    gradient: "from-indigo-500 to-purple-500",
+    image: "/assets/static/fingertips.png",
+    href: "/quiz/interschool/round/on-your-fingertips",
+  },
+];
+
 export default function Panel() {
   return (
     <div className={nunito.className}>
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 px-2 py-6 sm:py-8 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950">
-        <h1 className="mt-4 mb-8 flex items-center gap-2 rounded-2xl border border-blue-100/60 bg-white/80 px-6 py-4 text-2xl font-bold text-blue-900 shadow-2xl backdrop-blur-xl sm:mb-12 sm:text-3xl md:text-4xl dark:border-blue-900/60 dark:bg-gray-900/80 dark:text-blue-300">
-          <FontAwesomeIcon icon={faCube} />
-          Rounds:
-        </h1>
+      <div className="relative min-h-screen w-full bg-linear-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-black dark:via-gray-950 dark:to-gray-900">
+        {/* Vercel-style grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
 
-        <section className="grid w-full max-w-5xl grid-cols-1 gap-6 px-2 sm:grid-cols-2 sm:gap-10 md:grid-cols-3">
-          {/* On Your Own */}
-          <Link href="/quiz/interschool/round/on-your-own" className="group">
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-blue-200/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-blue-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(0,80,255,0.18)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-blue-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-blue-900/70">
-              <img
-                src="/assets/static/person.jpg"
-                loading="lazy"
-                alt="person"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-blue-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-blue-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="bg-gradient-to-tr from-blue-800 via-blue-600 to-blue-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-blue-900 group-hover:to-blue-500 sm:text-xl">
-                On Your Own
-              </h1>
-            </div>
-          </Link>
-          {/* Pounce - Bounce */}
-          <Link href="/quiz/interschool/round/pounce-bounce" className="group">
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-pink-200/60 bg-gradient-to-br from-white/80 via-pink-50/80 to-pink-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(255,0,120,0.13)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-pink-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-pink-900/70">
-              <img
-                src="/assets/static/bounce.jpg"
-                loading="lazy"
-                alt="logo"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-pink-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-pink-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #ffe0f0 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="bg-gradient-to-tr from-pink-700 via-pink-500 to-pink-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-pink-800 group-hover:to-pink-600 sm:text-xl">
-                Pounce - Bounce
-              </h1>
-            </div>
-          </Link>
-          {/* Connections */}
-          <Link href="/quiz/interschool/round/connections" className="group">
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-green-200/60 bg-gradient-to-br from-white/80 via-green-50/80 to-green-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(0,200,100,0.13)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-green-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-green-900/70">
-              <img
-                src="/assets/static/connection.jpg"
-                loading="lazy"
-                alt="connection"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-green-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-green-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0ffe7 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="bg-gradient-to-tr from-green-700 via-green-500 to-green-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-green-800 group-hover:to-green-600 sm:text-xl">
-                Connections
-              </h1>
-            </div>
-          </Link>
-          {/* Movie Mania */}
-          <Link href="/quiz/interschool/round/movie-mania" className="group">
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-yellow-200/60 bg-gradient-to-br from-white/80 via-yellow-50/80 to-yellow-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(255,215,0,0.13)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-yellow-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-yellow-900/70">
-              <img
-                src="/assets/static/movie.jpg"
-                loading="lazy"
-                alt="movie"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-yellow-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-yellow-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #fffbe0 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="bg-gradient-to-tr from-yellow-700 via-yellow-500 to-yellow-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-yellow-800 group-hover:to-yellow-600 sm:text-xl">
-                Movie Mania
-              </h1>
-            </div>
-          </Link>
-          {/* Point Blank */}
-          <Link href="/quiz/interschool/round/point-blank" className="group">
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-orange-200/60 bg-gradient-to-br from-white/80 via-orange-50/80 to-orange-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(255,180,0,0.13)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-yellow-700/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-yellow-900/70">
-              <img
-                src="/assets/static/pointblank.jpg"
-                loading="lazy"
-                alt="point blank"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-orange-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-yellow-700/60"
-                style={{
-                  background: "linear-gradient(135deg, #fff3e0 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="bg-gradient-to-tr from-orange-700 via-orange-500 to-orange-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-orange-800 group-hover:to-orange-600 sm:text-xl">
-                Point Blank
-              </h1>
-            </div>
-          </Link>
-          {/* On Your Fingertips */}
-          <Link
-            href="/quiz/interschool/round/on-your-fingertips"
-            className="group"
-          >
-            <div className="flex h-[200px] min-h-[180px] min-w-[140px] cursor-pointer flex-col items-center rounded-3xl border-2 border-indigo-200/60 bg-gradient-to-br from-white/80 via-indigo-50/80 to-indigo-100/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_40px_0_rgba(80,80,255,0.13)] sm:h-[290px] sm:min-h-[260px] sm:min-w-[220px] sm:p-8 dark:border-indigo-900/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-indigo-900/70">
-              <img
-                src="/assets/static/fingertips.png"
-                loading="lazy"
-                alt="fingertips"
-                className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-lg ring-2 ring-indigo-200/60 sm:mb-5 sm:h-28 sm:w-28 dark:ring-indigo-900/60"
-                style={{
-                  background: "linear-gradient(135deg, #e0e7ff 0%, #fff 100%)",
-                }}
-              />
-              <h1 className="group_hover:to-indigo-600 bg-gradient-to-tr from-indigo-700 via-indigo-500 to-indigo-400 bg-clip-text text-lg font-bold text-transparent transition group-hover:from-indigo-800 sm:text-xl">
-                On Your Fingertips
-              </h1>
-            </div>
-          </Link>
+        {/* Gradient orbs */}
+        <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl dark:bg-purple-500/10" />
+        <div className="absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl dark:bg-blue-500/10" />
+
+        <section className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-12 text-center">
+            <Badge variant="secondary" className="mb-4 text-sm font-medium">
+              Quiz Competition
+            </Badge>
+            <h1 className="mb-4 bg-linear-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl lg:text-6xl dark:from-gray-100 dark:via-gray-300 dark:to-gray-500">
+              Rounds
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Choose a round to begin
+            </p>
+          </div>
+
+          {/* Rounds Grid */}
+          <div className="grid w-full max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {rounds.map((round, index) => {
+              const Icon = round.icon;
+              return (
+                <Link key={round.id} href={round.href}>
+                  <Card
+                    className="group relative overflow-hidden border border-gray-200 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-gray-300 hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/80 dark:hover:border-gray-700"
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                  >
+                    {/* Gradient overlay */}
+                    <div
+                      className={`absolute inset-0 bg-linear-to-br ${round.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-5`}
+                    />
+
+                    <CardContent className="relative flex flex-col items-center p-8 text-center">
+                      {/* Image with icon overlay */}
+                      <div className="relative mb-6">
+                        <div className="relative h-28 w-28 overflow-hidden rounded-2xl shadow-lg ring-2 ring-gray-200 transition-all duration-300 group-hover:ring-4 group-hover:ring-gray-300 dark:ring-gray-700 dark:group-hover:ring-gray-600">
+                          <Image
+                            fill
+                            src={round.image}
+                            loading="lazy"
+                            alt={round.title}
+                            className="h-full w-full object-cover"
+                          />
+                          {/* Icon overlay */}
+                          <div
+                            className={`absolute inset-0 flex items-center justify-center bg-linear-to-br ${round.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-90`}
+                          >
+                            <Icon className="h-12 w-12 text-white" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h2 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                        {round.title}
+                      </h2>
+
+                      {/* Hover arrow */}
+                      <div className="mt-2 flex items-center gap-2 text-sm font-medium text-gray-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:text-gray-400">
+                        Start Round
+                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Tie Breaker Section */}
+          <div className="mt-16 w-full max-w-6xl">
+            <Card className="group relative overflow-hidden border-2 border-yellow-500/20 bg-linear-to-br from-yellow-50/80 via-amber-50/80 to-orange-50/80 backdrop-blur-sm transition-all duration-300 hover:border-yellow-500/40 hover:shadow-2xl dark:border-yellow-500/20 dark:from-yellow-950/20 dark:via-amber-950/20 dark:to-orange-950/20">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-linear-to-br from-yellow-500 to-orange-500 opacity-0 transition-opacity duration-300 group-hover:opacity-5" />
+
+              <CardContent className="relative flex flex-col items-center justify-between gap-4 p-6 sm:flex-row sm:p-8">
+                <div className="flex items-center gap-4">
+                  <div className="rounded-xl bg-linear-to-br from-yellow-500 to-orange-500 p-3 shadow-lg">
+                    <Trophy className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      Tie Breaker
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Descisive round to determine the winner from tied teams
+                    </p>
+                  </div>
+                </div>
+
+                <Link href="/quiz/interschool/round/tie-breaker">
+                  <Button
+                    size="lg"
+                    className="group/button bg-linear-to-r from-yellow-500 to-orange-500 font-semibold text-white shadow-lg transition-all duration-300 hover:from-yellow-600 hover:to-orange-600 hover:shadow-xl"
+                  >
+                    View Round
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
         </section>
-        <div className="mt-24 flex w-full max-w-5xl items-center justify-between rounded-2xl border-2 border-yellow-200/60 bg-gradient-to-br from-white/80 via-yellow-50/80 to-yellow-100/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6 dark:border-yellow-800/60 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-yellow-900/70">
-          <span className="text-xl font-bold text-yellow-800 sm:text-2xl dark:text-yellow-300">
-            Tie Breaker
-          </span>
-          <Link href={"/quiz/interschool/round/tie-breaker"}>
-            <button className="transform cursor-pointer rounded-xl bg-gradient-to-r from-yellow-500 to-pink-500 px-6 py-2.5 text-base font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-yellow-300 focus:outline-none dark:focus:ring-yellow-700">
-              View
-            </button>
-          </Link>
-        </div>
       </div>
     </div>
   );

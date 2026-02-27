@@ -1,40 +1,25 @@
-// CSS
-import "./globals.css";
-
-// FLOWBITE
-import { ThemeModeScript } from "flowbite-react";
-
-// METADATA
 import type { Metadata } from "next";
-
-// LAYOUT
-import Layout from "@/layout/layout";
-
-// FONTAWESOME
-import { config } from "@fortawesome/fontawesome-svg-core";
-
-// CSS
-import "@fortawesome/fontawesome-svg-core/styles.css";
-
-// CONFIG FONTAWESOME
-config.autoAddCss = false;
+import { Nunito } from "next/font/google";
 
 // TOP LOADER
-import NextTopLoader from 'nextjs-toploader';
+import NextTopLoader from "nextjs-toploader";
+
+// LAYOUT
+import Layout from "@/layout/index";
+
+// IMPORT CSS
+import "./globals.css";
 
 // FONT
-import { Nunito } from "next/font/google";
+const nunito = Nunito({
+  subsets: ["latin"],
+});
 
 // METADATA
 export const metadata: Metadata = {
   title: "Quizdom",
   description: "Annual quiz competition of Jalpaiguri Zilla School",
 };
-
-// NUNITO FONT
-const nunito = Nunito({
-  subsets: ["latin"],
-});
 
 export default function RootLayout({
   children,
@@ -43,10 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <ThemeModeScript />
-      </head>
-      <body className={`${nunito.className} dark:bg-gray-900`}>
+      <body className={`${nunito.className} antialiased`}>
         <NextTopLoader />
         <Layout>{children}</Layout>
       </body>

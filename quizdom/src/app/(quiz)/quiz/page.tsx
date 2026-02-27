@@ -1,8 +1,5 @@
-import Panel from '@/components/website/quiz/panel';
-
+import Panel from "@/components/website/quiz/panel";
 
 export default function Page() {
-  return (
-    <div><Panel/></div>
-  )
+  return <Panel />;
 }

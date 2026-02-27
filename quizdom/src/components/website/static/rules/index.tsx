@@ -1,36 +1,53 @@
 "use client";
 
 import React from "react";
-import { Badge, Alert } from "flowbite-react";
 import {
-  FaTrophy,
-  FaUsers,
-  FaClock,
-  FaStar,
-  FaHeadSideVirus,
-  FaBullseye,
-  FaLink,
-  FaHandPointUp,
-} from "react-icons/fa";
-import { TbArrowBounce } from "react-icons/tb";
-import { BsFillCameraReelsFill } from "react-icons/bs";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Trophy,
+  Users,
+  Clock,
+  Star,
+  Brain,
+  Link2,
+  Target,
+  Hand,
+  Film,
+  Info,
+  AlertCircle,
+} from "lucide-react";
 
-// Type definitions
 interface Rule {
   type: string;
   correct: string;
   wrong: string;
   note?: string;
 }
+
 interface ConnectionScoring {
   correct: string;
   wrong: string;
   note?: string;
 }
+
 interface Round {
   id: number;
   title: string;
-  icon: React.ReactElement;
+  icon: React.ReactNode;
   description: string;
   rules: Rule[];
   challenge: boolean;
@@ -42,11 +59,10 @@ interface Round {
 
 const QuizRulesPage: React.FC = () => {
   const rounds: Round[] = [
-    // Data
     {
       id: 1,
       title: "Round 1",
-      icon: <FaHeadSideVirus className="h-5 w-5" />,
+      icon: <Brain className="w-6 h-6" />,
       description: "On Your Own",
       rules: [
         {
@@ -67,7 +83,21 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 2,
       title: "Round 2",
-      icon: <TbArrowBounce className="h-5 w-5" />,
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            d="M12 5v14m0 0l-7-7m7 7l7-7"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
       description: "Pounce Bounce",
       rules: [
         { type: "Direct Question", correct: "+20", wrong: "0" },
@@ -89,7 +119,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 3,
       title: "Round 3",
-      icon: <BsFillCameraReelsFill className="h-5 w-5" />,
+      icon: <Film className="w-6 h-6" />,
       description: "Movie Mania",
       rules: [
         {
@@ -104,7 +134,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 4,
       title: "Round 4",
-      icon: <FaLink className="h-5 w-5" />,
+      icon: <Link2 className="w-6 h-6" />,
       description: "Connection Round",
       rules: [{ type: "Per Question", correct: "+20", wrong: "-10" }],
       connection: {
@@ -128,7 +158,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 5,
       title: "Round 5",
-      icon: <FaBullseye className="h-5 w-5" />,
+      icon: <Target className="w-6 h-6" />,
       description: "Point Blank",
       rules: [
         {
@@ -143,7 +173,7 @@ const QuizRulesPage: React.FC = () => {
     {
       id: 6,
       title: "Round 6",
-      icon: <FaHandPointUp className="h-5 w-5" />,
+      icon: <Hand className="w-6 h-6" />,
       description: "On Your Fingertips",
       rules: [
         { type: "Direct Question", correct: "+20", wrong: "0" },
@@ -160,205 +190,241 @@ const QuizRulesPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 px-4 py-12 text-gray-300">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-background py-12 px-4 text-foreground">
+      <div className="mx-auto max-w-5xl space-y-12">
         {/* Header */}
-        <div className="mb-16 text-center">
-          <div className="mb-4 flex items-center justify-center gap-4">
-            <FaTrophy className="h-10 w-10 text-amber-400" />
-            <h1 className="bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-4xl font-bold text-transparent">
+        <section className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-4">
+            <Trophy className="h-10 w-10 text-amber-400" />
+            <h1 className="text-4xl sm:text-5xl font-bold">
               Quiz Competition Rules
             </h1>
-            <FaTrophy className="h-10 w-10 text-amber-400" />
+            <Trophy className="h-10 w-10 text-amber-400" />
           </div>
-          <p className="mx-auto max-w-2xl text-lg text-slate-400">
+          <p className="text-lg text-muted-foreground">
             A complete guide to the 6-round quiz competition.
           </p>
-        </div>
+        </section>
 
-        {/* General Information */}
-        <div className="mb-12 grid gap-6 md:grid-cols-3">
-          {/* Combination */}
-          <div className="// Make it slightly larger by default // Base styles // Add a subtle gradient // Add a larger, more vibrant // Make the brighter // Smooth transitions // Enhance effect on hover scale-105 transform rounded-xl bg-gradient-to-br from-slate-800 to-amber-900/60 p-6 text-center shadow-2xl ring-2 shadow-amber-500/30 ring-amber-400 transition-all duration-300 hover:scale-110 hover:shadow-amber-400/50">
-            <FaUsers className="mx-auto mb-3 h-10 w-10 text-amber-300" />
-            <h3 className="text-xl font-bold text-white">Team Format</h3>
-            <p className="text-slate-400">⁴C₂ combinations</p>
-            <p className="mt-2 text-lg font-semibold text-amber-400">
-              Each combination plays once
-            </p>
-          </div>
+        {/* General Information Cards */}
+        <section className="grid md:grid-cols-3 gap-6">
+          <Card className="relative overflow-hidden border-amber-300 bg-linear-to-br from-amber-900/10 to-amber-900/5 hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <Users className="mx-auto h-10 w-10 text-amber-500 mb-2" />
+              <CardTitle>Team Format</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground mb-2">⁴C₂ combinations</p>
+              <p className="font-semibold text-amber-600">
+                Each combination plays once
+              </p>
+            </CardContent>
+          </Card>
 
-          {/* Other Info Cards */}
-          <div className="rounded-xl bg-slate-800/50 p-6 text-center ring-1 ring-slate-700">
-            <FaClock className="mx-auto mb-3 h-8 w-8 text-sky-400" />
-            <h3 className="text-lg font-semibold text-white">Format</h3>
-            <p className="text-slate-400">6 Exciting Rounds</p>
-            <p className="text-sm text-slate-500">Progressive difficulty</p>
-          </div>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <Clock className="mx-auto h-10 w-10 text-blue-500 mb-2" />
+              <CardTitle>Format</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground">6 Exciting Rounds</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Progressive difficulty
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="rounded-xl bg-slate-800/50 p-6 text-center ring-1 ring-slate-700">
-            <FaStar className="mx-auto mb-3 h-8 w-8 text-violet-400" />
-            <h3 className="text-lg font-semibold text-white">Scoring</h3>
-            <p className="text-slate-400">Points-based system</p>
-            <p className="text-sm text-slate-500">
-              Positive & negative marking
-            </p>
-          </div>
-        </div>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <Star className="mx-auto h-10 w-10 text-purple-500 mb-2" />
+              <CardTitle>Scoring</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground">Points-based system</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Positive & negative marking
+              </p>
+            </CardContent>
+          </Card>
+        </section>
 
-        {/* Rounds */}
-        <div className="space-y-8">
+        {/* Rounds with Tabs */}
+        <Tabs defaultValue="round-1" className="w-full">
+          <TabsList className="w-full grid grid-cols-3 md:grid-cols-6 gap-2">
+            {rounds.map((round) => (
+              <TabsTrigger
+                key={round.id}
+                value={`round-${round.id}`}
+                className="cursor-pointer text-xs sm:text-sm"
+              >
+                R{round.id}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
           {rounds.map((round) => (
-            <div
-              key={round.id}
-              className="overflow-hidden rounded-xl bg-slate-800/30 ring-1 ring-slate-700"
-            >
-              <div className="border-b border-slate-700 bg-slate-800/50 p-4">
-                <div className="flex items-center gap-4">
-                  <div className="text-slate-400">{round.icon}</div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">
-                      {round.title}
-                    </h2>
-                    <p className="text-slate-400">{round.description}</p>
-                  </div>
-                  {round.topics && (
-                    <Badge color="cyan" className="ml-auto">
-                      {round.topics} Topics
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <div className="p-6">
-                {/* Regular Rules - Minimalist List */}
-                <div className="divide-y divide-slate-700">
-                  {round.rules.map((rule, index) => (
-                    <div key={index} className="py-4 first:pt-0 last:pb-0">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-slate-200">
-                          {rule.type}
-                        </h4>
-                        <div className="flex gap-4">
-                          <Badge color="success" size="sm">
-                            Correct: {rule.correct}
-                          </Badge>
-                          <Badge
-                            color={rule.wrong === "0" ? "gray" : "failure"}
-                            size="sm"
-                          >
-                            Wrong: {rule.wrong}
-                          </Badge>
-                        </div>
-                      </div>
-                      {rule.note && (
-                        <p className="mt-1 text-sm text-slate-400 italic">
-                          {rule.note}
-                        </p>
-                      )}
+            <TabsContent key={round.id} value={`round-${round.id}`}>
+              <Card>
+                <CardHeader className="border-b pb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">{round.icon}</div>
+                    <div className="flex-1">
+                      <CardTitle className="text-2xl">{round.title}</CardTitle>
+                      <CardDescription>{round.description}</CardDescription>
                     </div>
-                  ))}
-                </div>
+                    {round.topics && (
+                      <Badge variant="secondary">{round.topics} Topics</Badge>
+                    )}
+                  </div>
+                </CardHeader>
 
-                {/* Connection Round Special Rules */}
-                {round.connection && (
-                  <div className="mt-6 border-t border-slate-700 pt-6">
-                    <h4 className="mb-4 flex items-center gap-2 font-semibold text-slate-200">
-                      <FaLink className="h-4 w-4" />
-                      Connection Guessing Points
-                    </h4>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      {Object.entries(round.connection).map(
-                        ([hint, scoring]) => (
-                          <div
-                            key={hint}
-                            className="flex items-center justify-between rounded-lg bg-slate-800 p-3 ring-1 ring-slate-700"
-                          >
-                            {/* Group the hint text and the asterisk together */}
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-slate-300">
-                                {hint}
-                              </span>
-                              {scoring.note && (
-                                <span className="text-xs text-slate-500">
-                                  *
-                                </span>
-                              )}
-                            </div>
-
-                            {/* This container for badges remains the same */}
-                            <div className="flex gap-2 text-sm">
-                              <Badge color="success" size="sm">
-                                +{scoring.correct.replace("+", "")}
+                <CardContent className="pt-6 space-y-6">
+                  {/* Rules Accordion */}
+                  <Accordion type="single" collapsible className="w-full">
+                    {round.rules.map((rule, idx) => (
+                      <AccordionItem key={idx} value={`rule-${idx}`}>
+                        <AccordionTrigger className="cursor-pointer font-semibold text-left">
+                          {rule.type}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3">
+                            <div className="flex flex-wrap gap-2">
+                              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                                Correct: {rule.correct}
                               </Badge>
                               <Badge
-                                color={
-                                  scoring.wrong === "0" ? "gray" : "failure"
+                                variant={
+                                  rule.wrong === "0"
+                                    ? "secondary"
+                                    : "destructive"
                                 }
-                                size="sm"
                               >
-                                {scoring.wrong}
+                                Wrong: {rule.wrong}
                               </Badge>
                             </div>
+                            {rule.note && (
+                              <Alert className="border-blue-200 bg-blue-50  dark:bg-[#0a0a0a]">
+                                <Info className="h-4 w-4 text-blue-600" />
+                                <AlertDescription className="text-blue-800">
+                                  {rule.note}
+                                </AlertDescription>
+                              </Alert>
+                            )}
                           </div>
-                        ),
-                      )}
-                    </div>
-                    <div className="mt-3 space-y-1">
-                      {Object.entries(round.connection).map(
-                        ([hint, scoring]) =>
-                          scoring.note && (
-                            <p
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+
+                  {/* Connection Round Special Rules */}
+                  {round.connection && (
+                    <div className="space-y-4 pt-4 border-t">
+                      <h4 className="font-bold text-lg flex items-center gap-2">
+                        <Link2 className="w-5 h-5 text-purple-600" />
+                        Connection Guessing Points
+                      </h4>
+                      <div className="space-y-2">
+                        {Object.entries(round.connection).map(
+                          ([hint, scoring]) => (
+                            <div
                               key={hint}
-                              className="text-xs text-slate-400 italic"
+                              className="flex items-center justify-between p-3 rounded-lg bg-muted"
                             >
-                              * {hint}: {scoring.note}
-                            </p>
-                          ),
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{hint}</span>
+                                {scoring.note && (
+                                  <span className="text-xs text-muted-foreground">
+                                    *
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex gap-2">
+                                <Badge className="bg-green-200 text-green-800 hover:bg-green-100">
+                                  +{scoring.correct.replace("+", "")}
+                                </Badge>
+                                <Badge
+                                  variant={
+                                    scoring.wrong === "0"
+                                      ? "secondary"
+                                      : "destructive"
+                                  }
+                                >
+                                  {scoring.wrong}
+                                </Badge>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                      {Object.entries(round.connection).some(
+                        ([, s]) => s.note
+                      ) && (
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          {Object.entries(round.connection).map(
+                            ([hint, scoring]) =>
+                              scoring.note && (
+                                <p key={hint}>
+                                  * {hint}: {scoring.note}
+                                </p>
+                              )
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Challenge Information */}
-                {round.challenge && (
-                  <Alert
-                    color="info"
-                    className="mt-6 border-sky-700 bg-sky-900/50 text-sky-200"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FaBullseye className="h-4 w-4" />
-                      <span className="font-medium">Challenge Rule:</span>
-                      <span>
-                        Teams can challenge the topic, not the question
-                      </span>
-                    </div>
-                  </Alert>
-                )}
-              </div>
-            </div>
+                  {/* Challenge Information */}
+                  {round.challenge && (
+                    <Alert className="border-sky-200 bg-sky-50 dark:bg-[#0a0a0a]">
+                      <AlertCircle className="h-4 w-4 text-sky-600" />
+                      <AlertDescription className="text-sky-900">
+                        <strong>Challenge Rule:</strong> Teams can challenge the
+                        topic, not the question
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
           ))}
-        </div>
+        </Tabs>
 
-        {/* Footer */}
-        <div className="mt-16 text-center">
-          <div className="mx-auto max-w-2xl rounded-lg bg-amber-500/50 p-4 ring-1 ring-slate-700">
-            <h4 className="mb-2 font-bold">Important Notes</h4>
-            <ul className="space-y-1 text-lg text-slate-400">
-              <li>• Pay attention to negative marking in later rounds.</li>
-              <li>
-                • The Connection round offers the highest points but also the
-                highest risk.
+        {/* Important Notes Footer */}
+        <Card className="bg-amber-50 border-amber-300 dark:bg-[#0a0a0a] dark:border-amber-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-amber-900 dark:text-amber-200">
+              <AlertCircle className="w-5 h-5" />
+              Important Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>Pay attention to negative marking in later rounds. </span>
               </li>
-              <li>• Challenge rules apply only where specified.</li>
-              <li className="text-yellow-300">
-                • Each team combination plays only once.
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>
+                  The Connection round offers the highest points but also the
+                  highest risk.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>Challenge rules apply only where specified.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-amber-700">•</span>
+                <span className="text-amber-700 font-medium">
+                  Each team combination plays only once.
+                </span>
               </li>
             </ul>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </main>
   );
 };
 
